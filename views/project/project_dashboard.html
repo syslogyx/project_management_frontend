@@ -1,0 +1,560 @@
+<section class="content dashboard">
+    <style>
+        #circle {
+            width: 15px;
+            height: 15px;
+            -webkit-border-radius: 25px;
+            -moz-border-radius: 25px;
+            border-radius: 25px;
+            /*background: red;*/
+            float: left;
+            margin-right: 10px;
+        }
+
+        .panel-default {
+            height: 369px;
+            width: 100%;
+        }
+
+        /* Suvrat Add a new legend for tables */
+        @media (min-width: 1024px) {
+            #legendd {
+                margin-top: 1.3%;
+            }
+        }
+
+        /* ////////////////////////////////////////// */
+    </style>
+    <div class="container-fluid dashbaordContainer">
+        <!-- Suvrat Change the layout of breadcrumb and legend -->
+        <div class="row">
+            <div class="col-md-3 col-sm-12 col-xs-12">
+                <ol id="breadcrumb" class="ab-nav breadcrumb">
+                    <i class="glyphicon glyphicon-home"></i>&nbsp;
+                    <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label"
+                        ng-class="{ active: $last }">
+                        <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                            class="margin-right-xs"></a>
+                        <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Suvrat Add a new legend for tables -->
+            <div id="legendd" class="col-md-9 col-sm-12 col-xs-12" style="text-align: right;">
+                <div class="" style="display: inline-block;">
+                    <!-- <div class="legend-item col-md-2 col-sm-4 col-xs-5"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Pending"></span>
+                    <span class="status_name">Pending</span>
+                    <!-- </div> -->
+                    <!-- <div class="legend-item col-md-3 col-sm-4 col-xs-7"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Start"></span>
+                    <span class="status_name">In-progress</span>
+                    <!-- </div> -->
+                    <!-- <div class="legend-item col-md-2 col-sm-4 col-xs-4"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Active"></span>
+                    <span class="status_name">Active</span>
+                    <!-- </div> -->
+                    <!-- <div class="legend-item col-md-3 col-sm-4 col-xs-4"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Paused"></span>
+                    <span class="status_name">On-hold</span>
+                    <!-- </div> -->
+                    <!-- <div id="legend5" class="legend-item col-md-2 col-sm-4 col-xs-4"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Closed"></span>
+                    <span class="status_name">Closed</span>
+                    <!-- </div> -->
+                </div>
+            </div>
+            <!-- ------------------------------- -->
+        </div>
+        <!-- --------------------------------------------------- -->
+        <div class="row" style="margin-left:15px;">
+            <h4><strong>Project name </strong> : <span>{{pjc.projectName}}</span>
+                <span class="dropdown">
+                    <button ng-if="can('user.projects.change_status')" type="button"
+                        class="btn btn-default btn-sm dropdown-toggle" title="{{pjc.projectStatusId}}"
+                        data-toggle="dropdown" style="border:white;width: 5%; background-color:transparent!important;">
+                        <div id="circle" ng-class="pjc.projectStatusId"></div><i class="fa fa-chevron-down"></i>
+                    </button>
+
+                    <button ng-if="!can('user.projects.change_status')" type="button" class="btn btn-default btn-sm"
+                        title="{{pjc.projectStatusId}}"
+                        style="border:white;width: 5%; background-color:transparent!important;">
+                        <div id="circle" ng-class="pjc.projectStatusId"></div><i class="fa fa-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-menu" style="min-width:110px!important;">
+                        <li ng-repeat="data in pjc.status" ng-if="data.name != pjc.projectStatusId">
+
+                            <!--  <a ng-href="">{{data.name}}</a> -->
+
+                            <button type="button" class="btn btn-default btn-sm" title="" data-toggle="modal"
+                                data-target="#changeStatusModal" ng-click="pjc.loadStatus(data);"
+                                style="border:white;padding-right: 17px;"><span id="circle"
+                                    ng-class="data.name"></span>&nbsp;{{data.name}}
+                            </button>
+
+                        </li>
+                    </ul>
+                </span>
+            </h4>
+            <span style=""><strong>Owner</strong> : {{pjc.clientName}}</span>
+        </div><br><br>
+
+        <!--Status Drop down modal Modal -->
+        <div class="modal fade" id="changeStatusModal" role="dialog">
+            <div class="modal-dialog modal-md">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <div class="row col-md-12">
+                            <div class="col-md-4">
+                                <h4 class="modal-title" style="width: -moz-max-content;">Change Status to </h4>
+                            </div>
+
+                            <div class="col-md-8" style="margin-top: 1%;">
+                                <div id="circle" ng-class="pjc.changedStatus"></div>&nbsp;{{pjc.changedStatus}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <form id="changeStatusForm">
+                            <div class="form-group">
+                                <label for="status_comment">Add comment</label><br>
+                                <textarea type="text" rows="3" cols="90" ng-model="pjc.status_comment"
+                                    name="status_comment" id="comment" class="form-control" placeholder="Enter comment"
+                                    style="resize: vertical"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="updateComment" type="button" class="btn btn-default btn-sm" data-dismiss=""
+                            ng-click="pjc.updateComment();">Update</button>
+                        <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default" style="margin-left:1.5%; width:97%">
+                    <div class="panel-heading">
+                        <h4>Project Description</h4>
+                    </div>
+                    <!-- <div style="overflow: auto; height: {{ pjc.hgt }}px;"> -->
+                    <div style="overflow: auto; max-height: 309px">
+                        <div class="panel-body project_desc_dashboard" ng-bind-html="pjc.description | htmlToText">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <a ng-href="/project/milestone/{{pjc.projectId}}"
+                                        style="text-decoration: none;outline:0;">
+                                        <h4>Milestone Status</h4>
+                                    </a>
+                                    <span>Keep track of the milestones </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-right" style="margin-top:10px">
+                                        <a ng-href="/project/milestone/add/{{pjc.projectId}}"
+                                            style="text-decoration: none;outline:0;">Add Milestone</a> &nbsp; <i
+                                            class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="panel-body project_desc_dashboard">
+                            <h4>Total Milestone : {{pjc.milestoneCount}}</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <a ng-href="/project/task/{{pjc.projectId}}"
+                                        style="text-decoration: none;outline:0;">
+                                        <h4>Task Status</h4>
+                                    </a>
+                                    <span>Keep track of the tasks in projects. </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-right" style="margin-top:10px">
+                                        <!-- <a ng-href="/project/task/add/{{pjc.projectId}}" style="text-decoration: none;outline:0;">Add Task</a> &nbsp; <i class="fa fa-plus-circle" aria-hidden="true"></i>  -->
+                                        <!-- Suvrat Issue#3172 -->
+                                        <a data-toggle="modal" data-target="" data-ng-click="pjc.addNewTask()"
+                                            style="text-decoration: none;outline:0;cursor: pointer;">Add Task</a> &nbsp;
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                        <!-- ng-href="/project/task/add/{{pjc.projectId}}" -->
+                                        <!-- ---------------- -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <h4>Total Task : {{pjc.taskCount}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+        <div class="row">
+            <div class="col-md-12" style="display: none;">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4>Activity status log</h4>
+                                    <span>Know what's in activity status log</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="pull-right" style="margin-top:10px">
+                                        <a ng-href="/project/activity-status/{{pjc.projectId}}"
+                                            style="text-decoration: none;outline:0;">View more</a> &nbsp; <i
+                                            class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-body"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>Task Progress Chart</h4>
+                            <span>Get the task count based on level of completion</span>
+                        </div>
+                        <div class="panel-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="display: none;">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>Weekly Digest</h4>
+                            <span>Select a week to view its overall work status</span>
+                        </div>
+                        <div class="panel-body"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>Task Progress Chart</h4>
+                            <span>Get the task count based on level of completion</span>
+                        </div>
+                        <div class="panel-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="taskOptionModal" role="dialog">
+        <div class="modal-dialog modal-xs">
+            <form id="taskOptionForm" role="form">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Select Task Source</h4> <!-- Added closing tag -->
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" style="margin-bottom: 20px;text-align:center;">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <div class="radio radio-info radio-inline col-xs-12 col-sm-5 col-md-1"
+                                        style="padding-left:10px;padding-right: 0px">
+                                        <input type="radio" data-ng-model="pjc.taskOptionSelected" name="radioInline"
+                                            id="new" value="new" ng-change="pjc.activateSelect2()" />
+                                        <label for="new">New</label>
+                                    </div>
+                                    <div class="radio radio-info radio-inline col-xs-12 col-sm-6 col-md-3"
+                                        style="padding-left:0px;padding-right:0px;margin-left:18px;">
+                                        <input type="radio" data-ng-model="pjc.taskOptionSelected"
+                                            id="copy_from_existing" name="radioInline" value="copy_from_existing"
+                                            ng-change="pjc.activateSelect2()" />
+                                        <label for="copy_from_existing">
+                                            Copy from Existing
+                                        </label>
+                                    </div>
+                                    <div class="radio radio-info radio-inline col-xs-12 col-sm-5 col-md-3"
+                                        style="margin-left:14px;padding-left:0px;padding-right:0px;">
+                                        <input type="radio" data-ng-model="pjc.taskOptionSelected"
+                                            id="copy_from_default" name="radioInline" value="copy_from_default"
+                                            ng-change="pjc.activateSelect2()" disabled="" />
+                                        <label for="copy_from_default">
+                                            Copy from Default
+                                        </label>
+                                    </div>
+                                    <!-- Suvrat Issue#3175 -->
+                                    <div class="radio radio-info radio-inline col-xs-12 col-sm-6 col-md-4"
+                                        style="padding-left:0px;padding-right:0px;margin-left:14px;">
+                                        <input type="radio" data-ng-model="pjc.taskOptionSelected"
+                                            id="copy_from_project" name="radioInline" value="copy_from_project"
+                                            ng-change="pjc.getProjectList()" ng-click="pjc.activateSelect2()" />
+                                        <label for="copy_from_project">
+                                            Copy from another Project
+                                        </label>
+                                    </div>
+                                    <!-- -------------  -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"
+                            ng-if="pjc.taskOptionSelected == 'copy_from_existing' || pjc.taskOptionSelected == 'copy_from_default'">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Milestone</label>
+                                    <select id="milestoneLists" name="milestoneLists" ng-model="pjc.milestoneIdForTask"
+                                        class="form-control select2 s2mn" style="width: 100%;"
+                                        ng-options="x.id as x.title for x in pjc.milestoneList"
+                                        ng-change="pjc.getTaskListByMilestoneID(pjc.milestoneIdForTask)">
+                                        <option value="">Select milestone</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-if="pjc.milestoneIdForTask">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Task</label>
+                                    <select id="taskList" name="taskList" ng-model="pjc.taskListId"
+                                        class="form-control select2 s2mn" style="width: 100%;"
+                                        ng-options="x.id as x.title for x in pjc.taskListOfMilestone | unique:'title'">
+                                        <option value="">Select task</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Suvrat Issue#3175 -->
+                        <div class="row" ng-if="pjc.taskOptionSelected == 'copy_from_project'">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Project</label>
+                                    <select id="projectLists" name="projectLists" ng-model="pjc.projectIdForMilestone"
+                                        class="form-control select2 s2mn" style="width:100%;"
+                                        ng-options="x.id as x.name for x in pjc.projectList"
+                                        ng-change="pjc.getMilestoneForProject(pjc.projectIdForMilestone)">
+                                        <option value="">Select Project</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-if="pjc.projectIdForMilestone">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Milestone</label>
+                                    <select id="milestoneLst" name="milestoneLst" ng-model="pjc.milestoneTask"
+                                        class="form-control select2 s2mn" style="width:100%;"
+                                        ng-options="x.id as x.title for x in pjc.projectMilestone"
+                                        ng-change="pjc.getTaskForMilestone(pjc.milestoneTask)">
+                                        <option value="">Select Milestone</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12" ng-if="pjc.milestoneTask">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Task</label>
+                                    <select id="taskLst" name="taskLst" ng-model="pjc.taskLst"
+                                        class="form-control select2 s2mn" style="width:100%;"
+                                        ng-options="x.id as x.title for x in pjc.milestoneTaskL | unique:'title'">
+                                        <option value="">Select Task</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ----------------------- -->
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="pjc.saveSelectedOption()" class="btn btn-primary">Next</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    $("#changeStatusForm").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        errorPlacement: function (error, element) {
+
+            var type = $(element).attr("type");
+            if (type === "radio") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "projectOwner" || $(element).attr("id") === "projectManager" || $(element).attr("id") === "projectDomain" || $(element).attr("id") === "projectTechnology" || $(element).attr("id") === "projectStatus") {
+                // custom placement
+                element.parent().append(error);
+            } else if ($(element).attr("id") === "startDate") {
+                // custom placement
+                element.parent().parent().parent().append(error);
+            } else if ($(element).attr("id") === "endDate") {
+                // custom placement
+                element.parent().parent().parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        focusInvalid: true, // set focus the last invalid input
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            status_comment: {
+                required: true
+            }
+        },
+        messages: {
+            status_comment: {
+                required: "Comment is required."
+            }
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element)
+                .closest('.form-group').removeClass('has-error');
+            $(element)
+                .next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label
+                .closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $('.modal').on('hidden.bs.modal', function (e) {
+            // console.log("Modal is closed");
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        });
+    });
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            // console.log("Modal is open");
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+</script>
+
+<!-- Suvrat Issue#3172 -->
+<script>
+    function validateData() {
+        $("#taskOptionForm").validate({
+            focusCleanup: true,
+            onkeyup: false,
+            onselect: true,
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            invalidHandler: function (form, validator) {
+
+                if (!validator.numberOfInvalids())
+                    return;
+                $(this).find(":input.error:first").focus();
+                $("html, body").animate({ scrollTop: 0 }, "fast");
+
+            },
+            errorPlacement: function (error, element) {
+
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    // custom placement
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("id") === "milestoneLists" || $(element).attr("id") === "taskList" || $(element).attr("id") === "projectLists" || $(element).attr("id") === "milestoneLst" || $(element).attr("id") === "taskLst") {
+                    // custom placement
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                milestoneLists: {
+                    required: true
+                },
+                taskList: {
+                    required: true
+                },
+                // Suvrat Issue#3175
+                projectLists: {
+                    required: true
+                },
+                milestoneLst: {
+                    required: true
+                },
+                taskLst: {
+                    required: true
+                },
+                ///////////////////
+            },
+            messages: {
+                milestoneLists: {
+                    required: "Milestone is required."
+                },
+                taskList: {
+                    required: "Task is required."
+                },
+                // Suvrat Issue#3175
+                projectLists: {
+                    required: "Project is required."
+                },
+                milestoneLst: {
+                    required: "Milestone is required."
+                },
+                taskLst: {
+                    required: "Task is required."
+                },
+                ///////////////////////
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+    }
+    validateData();
+</script>

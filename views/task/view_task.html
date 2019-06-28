@@ -1,0 +1,1181 @@
+<style>
+    /* Style the tab */
+    .tab {
+        /*overflow: hidden;*/
+        /*border: 1px solid #ccc;*/
+        padding-left: 20px;
+        /*background-color: #f1f1f1;*/
+    }
+
+    /* Style the buttons inside the tab */
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 7px 10px;
+        transition: 0.3s;
+        font-size: 16px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+        /*background-color: #ddd;*/
+        background-color: #1e5498;
+        color: #ffff;
+    }
+
+    /* Create an active/current tablink class */
+    .tab button.active {
+        background-color: #1e5498;
+        color: #ffff;
+    }
+
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        /*padding: 6px 12px;*/
+        /*border: 1px solid #ccc;*/
+        /*border-top: none;*/
+    }
+
+    #message-to-send {
+        width: 87%;
+        border: none;
+        /*padding: 10px 20px;*/
+        padding: 6px 20px 10px 20px;
+        /*font: 14px/22px "Lato", Arial, sans-serif;*/
+        margin-bottom: 10px;
+        border-radius: 5px;
+        resize: none;
+        background-color: #fff;
+        border: 1px solid gainsboro;
+        margin-left: 34px;
+    }
+
+    .user-search {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+        border-radius: 6px;
+        -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+        box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+        background-clip: padding-box;
+        outline: 0;
+    }
+
+    .list-group {
+        width: 293px;
+        height: 212px;
+        overflow: auto;
+    }
+
+    .list-group-item.active {
+        background-color: #f5f5f5;
+    }
+
+    .user-search:hover {
+        cursor: pointer;
+    }
+
+    .user-search .list-group-item.active {
+        color: #fff;
+        background-color: #428bca;
+        border-color: #428bca;
+    }
+
+    .user-search .list-group-item.active .text-muted {
+        color: #ccc;
+    }
+
+    .user-search .list-group-item.active .text-primary {
+        color: #fff;
+    }
+
+    .user-search .list-group-item {
+        padding: 5px;
+    }
+
+    .user-search .user-photo {
+        max-width: 30px;
+        max-height: 30px;
+        border-radius: 15px;
+    }
+
+    .user-photo {
+        max-width: 30px;
+        max-height: 30px;
+        border-radius: 15px;
+    }
+
+    .daterangepicker {
+        right: 421.25px !important;
+    }
+
+    header,
+    footer {
+        z-index: 1053;
+    }
+
+    .tab button:hover {
+        background-color: #6c98d0;
+        color: #ffff;
+    }
+
+    .timer
+
+    /*Suvrat Issue#3181 to fix the timer layout*/
+        {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin-left: 0px;
+    }
+
+    @media screen and (min-width: 767px)
+
+    /*Suvrat Issue#3181 to fix the timer layout*/
+        {
+        .timer {
+            margin-left: -70px !important;
+        }
+    }
+
+    /*Suvrat Issue#3182*/
+    .cancelBtn {
+        display: none;
+    }
+
+    /*------------------*/
+</style>
+<section class="content" ng-init="tsk.viewTask()">
+    <!-- Suvrat Change the position of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <!-- ----------------------------------- -->
+    <br><br>
+    <!-- general form elements disabled -->
+    <form ng-submit="submitTaskForm()" role="form" name="taskForm" id="taskForm">
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border boxhead">
+                <div class="col-md-9 col-sm-9 col-xs-9">
+                    <!-- Suvrat Issue#3181 changed spacing -->
+                    <div class="">
+                        <h1 class="formheading">
+                            <b>{{tsk.title}} </b>
+                        </h1>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-sm-3 col-xs-3">
+                    <!-- Suvrat Issue#3181 changed spacing -->
+                    <div class="pull-right" style="margin-top: 5px; margin-right: 30px;">
+                        <a ng-href="/project/task/{{tsk.project_id}}"><button type="button"
+                                class="btn btn-default btn-sm" data-toggle="modal" title="Back" data-target=""
+                                data-ng-click="" style="border:white;color:#428bca;float: right;"><i
+                                    class="fa fa-arrow-left" aria-hidden="true"></i></button></a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <!-- text input -->
+                <div class="form-group">
+                    <label class="" for="">Task Name</label>
+                    <div>{{tsk.taskName}}</div>
+                </div></br>
+
+                <div class="form-group">
+                    <label class="" for="">Description</label>
+                    <div ng-bind-html="tsk.taskDescription | htmlToText"
+                        style="overflow: auto;height: auto; max-height: {{ tsk.hgt }}px;"></div>
+                </div></br>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Milestone</label>
+                            <div>{{tsk.milestoneName}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Status</label>
+                            <div>
+                                <a class="btn status-btn {{tsk.taskStatusData}}" title="Status">
+                                    <!-- {{tsk.taskStatusData}} -->
+                                    <!-- Suvrat Issue#2941 -->
+                                    <div ng-if="tsk.taskStatusData == 'Start'">
+                                        In-progress
+                                    </div>
+                                    <div ng-if="tsk.taskStatusData != 'Start'">
+                                        {{tsk.taskStatusData}}
+                                    </div>
+                                    <!-- ----------------- -->
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Priority</label>
+                            <div>{{tsk.priorities[tsk.priority - 1].name}}</div>
+                        </div>
+                    </div>
+                </div></br>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Assigned</label>
+                            <div>{{tsk.assignedToName}}</div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-4" style="margin-top: 4px"> -->
+                    <!-- Suvrat Issue#3355 -->
+                    <div class="col-md-4">
+                        <!-- ----------------- -->
+                        <div class="form-group">
+                            <label for="">Technical Support</label>
+                            <div>{{tsk.technicalSupportName}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Estimated Hours</label>
+                            <div ng-bind="tsk.task_estimation"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <!-- <label class="" for="">Total Spent Time</label>
+                            <div>{{tsk.spent_time}}</div>  -->
+                            <!-- Suvrat Issue#3189 Show timer in respective places-->
+                            <label class="" for="">Total Spent Time</label>
+                            <div data-ng-if="tsk.taskStatusData != 'Start'">{{tsk.spent_time}}</div>
+
+                            <div class="subtimer">
+                                <b>
+                                    <p id="sub_time_tot" data-ng-if="tsk.taskStatusData == 'Start'"></p>
+                                </b>
+                            </div>
+                            <!-- ------------------------- -->
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-4" style="margin-top: 4px"> -->
+                    <!-- Suvrat Issue#3355 -->
+                    <div class="col-md-4">
+                        <!-- ----------------- -->
+                        <div class="form-group">
+                            <!-- <label class="" for="">Today's Spent Time</label>
+                            <div>{{tsk.todays_spent_time}}</div>  -->
+                            <!-- Suvrat Issue#3189 Show timer in respective places-->
+                            <label class="" for="">Today's Spent Time</label>
+                            <div data-ng-if="tsk.taskStatusData != 'Start'">{{tsk.todays_spent_time}}</div>
+
+                            <div class="subtimer">
+                                <b>
+                                    <p id="sub_time_tod" data-ng-if="tsk.taskStatusData == 'Start'"></p>
+                                </b>
+                            </div>
+                            <!-- ------------------------ -->
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="">Break Time</label>
+                            <div>{{tsk.break_time}}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Namrata : Add row for Extension Time Related Details -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Extension Time</label>
+                            <div ng-bind="tsk.extensionTime"></div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-4" style="margin-top: 4px"> -->
+                    <!-- Suvrat Issue#3355 -->
+                    <div class="col-md-4">
+                        <!-- ----------------- -->
+                        <div class="form-group">
+                            <label for="">Approval Status</label>
+                            <div ng-if="tsk.extensionTime != null" ng-bind="tsk.isApproved ? 'Approved' : 'Pending'">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Remark</label>
+                            <div ng-bind="tsk.remark"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /.box-body -->
+            </div>
+            <div class="box-footer" style="padding-bottom: 30px !important;">
+                <div class="text-center">
+                    <input type="button" value="Start" data-ng-click="tsk.updateTaskStatus('Start')"
+                        class="btn btn-success"
+                        ng-disabled="!tsk.isAuthorised || tsk.taskStatusData == 'Start' || tsk.taskStatusData == 'Approval-Pending' || tsk.taskStatusData == 'In-progress' || tsk.taskStatusData == 'Resolved'" />&nbsp
+
+                    <input type="button" value="Pause" data-ng-click="tsk.updateTaskStatus('Paused')"
+                        class="btn btn-warning"
+                        ng-disabled="!tsk.isAuthorised || tsk.taskStatusData == 'Stop' || tsk.taskStatusData == 'Approval-Pending' || tsk.taskStatusData == 'Resolved' || tsk.taskStatusData == 'Assigned' || tsk.taskStatusData == 'On-hold' || tsk.taskStatusData == 'Paused' || tsk.taskStatusData == 'Pending' || tsk.taskStatusData == 'Closed'" />&nbsp
+
+                    <input type="button" value="Stop" data-toggle="modal" data-target="#changeStatusModal"
+                        data-ng-click=" resetChangeStatusForm();" class="btn btn-danger"
+                        data-atr="{{tsk.taskStatusData == 'Stop'}}"
+                        ng-disabled="!tsk.isAuthorised || tsk.taskStatusData == 'Stop' || tsk.taskStatusData == 'Approval-Pending' || tsk.taskStatusData == 'Resolved' || tsk.taskStatusData == 'Assigned' || tsk.taskStatusData == 'Pending' || tsk.taskStatusData == 'Closed' " />&nbsp
+
+                    <!--Namrata : Add button for Task Time Extension -->
+                    <!-- <input type="button" id="timeExtension" value="Time Extension" data-toggle="modal" class="btn btn-info" ng-click="tsk.resetPauseModal()" data-target = "#timeExtensionModal" ng-disabled="tsk.timeEstimationInSec < tsk.fourHrsInSec || tsk.extensionTimeInSec > 0"> -->
+                    <!-- Suvrat Issue#3340 -->
+                    <input type="button" id="timeExtension" value="Time Extension" data-toggle="modal"
+                        class="btn btn-info" ng-click="tsk.resetPauseModal()" data-target="#timeExtensionModal"
+                        ng-disabled="!tsk.isAuthorised || (tsk.timeEstimationInSec < tsk.fourHrsInSec || tsk.extensionTimeInSec > 0) && (tsk.taskStatusData == 'Pending' || tsk.taskStatusData == 'Assigned' || tsk.taskStatusData == 'Resolved' || tsk.taskStatusData == 'Closed' ) ">
+                    <!-- -------------------- -->
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+
+<section class="content" style="margin-top: -4%;">
+
+    <div class="box box-default">
+        <form ng-submit="submitTaskForm()" role="form" name="taskForm" id="taskForm">
+            <div class="row boxhead box-header with-border boxhead" style="padding-bottom: 0px">
+                <div class="tab col-md-5">
+                    <button id="commentTab" class="tablinks active" onclick="openCity(event, 'Comments')"
+                        ng-click="tsk.showCommentBox()">Comments</button>
+                    <button class="tablinks" onclick="openCity(event, 'Activity')"
+                        ng-click="tsk.showCommentBox()">Activity Logs</button>
+                </div>
+                <div class="col-md-5 pull-right" style="margin-bottom: 1%;margin-right: 1.4%;" id="filterBtn">
+                    <button type="button" data-target="#filterBox" class="btn btn-primary btn-circle btn-sm pull-right"
+                        title="Filter" style="outline: 0;" aria-expanded="true"><i class="fa fa-filter"
+                            aria-hidden="true" style="padding-right:0.3px"></i>
+                    </button>
+                    <!-- data-toggle="collapse"  -->
+                </div>
+            </div>
+
+            <!-- Add filter -->
+            <div class="row collapse" id="filterBox">
+                <div class="col-md-12">
+                    <div class="box box-primary paddingLeft0">
+
+                        <!--  <div class="box-header with-border paddingLeft0 marginBorderHead">
+                            <div class="formHeadDiv">
+                                <h1 class="formheading paddingLeft0">
+                                    Filter                                 
+                                </h1>
+                            </div>
+                        </div> -->
+                        <!-- /.box-header -->
+
+                        <div class="box-body marginEmailBody">
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="" for="">Status</label>
+                                        <select id="taskStatus" name="taskStatus" ng-model="tsk.filedName"
+                                            class="form-control select2 s2mn" style="width: 100%;"
+                                            ng-options="x.value as x.name for x in tsk.field_name">
+                                            <option value="">Select field</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Date:</label>
+
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            <!-- <input ng-model="tsk.dateRange" type="text" class="form-control pull-right" id="datepicker" placeholder="Select date range" readonly='true' style="cursor:default;background-color: white;"> -->
+                                            <!-- Suvrat Issue#3182 add name attribute -->
+                                            <input ng-model="tsk.dateRange" type="text" class="form-control pull-right"
+                                                name="datepicker" id="datepicker" placeholder="Select date range"
+                                                readonly='true' style="cursor:default;background-color: white;">
+                                        </div>
+                                        <!-- /.input group -->
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1 " style="margin-top: 20px;">
+                                    <button type="button" class="btn btn-block btn-primary"
+                                        ng-click="tsk.getActivityLogsFilter()">Search</button>
+                                </div>
+
+                                <div class="col-md-1" style="margin-top: 20px;">
+                                    <!--       <button type="button" class="btn btn-block btn-primary" ng-click="tsk.refreshfilter()">Refresh</button> -->
+                                    <button type="button" class="btn btn-block btn-primary fa fa-refresh"
+                                        ng-click="tsk.refreshfilter()"></button>
+                                </div>
+
+
+                                <!--  <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="technologyGroup">Technology Group</label>
+                                        <select id="technologyGroup" name="technologyGroup" ng-model="rmx.matrixForm.technology_group" ng-options="x.id as x.name for x in rmx.categoryList" data-placeholder="Select technology group" class="form-control select2" style="width: 100%;" multiple="multiple">
+
+                                        </select>
+                                    </div> 
+                                </div> -->
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+
+                        <div class="box-footer" style="margin-right:14px!important">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div id="Comments" class="tabcontent" style="display: block;">
+                    <!-- row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- The time line -->
+                            <ul class="timeline" ng-repeat="cmt in tsk.comment_list">
+
+                                <li>
+                                    <div class="timeline-item">
+                                        <span class="time"><i class="fa fa-clock-o"></i>&nbsp;{{cmt.created_at}}</span>
+
+                                        <h4 class="timeline-header" style="padding: 0px;">
+                                            <a class="user-hover user-avatar" href="/user/info/{{cmt.user.id}}">
+                                                <span class="aui-avatar aui-avatar-xsmall">
+                                                    <span class="aui-avatar-inner">
+                                                        <img ng-src="https://hrms.syslogyx.com/upload/profilepic/{{cmt.user.avatar}}"
+                                                            onerror="this.onerror=null;this.src='resources/img/default_profile.png';"
+                                                            class="user-photo">
+                                                    </span>
+                                                </span>
+                                                {{cmt.user.name}}
+                                            </a>
+                                            added a comment
+                                            <span class="commentdate_11037_verbose subText">
+                                                <span class="date user-tz" title="{{cmt.created_at}}">
+                                                    <time class="livestamp" datetime="{{cmt.created_at}}"> </time>
+                                                </span>
+                                            </span>
+                                        </h4>
+
+                                        <div class="timeline-body" style="word-wrap: break-word;"
+                                            ng-bind-html="cmt.text | htmlToText">
+                                        </div>
+                                        <!-- <div class="timeline-footer">
+
+                                        </div> -->
+                                    </div>
+                                </li>
+                                <!-- END timeline item -->
+                            </ul>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </div>
+
+                <div id="Activity" class="tabcontent">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- The time line -->
+                            <!-- <pre>{{tsk.ActivityLogList |json}}</pre> -->
+                            <ul class="timeline" ng-repeat="ac in tsk.ActivityLogList | orderBy:'created_at':true"
+                                style="margin: 0 0 0 0;">
+                                <li>
+                                    <!-- <div class="timeline-item">
+                                        <span class="time"><i class="fa fa-clock-o"></i>&nbsp;{{ac.created_at}}</span>
+
+                                        <div class="timeline-body" style="word-wrap: break-word;" ng-bind-html="ac.message | htmlToText">
+                                            
+                                        </div>
+                                    </div> -->
+                                    <div class="timeline-item"
+                                        ng-init=" cDate = ac.created_at.split(' ')[0]; ctime = ac.created_at.split(' ')[1]">
+                                        <!-- <span class="time"><i class="fa fa-clock-o"></i>&nbsp;{{ac.created_at | date:'dd-MM-yyyy'}}</span> -->
+
+                                        <div class="row timeline-body" style="padding:10px">
+                                            <div class="col-md-10 timeline-body" style="word-wrap: break-word;"
+                                                ng-bind-html="ac.message | htmlToText">
+                                            </div>
+                                            <div class="col-md-2"
+                                                style="color:#888484;padding-left:1px;padding-right:1px">
+                                                <span class="time"><i
+                                                        class="fa fa-clock-o"></i>&nbsp;{{cDate | date :'dd/MM/yyyy'}}
+                                                    {{ctime}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- END timeline item -->
+                            </ul>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </form>
+        <div class="box-footer" ng-if="tsk.showMessageBox">
+            <form id="sendMessage" class="message" role="form">
+                <div class="form-group">
+
+                    <!-- <input type="text" name="message-to-send" id="message-to-send" placeholder="Type your message" rows="1">&nbsp -->
+                    <div class="row">
+                        <div class="col-sm-10" style="padding-left: 50px;">
+                            <div contenteditable mentio mentio-typed-term="typedTerm" mentio-macros="macros"
+                                mentio-require-leading-space="true" mentio-select-not-found="true"
+                                class="editor form-control" mentio-id="'htmlContent'" id="htmlContent"
+                                name="htmlContent" ng-model="tsk.htmlContent"
+                                style="height: auto!important; min-height: 30px !important;word-break: inherit;">
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <!-- <input type="button" value="Send" data-ng-click="tsk.addComments()" class="btn btn-success fa fa-send" ng-disabled="tsk.submitClicked"/> -->
+                            <button type="button" value="Send" data-ng-click="tsk.addComments()"
+                                class="btn btn-success fa fa-send" ng-disabled="tsk.submitClicked" /></button>
+                        </div>
+                    </div>
+                </div>
+                <mentio-menu mentio-for="'htmlContent'" mentio-trigger-char="'@'" mentio-items="people"
+                    mentio-template-url="/people-mentions.tpl" mentio-search="searchPeople(term)"
+                    mentio-select="getPeopleText(item)"></mentio-menu>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changeStatusModal" role="dialog">
+        <div class="modal-dialog modal-xs">
+            <form id="changeTaskStatusForm" role="form">
+                <input type="hidden" id="projectId" ng-model="projectId">
+                <div class="modal-content" style="border-radius: 0px!important;width: 80%; margin-left: 10%;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <div class="row col-md-12" style="text-align:center;">
+                            <div class="">
+                                <h4 class="modal-title">Change Status </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 form-group" style="min-height:90px;margin-bottom:0px">
+                                <label class="mandatory" for="">Change Status To</label>
+                                <select id="changeStatusTo" name="changeStatusTo" ng-model="tsk.changeStatusTo"
+                                    class="form-control select2 s2mn" style="width: 100%;"
+                                    ng-options="x.name as x.name for x in tsk.taskStatus">
+                                    <option value="">Select status</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="mandatory" for="status_comment">Add comment</label>
+                                    <textarea type="text" rows="3" cols="90" ng-model="tsk.status_comment"
+                                        name="task_status_comment" id="task_comment" class="form-control"
+                                        placeholder="Enter comment" style="resize: vertical"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="tsk.updateTask('task')" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="giveReasonModal" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-xs">
+            <form id="giveReasonForm" role="form">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <h4 class="modal-title">You spent more time than expected. Please specify the reason.</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="mandatory" for="">Reason</label>
+                                <textarea type="text" rows="3" cols="90" ng-model="tsk.status_reason" name="task_reason"
+                                    id="task_reason" class="form-control" placeholder="Enter Reason"
+                                    style="resize: vertical"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="tsk.updateTaskForReason()" class="btn btn-primary"> Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="giveReasonForPauseModal" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-xs">
+            <form id="giveReasonForPauseForm" role="form">
+                <div class="modal-content" style="border-radius: 0px!important; width: 70%; margin-left: 15%;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Select reason to pause the task</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Select Reason</label>
+                                    <select id="pause_reason" name="pause_reason" ng-model="tsk.pause_reason"
+                                        class="form-control select2 s2mn" style="width: 100%;"
+                                        ng-options="x.id as x.name for x in tsk.pauseReasonList"
+                                        placeholder="Select reason">
+                                        <option value="">Select reason</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group" id="remarkValidation">
+                                <label class="" for="">Remark</label>
+                                <textarea type="text" rows="3" cols="90" ng-model="tsk.remark" name="remark" id="remark"
+                                    class="form-control" placeholder="Enter remark" style="resize: vertical"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="tsk.updateTaskStatusForPause()" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="endHRMSBreakModal" role="dialog">
+        <div class="modal-dialog modal-xs">
+            <form id="endHRMSBreakForm" role="form">
+                <!-- <input type="hidden" id ="projectId" ng-model="projectId"> -->
+                <div class="modal-content" style="border-radius: 0px!important;width: 80%; margin-left: 10%;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <div class="row col-md-12" style="text-align:center;">
+                            <div class="">
+                                <h4 class="modal-title">End HRMS Break</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 form-group" style="min-height:90px;margin-bottom:0px">
+                                <label class="mandatory" for="">Reason</label>
+                                <select id="endBreakReason" name="endBreakReason" ng-model="tsk.endBreakReason"
+                                    class="form-control select2 s2mn" style="width: 100%;"
+                                    ng-options="key as value for (key , value) in tsk.HRMSBreakReasonList">
+                                    <option value="">Select reason</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="tsk.endBreakReason=='Other'">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="mandatory" for="end_break_comment">Add comment</label>
+                                    <textarea type="text" rows="3" cols="90" ng-model="tsk.end_break_comment"
+                                        name="end_break_comment" id="end_break_comment" class="form-control"
+                                        placeholder="Enter comment" style="resize: vertical"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="tsk.closeHRMSBreakModal()" class="btn btn-primary">End Break</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Namrata : Modal for Time Extension Request -->
+    <!-- <div class="modal fade" id="timeExtensionModal" role="dialog"> -->
+    <!-- Suvrat Issue#3349 -->
+    <div class="modal fade" id="timeExtensionModal" role="dialog" style="z-index:1053;padding-top:130px;">
+        <!-- --------------------- -->
+        <div class="modal-dialog modal-sm">
+            <form id="requestTimeExtension" role="form">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <div class="row col-md-12" style="text-align:center;">
+                            <div class="">
+                                <h4 class="modal-title">Request Time Extension </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class='row'>
+                            <label class="mandatory" for="" style="padding-left: 15px;">Time to Extend</label>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="col-sm-6" style="padding-left: 0px;">
+                                        <input type="text" class="form-control" ng-model="tsk.taskEstimationInHr"
+                                            id="taskEstimationhh" name="taskEstimationhh" placeholder="HH">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-6" style="padding-left: 0px; margin-top:-15px;">
+                                        <input type="text" class="form-control" ng-model="tsk.taskEstimationInMin"
+                                            id="taskEstimationmm" name="taskEstimationmm" placeholder="MM">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="tsk.requestTimeExtension()" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+
+        $(".select2").select2();
+        $(".s2mn").on("change", function () { $(this).valid(); });
+        $("#pause_reason").on("change", function () { $("#remark").valid(); });
+
+        $('.modal').on('hidden.bs.modal', function (e) {
+            // console.log("Modal is closed");
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        });
+
+        $("#filterBtn").click(function () {
+            // console.log($("#filterBox").is(':visible'));
+            // $("#filterBox").collapse();
+            // if(!$("#filterBox").is(':visible')){
+            $("#filterBox").collapse("toggle");
+            // }
+            // else{
+            //     $("#filterBox").collapse("hide");
+            // }   
+        });
+
+        // $('#datepicker').daterangepicker({
+        //     // opens: 'center',
+        //     drops: 'up',
+        //     autoclose: true,
+        //     todayHighlight: true,
+        //     locale: {
+        //         format: 'DD/MM/YYYY'
+        //     }
+        // }).on('changeDate', function (e) {
+        //     $(this).valid();
+        //     var selected = $(this).val();
+        //     $('#prstartDate').daterangepicker('setEndDate', selected);
+        // }).val('');
+
+        /////////////////////Suvrat Issue#3182///////////////////////////
+
+        $('input[name="datepicker"]').daterangepicker({
+            drops: 'up',
+            autoclose: true,
+            autoUpdateInput: false,
+            todayHighlight: true,
+            locale: {
+                format: 'DD/MM/YYYY'
+            },
+        });
+
+        $('input[name="datepicker"]').on('show.daterangepicker', function () {
+            $('input[name="datepicker"]').daterangepicker({
+                autoUpdateInput: true,
+                locale: {
+                    format: 'DD/MM/YYYY'
+                },
+            });
+        });
+
+        $('input[name="datepicker"]').on('apply.daterangepicker', function () {
+            $('input[name="datepicker"]').daterangepicker({
+                locale: {
+                    format: 'DD/MM/YYYY',
+                },
+            }, function (start_date, end_date) {
+                $('#datepicker').val(start_date.format('DD/MM/YYYY') + '-' + end_date.format('DD/MM/YYYY'));
+            }).on('changeDate', function (e) {
+                $(this).valid();
+                var selected = $(this).val();
+                $('#prstartDate').daterangepicker('setEndDate', selected);
+            }).val('');
+        });
+        ///////////////////////////////////////////////////////////////////
+    });
+
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            // console.log("Modal is open");
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+
+    $("#taskStatus").select2({
+    }).on('select2:open', function () {
+        $('.select2-dropdown--below').attr('id', 'fix');
+        $('#fix').removeClass('select2-dropdown--below');
+        $('#fix').addClass('select2-dropdown--above');
+    });
+
+
+    // Namrata : Custom Validation Method for Minutes < 59 and Restrict Decimal point
+    $.validator.addMethod('checkRange', function (value, el, param) {
+        return value <= param;
+    }, "The value must be less than equal to {0}");
+    //Suvrat Issue#3186
+    $.validator.addMethod("integer", function (value, element) {
+        return this.optional(element) || /^-?\d+$/.test(value);
+    }, "Decimal values not allowed");
+
+    function validateData() {
+        $("#changeTaskStatusForm").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            // invalidHandler: function (form, validator) {
+
+            //     if (!validator.numberOfInvalids())
+            //         return;
+            //     $(this).find(":input.error:first").focus();
+            //     $("html, body").animate({scrollTop: 0}, "fast");
+
+            // },
+            errorPlacement: function (error, element) {
+
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    // custom placement
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("id") === "changeStatusTo") {
+                    // custom placement
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                changeStatusTo: {
+                    required: true
+                },
+                task_status_comment: {
+                    required: true
+                }
+            },
+            messages: {
+                changeStatusTo: {
+                    required: "Status is required."
+                },
+                task_status_comment: {
+                    required: "Comment is required."
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+        $("#giveReasonForm").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            errorPlacement: function (error, element) {
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("id") === "changeStatusTo") {
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                task_reason: {
+                    required: true
+                }
+            },
+            messages: {
+                task_reason: {
+                    required: "Reason is required."
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+        $("#giveReasonForPauseForm").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            errorPlacement: function (error, element) {
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("id") === "pause_reason") {
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                pause_reason: {
+                    required: true
+                },
+                remark: {
+                    required: function (element) {
+                        return ($('#pause_reason').val() == "number:4")
+                    }
+                }
+            },
+            messages: {
+                pause_reason: {
+                    required: "Reason is required."
+                },
+                remark: {
+                    required: "Remark is required"
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+        $("#sendMessage").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            errorPlacement: function (error, element) {
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("id") === "changeStatusTo") {
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                htmlContent: {
+                    required: true
+                }
+            },
+            messages: {
+                htmlContent: {
+                    required: "Message is required."
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+        $("#endHRMSBreakForm").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            errorPlacement: function (error, element) {
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    // custom placement
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("id") === "endBreakReason") {
+                    // custom placement
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                endBreakReason: {
+                    required: true
+                },
+                end_break_comment: {
+                    required: true
+                }
+            },
+            messages: {
+                endBreakReason: {
+                    required: "Reason is required."
+                },
+                end_break_comment: {
+                    required: "Comment is required."
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+
+        /**
+        * Namrata : Validation for Time Extension Modal
+        */
+        $("#requestTimeExtension").validate({
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                taskEstimationhh: {
+                    required: true,
+                    number: true,
+                    integer: true
+                },
+                taskEstimationmm: {
+                    required: true,
+                    number: true,
+                    checkRange: 59,
+                    integer: true
+                }
+            },
+            messages: {
+                taskEstimationhh: {
+                    required: "Hour is required",
+                    integer: "Decimal values not allowed"
+                },
+                taskEstimationmm: {
+                    required: "Minute is required",
+                    integer: "Decimal values not allowed"
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+    }
+    validateData();
+
+    //set filter btn and box by default hide
+    $("#filterBtn").hide();//$("#filterBox").hide();
+
+    function openCity(evt, cityName) {
+
+        if (cityName == 'Comments') {
+            $("#filterBtn").hide();
+            $("#filterBox").collapse("hide");
+        }
+        else {
+            $("#filterBtn").show();
+        }
+
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
+
+<script type="text/ng-template" id="/people-mentions.tpl">
+    <ul class="list-group user-search">
+        <li mentio-menu-item="person" ng-repeat="person in items" class="list-group-item">
+            <img ng-src="https://hrms.syslogyx.com/upload/profilepic/{{person.avatar}}" onerror="this.onerror=null;this.src='resources/img/default_profile.png';" class="user-photo">
+            <span class="text-primary" ng-bind-html="person.name | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+            <!-- <em class="text-muted" ng-bind="person.bio | words:5"></em> -->
+        </li>
+    </ul>
+</script>

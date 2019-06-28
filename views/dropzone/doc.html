@@ -1,0 +1,102 @@
+<section>
+	<div class="container-fluid" style="margin-top: 50px; width: 100%">
+		<div class="row" style="margin-top: 15px;">
+			<div class="col-md-6">
+				<div class="pull-left">
+
+					<ul class="nav navbar-nav document">
+						<li class="active"><a href="#" style="outline:0;">All</a></li>
+						<li><a href="#" style="outline:0;">Documents</a></li>
+						<li><a href="#" style="outline:0;">Spreadsheets</a></li>
+						<li><a href="#" style="outline:0;">Presentations</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="pull-right">
+					<div class="row side-button">
+						<div class="col-md-4">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+								data-target="#addNew">New <i class="fa fa-angle-down"></i></button>
+
+							<!-- Dropdown menu -->
+							<ul class="dropdown-menu">
+								<li><a href="#" style="outline:0;"><i class="fa fa-folder"></i> &nbsp;Folder</a></li>
+								<li class="divider"></li>
+								<li><a href="#" style="outline:0;"> <i class="fa fa-file-word-o"></i> &nbsp;Document</a></li>
+								<li><a href="#" style="outline:0;"> <i class="fa fa-file-excel-o"></i> &nbsp;Spreadsheet</a></li>
+								<li><a href="#" style="outline:0;"><i class="fa fa-file-powerpoint-o"></i> &nbsp;Presentation</a></li>
+								<li class="divider"></li>
+								<li><a href="#" style="outline:0;"><i class="fa fa-file-word-o"></i> &nbsp;Upload Files</a></li>
+								<li><a href="#" style="outline:0;"><i class="fa fa-folder"></i> &nbsp;Upload Folder</a></li>
+								<li><a href="#" style="outline:0;"><i class="fa fa-cloud"></i> &nbsp;From Cloud</a></li>
+							</ul>
+						</div>
+						<div class="col-md-8">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default doc-button" title="List View"><i
+										class="fa fa-bars"></i></button>
+								<button type="button" class="btn btn-default doc-button" title="Thumbnail view"><i
+										class="fa fa-th-large"></i></button>
+							</div>
+							<button type="button" class="btn btn-default doc-button" title="View Preference"><i
+									class="fa fa-wrench"></i></button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div>
+
+			<form action="/album/import-photo" class="dropzone" id="my-awesome-dropzone">
+				<input type="file" name="file" ng-model="importPCPhoto" />
+			</form>
+		</div>
+
+	</div>
+</section>
+
+
+<script type="text/javascript">
+	$(function () {
+		Dropzone.options.myAwesomeDropzone = {
+			maxFilesize: 5,
+			addRemoveLinks: true,
+			dictResponseError: 'Server not Configured',
+			acceptedFiles: ".png,.jpg,.gif,.bmp,.jpeg",
+			init: function () {
+				var self = this;
+				// config
+				self.options.addRemoveLinks = true;
+				self.options.dictRemoveFile = "Delete";
+				//New file added
+				self.on("addedfile", function (file) {
+					console.log('new file added ', file);
+				});
+				// Send file starts
+				self.on("sending", function (file) {
+					console.log('upload started', file);
+					$('.meter').show();
+				});
+
+				// File upload Progress
+				self.on("totaluploadprogress", function (progress) {
+					console.log("progress ", progress);
+					$('.roller').width(progress + '%');
+				});
+
+				self.on("queuecomplete", function (progress) {
+					$('.meter').delay(999).slideUp(999);
+				});
+
+				// On removing file
+				self.on("removedfile", function (file) {
+					console.log(file);
+				});
+			}
+		};
+	})
+</script>

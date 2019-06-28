@@ -1,0 +1,82 @@
+<section class="content">
+    <div class="pull-right">
+        <ol class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <br><br>
+    <!--sonal: view POC Form  -->
+    <form role="form" name="viewProjectPOCForm" id="viewProjectPOCForm">
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border">
+                <div class="col-md-6">
+                    <div class="">
+                        <h1 class="formheading">
+                            <b> View Project POC </b>
+                        </h1>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="pull-right" style="margin-top: 5px; margin-right: 30px;">
+                        <a ng-href="/project/project-poc/{{poc.project_id}}/"><button type="button"
+                                class="btn btn-default btn-sm" data-toggle="modal" title="Back" data-target=""
+                                data-ng-click="" style="border:white;color:#428bca;float: right;"><i
+                                    class="fa fa-arrow-left" aria-hidden="true"></i></button></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" for="">Name</label>
+                            <div>{{poc.pocName}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" for="">Address</label>
+                            <div>{{ poc.address }}</div>
+                        </div>
+                    </div>
+                </div></br>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" for="">Primary Contact No.</label>
+                            <div>{{poc.pocPrimaryContactNo}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" for="">Secondary Contact No.</label>
+                            <div>{{poc.pocSecondaryContactNo}}</div>
+                        </div>
+                    </div>
+                </div></br>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" for="">Personal Email</label>
+                            <div>{{poc.pocPersonalEmail}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="">Official Email</label>
+                            <div>{{poc.pocOfficialEmail}}</div>
+                        </div>
+                    </div>
+                </div></br>
+            </div>
+        </div>
+    </form>
+</section>

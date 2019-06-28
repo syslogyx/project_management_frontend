@@ -1,0 +1,108 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5 col-sm-5 col-xs-9">
+                <ol id="breadcrumb" class="ab-nav breadcrumb">
+                    <i class="glyphicon glyphicon-home"></i>&nbsp;
+                    <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path"
+                        ng-class="{ active: $last }">
+                        <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                            class="margin-right-xs"></a>
+                        <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-3">
+                <h4 id="pageHead">Users</h4>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-10" style="margin-top: 8px;">
+                <div class="dataTables_length showtable text-right" id="example_length"><label>Show
+                        <select id="table_length" aria-controls="example" style='outline: 0;'>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        entries</label>
+                </div>
+            </div>
+            <div class="" style="display:none">
+                <button type="button" class="btn btn-default btn-md" data-toggle="modal" title="Add new user"
+                    data-target="" ng-show="">Add new user &nbsp;<i class="fa fa-user-plus" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="col-md-1 col-sm-1 col-xs-2 pull-right" style="margin-top: 4px;">
+                <button type="button" class="btn btn-primary btn-circle pull-right" title="Sync"
+                    data-ng-click="usc.syncNewUsers()"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class=" table-responsive">
+            <table class="table ">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">Sr No.</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Total Experience</th>
+                        <th style="text-align: center;" ng-if="can('user.resourcematrix.users.view')">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-if="usc.userList.length > 0"
+                        ng-repeat="data in usc.userList | orderBy:'name' track by data.id">
+                        <td style="text-align: center;" ng-bind="(usc.pageno - 1) * usc.limit + ($index + 1)"></td>
+                        <td>{{data.name}}</td>
+                        <td>{{data.email}}</td>
+                        <!--<td>{{data.total_experience}}</td>-->
+                        <td>{{data.total_experience.split(".")[0]}}
+                            {{data.total_experience.split(".")[0] > 1 ? "years" : "year"}}
+                            {{data.total_experience.split(".")[1]}}
+                            {{data.total_experience.split(".")[1] > 1 ? "months" : "month"}}</td>
+                        <td style="text-align: center;" ng-if="can('user.resourcematrix.users.view')">
+                            <a ng-href="user/info/{{data.id}}" title="View more" style="outline:0;"><button
+                                    ng-if="can('user.resourcematrix.users.view')" type="button"
+                                    class="btn btn-default btn-xs"
+                                    style="border-color: #fff!important;color: #428bca;text-align: center;"><i
+                                        class="fa fa-eye" aria-hidden="true"></i></button></a>
+
+                            <!-- <a ng-href="user/info/{{data.id}}" title="View more" style="outline: 0;text-decoration: none">View more</a> -->
+
+                            <a title="PDF" style="outline:0;"><button ng-if="can('user.resourcematrix.users.pdf')"
+                                    type="button" class="btn btn-default btn-xs"
+                                    style="border-color: #fff!important;color: #df1007;text-align: center;"
+                                    ng-click="usc.download(data.id)"><i class="fa fa-file-pdf-o"
+                                        aria-hidden="true"></i></button></a>
+
+                            <a ng-if="can('user.resourcematrix.users.delete')" title="Delete"
+                                style="outline:0;text-decoration: none;"><button type="button"
+                                    class="btn btn-default btn-xs"
+                                    style="border-color: #fff!important;color: #428bca;text-align: center;"
+                                    ng-click="usc.deleteUser(data.id)"><i class="fa fa-remove"
+                                        aria-hidden="true"></i></button></a>
+
+                        </td>
+                    </tr>
+                    <tr ng-if="usc.userList == null || usc.userList.length == 0">
+                        <td style="text-align: center;" colspan="5">No Records Found</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row col-sm-12" style="padding-right: 0px;">
+                <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px" ng-if="usc.userList.length > 0">
+                    <span style="float: left;margin-top: 17px;margin-bottom: 10px;font-weight: 700;">Showing
+                        {{usc.fromValue != null ? usc.fromValue : 0}} to {{usc.toValue != null ? usc.toValue : 0}} out
+                        of {{usc.totalEntries != null ? usc.totalEntries : 0}} results</span>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px">
+                    <ul id="pagination-sec" class="pagination-sm"
+                        style="float: right;margin-top: 10px;margin-bottom: 10px"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+    });
+</script>

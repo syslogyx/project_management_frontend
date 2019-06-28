@@ -1,0 +1,62 @@
+<section class="contsiner" style="padding-top: 50px;">
+    <!-- general form elements disabled -->
+    <form ng-submit="submitClientForm()" role="form" name="addForm" id="clientForm">
+        <div class="row">
+            <div class="col-md-3" style="padding-right: 0px;">
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="active "><a style="border-radius: 0px;" data-toggle="pill" onclick="return false;"
+                            href="#personalInfotab">Change Password</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-9 paddingLeft0">
+                <div class="tab-content">
+                    <div id="personalInfotab" class="tab-pane fade in active">
+                        <div class="box box-default paddingLeft0">
+                            <div class="box-header with-border paddingLeft0 marginBorderHead">
+                                <div class="formHeadDiv">
+                                    <h1 class="formheading paddingLeft0">
+                                        Change Password
+                                    </h1>
+                                    <span>Manage your password settings here.</span>
+                                </div>
+                            </div>
+                            <!-- /.box-header -->
+
+                            <div class="box-body marginUserBody">
+                                <div class="form-group">
+                                    <label for="old_password">Old Password</label>
+                                    <input type="password" class="form-group" ng-model="usc.old_password"
+                                        name="old_password" id="old_password" placeholder="Enter old password"
+                                        style="margin-left: 79px;border: white;">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="new_password">New Password</label>
+                                    <input type="password" class="form-group" ng-model="usc.new_password"
+                                        name="new_password" id="new_password" placeholder="Enter new password"
+                                        style="margin-left: 74px;border: white;">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirm_password">Confirm Password</label>
+                                    <input type="password" class="form-group" ng-model="usc.confirm_password"
+                                        name="confirm_password" id="confirm_password"
+                                        placeholder="Enter confirm password" style="margin-left: 51px;border: white;">
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+
+                            <div class="box-footer" style="margin-right:14px!important; padding-left: 145px!important;">
+                                <div class="pull pull-left">
+                                    <input type="submit" value="Save" data-ng-click="" class="btn btn-primary" />
+                                    <input type="button" value="Cancel" ng-click="" class="btn btn-warning" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>

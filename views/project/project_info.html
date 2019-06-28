@@ -1,0 +1,567 @@
+<section class="" style="padding-top: 50px;">
+    <div class="pull-right">
+        <ol class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <div class="row">
+        <div class="col-md-3" style="padding-right: 0px;">
+            <ul class="nav nav-pills nav-stacked">
+                <li class="active"><a data-toggle="pill" href="#genInfoTab"
+                        style="border-radius: 0px; font-weight: 500;outline:0;" onclick="return false;"
+                        ng-click="pjc.scrollbarSetting()">General Information</a></li>
+                <li><a data-toggle="pill" href="#domainTechTab" style="border-radius: 0px; font-weight: 500;outline:0;"
+                        onclick="return false;" ng-click="pjc.scrollbarSetting()">Domain/Technology Information</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 paddingLeft0">
+            <div class="tab-content">
+                <div id="genInfoTab" class="tab-pane fade in active">
+                    <div class="box box-default paddingLeft0">
+
+                        <div class="box-header with-border paddingLeft0 marginBorderHead">
+                            <div class="formHeadDiv">
+                                <h1 class="formheading paddingLeft0">
+                                    General Information
+                                    <button type="button" class="btn btn-primary btn-circle btn-sm pull-right"
+                                        ng-click="pjc.changeMode()" title="Edit" data-ng-if="pjc.mode"><i
+                                            class="fa fa-edit"></i></button>
+                                </h1>
+                            </div>
+                        </div>
+
+                        <div class="box-body">
+                            <form id="projectAddForm" role="form" name="addProjectForm">
+                                <!-- Here -->
+                                <input type="hidden" id="projectId" name="projectId" value="{{pjc.id}}">
+                                <!-- text input -->
+                                <div class="form-group">
+                                    <label class="mandatory" for="projectName">Project Name</label>
+                                    <input type="text" class="form-control" id="projectName" name="projectName"
+                                        ng-model="pjc.projectName" placeholder="Enter project name"
+                                        ng-disabled="pjc.mode">
+                                </div>
+                                <br>
+                                <div class="row" id="dateSection">
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+
+                                            <label class="mandatory" for="pStartDate">Start Date</label>
+                                            <div>
+                                                <div class="input-group date">
+                                                    <div class="input-group-addon">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </div>
+                                                    <input type="text" class="form-control pull-right" id="pStartDate"
+                                                        name="start_date" ng-model="pjc.startDate" autocomplete="off"
+                                                        placeholder="Enter start date" ng-disabled="pjc.mode"
+                                                        readonly='true' style="cursor:default;background-color: white;">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+
+                                            <label class="mandatory">End Date</label>
+                                            <div>
+                                                <div class="input-group date">
+                                                    <div class="input-group-addon">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </div>
+
+                                                    <input type="text" class="form-control pull-right" id="pEndDate"
+                                                        name="end_date" ng-model="pjc.endDate" autocomplete="off"
+                                                        placeholder="Enter end date" ng-disabled="pjc.mode"
+                                                        readonly='true' style="cursor:default;background-color: white;">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mandatory form-group" id="descDiv">
+                                            <label class="mandatory" for="description">Project Overview</label><br>
+                                            <textarea type="text" rows="6" cols="90" ng-model="pjc.description"
+                                                name="description" id="description" class="form-control"
+                                                placeholder="Project overview"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <!--                                <div class="row">  
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="description">Project access</label><br>
+                                            <span class="control-label"><b>Project access</b></span><br>
+                                            <span>
+                                                <input value="private" type="radio"  id="projectAccess" name="projectAccess" ng-model="project.projectAccess" ng-disabled="pjc.mode" /> Private - Only project users can access
+                                            </span><br>
+                                            <span>
+                                                <input value="public" type="radio" name="projectAccess" ng-model="project.projectAccess" ng-disabled="pjc.mode"/> Public - Portal users can view/follow
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>-->
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <!-- text input -->
+                                        <div class="form-group">
+                                            <label class="mandatory" for="projectOwner">Owner</label>
+                                            <select id="projectOwner" name="projectOwner" ng-model="pjc.projectOwner"
+                                                class="form-control s2mn" style="width: 100%;"
+                                                ng-options="x.id as x.name for x in pjc.clients" ng-disabled="pjc.mode">
+                                                <option value="">Select project owner</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <!-- text input -->
+                                        <div class="form-group">
+                                            <label class="mandatory" for="projectManager">Manager</label>
+                                            <!-- <select id="projectManager" name="projectManager" ng-model="pjc.projectManager" class="form-control s2mn" style="width: 100%;" ng-options="x.id as x.name for x in pjc.managers" ng-disabled="pjc.mode">
+                                                <option value="">Select project manager</option>
+                                            </select> -->
+                                            <input type="text" class="form-control pull-right" id="projectManager"
+                                                name="projectManager" ng-model="pjc.projectManagerName"
+                                                autocomplete="off" placeholder="Enter manager" disabled="disabled">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="mandatory" for="projectStatus">Status</label>
+                                            <!-- <select id="projectStatus" name="projectStatus" ng-model="pjc.projectStatus" class="form-control" style="width: 100%;" ng-options="x.name as x.name for x in pjc.status"  disabled="disabled">
+                                                <option value="">Select project status</option>
+                                            </select> -->
+                                            <input type="text" class="form-control pull-right" id="projectStatus"
+                                                name="projectStatus" ng-model="pjc.projectStatus" autocomplete="off"
+                                                placeholder="Enter status" disabled="disabled">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 20px;" ng-if="can('user.projects.edit')">
+                                    <div class="col-md-12">
+                                        <div class="pull pull-right">
+                                            <input type="submit" value="Save" data-ng-click="pjc.saveProject()"
+                                                class="btn btn-success" ng-disabled="pjc.mode" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Ends here -->
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div id="domainTechTab" class="tab-pane fade">
+                    <div class="box box-default paddingLeft0">
+
+                        <div class="box-header with-border paddingLeft0 marginBorderHead">
+                            <div class="formHeadDiv">
+                                <h1 class="formheading paddingLeft0">
+                                    Domain/Technology Information
+                                </h1>
+                            </div>
+                        </div>
+
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-5">
+
+                                    <div class="form-group">
+                                        <label for="technology">Domain</label>
+                                        <select id="projectDomain" name="projectDomain"
+                                            ng-model="pjc.projectForm.projectDomain" class="form-control s2mn"
+                                            data-placeholder="Select project domain"
+                                            ng-options="x as x.name for x in pjc.domains" style="width: 100%;"
+                                            ng-change="pjc.fetchInfo(pjc.projectForm.projectDomain)">
+                                            <option value="">Select project domain</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="experienceYears">Technologies</label>
+                                        <select id="technology" name="technology"
+                                            ng-model="pjc.projectForm.projectTechnology" class="form-control s2mn"
+                                            data-placeholder="Select technologies"
+                                            ng-options="x as x.name for x in pjc.technologies" multiple="multiple"
+                                            style="width: 100%;" ng-disabled="!pjc.projectForm.projectDomain">
+                                            <option value="">Select technology</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div
+                                        ng-if="pjc.projectForm.projectDomain && pjc.projectForm.projectTechnology.length > 0 && !pjc.id">
+                                        <button type="button" class="btn btn-default btn-xs moving-pulse-button "
+                                            data-toggle="modal" title="Add more" ng-if="pjc.temp != 1"
+                                            data-ng-click="pjc.updateMoreDomainTechnology()"
+                                            style="margin-right: 40px;margin-top: 30px;bottom: 4px;left: -6px;"><i
+                                                style="color: black;padding-bottom: 0px;padding-right: 0px;"
+                                                class="fa fa-plus-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+
+
+                                    <!--  <div ng-if="pjc.projectForm.projectDomain && pjc.projectForm.projectTechnology && !pjc.id">
+                                       <button  type="button"  class="btn btn-default btn-xs moving-pulse-button " data-toggle="modal" title="Add more" ng-if="pjc.temp != 1" data-ng-click="pjc.addMoreDomainTechnology()" style="margin-right: 40px;margin-top: 30px;bottom: 4px;left: -6px;"><i style="color: black;" class="fa fa-plus-circle" aria-hidden="true"></i>
+                                       </button>
+                                     </div> -->
+
+
+                                </div>
+                            </div>
+
+                            <h5 data-ng-if="pjc.domainTechnology.length < 1">Sorry, No data is available :( </h5>
+                            <div class="row" data-ng-if="pjc.domainTechnology.length > 0">
+                                <!-- <div class="col-md-12"> -->
+                                <!-- Suvrat -->
+                                <div class="col-md-12 table-responsive">
+                                    <!-- ---------- -->
+                                    <table class="table ">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: center;">Sr No.</th>
+                                                <th>Domain</th>
+                                                <th>Technologies</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <!-- <pre>{{pjc.domainTechnology|json}}</pre> -->
+                                            <tr ng-repeat="data in pjc.domainTechnology">
+                                                <td style="text-align: center;">{{$index + 1}}</td>
+                                                <td>{{data.projectDomain.name}}</td>
+                                                <td>
+                                                    <!-- <pre>{{data.projectTechnology|json}}</pre> -->
+                                                    <div class="" style="float:left;">
+                                                        <a class="btn btn-outline btn-circles btn-sm green"
+                                                            ng-repeat="x in data.projectTechnology"
+                                                            style="margin-right: 10px; margin-bottom: 1%;">{{x.name}}&nbsp;&nbsp;<i
+                                                                class="fa fa-close"
+                                                                ng-click="pjc.removeTechnology(x.project_category_id, x.technology_id)"></i></a>
+                                                    </div>
+                                                </td>
+                                                <td>
+
+                                                    <a type="button" class=" " id="addTech" title="Add technology"
+                                                        data-ng-click="pjc.addTechToDomain(data.projectDomain.id, data.projectDomain.technology[0].project_category_id, data.projectTechnology);"
+                                                        data-toggle="modal" data-target="#addTechModal"><i
+                                                            class="fa fa-plus" aria-hidden="true"></i>
+                                                    </a>
+                                                    <span>&nbsp;</span>
+
+                                                    <a type="button" class="" title="Remove"
+                                                        data-ng-click="pjc.removeRowDomainTechnology(data.projectDomain.technology[0].project_category_id)"
+                                                        style=""><i class="fa fa-times" aria-hidden="true"></i>
+                                                    </a>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Row ends here -->
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal for adding new technology to domain -->
+<div class="modal fade" id="addTechModal" role="dialog">
+    <div class="modal-dialog modal-md">
+
+        <form class="form-horizontal" role="form" id="addTechForm" ng-submit="addRow()" style="margin-right: 100px;">
+            <div class="modal-content" style="border-radius: 0px!important;">
+
+                <div class="modal-header" style="text-align:center;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add Technology</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Domain</label>
+                        <div class="col-md-8">
+                            <select id="domainIdModal" data-ng-model="pjc.domain_idMod"
+                                ng-options="x.id as x.name for x in pjc.domains" name="domainModal" class="form-control"
+                                disabled="disabled">
+                                <!-- <option value="">Select domain</option> -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label for="experienceYears" class="col-md-4 control-label">Technologies</label>
+                            <div class="col-md-8">
+                                <select id="technologyModal" name="technologyModal" ng-model="pjc.technology_idMod"
+                                    class="form-control s2mn" data-placeholder="Select technologies"
+                                    ng-options="x.id as x.name for x in pjc.technologiesForModal" multiple="multiple"
+                                    style="width: 100%;" ng-disabled="!pjc.domain_idMod">
+                                    <!-- <option value="">Select technology</option> -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button data-ng-click="pjc.saveTechToDomain()" ng-disabled="pjc.technology_idMod.length < 1"
+                        class="btn btn-primary"> Save</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#projectOwner").on("change", function () {
+            $(this).valid();
+        });
+        $('#description').ckeditor();
+        CKEDITOR.instances.description.on('change', function () {
+            if (CKEDITOR.instances.description.getData().length > 0) {
+                $('#description-error').hide();
+                $('#cke_1_top').removeAttr('style');
+                $('#cke_1_bottom').removeAttr('style');
+                $('#descDiv').removeClass('has-error');
+                //$('#descLable').removeClass('has-error');
+
+            }
+
+            if (CKEDITOR.instances.description.getData().length == 0) {
+                $('#description-error').show();
+                $('#cke_1_top,#cke_1_bottom').css({ 'border-color': 'red' });
+                $('#descDiv').addClass('has-error');
+            }
+        });
+
+        $('#pStartDate').datepicker({
+            autoclose: true
+        }).on('show', function () {
+            var selected = $(this).val();
+            $('#pStartDate').datepicker('setDate', selected);
+            $('#pStartDate').datepicker('setStartDate', '');
+            $('#pStartDate').datepicker('setEndDate', '');
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+
+        $('#pEndDate').datepicker({
+            autoclose: true
+        }).on('show', function () {
+            var selected = $(this).val();
+            $('#pEndDate').datepicker('setDate', selected);
+            $('#pEndDate').datepicker('setStartDate', '');
+            $('#pEndDate').datepicker('setEndDate', '');
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+
+        $("#dateSection").delegate('.date', 'focusin', function () {
+            $(this).datepicker({
+                autoclose: true,
+                viewMode: 'days',
+                todayHighlight: true
+            });
+        });
+
+    });
+
+    var baseUrl = Utility.apiBaseUrl;
+
+    $("#projectAddForm").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        errorPlacement: function (error, element) {
+
+            var type = $(element).attr("type");
+            if (type === "radio") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "projectOwner" || $(element).attr("id") === "projectManager" || $(element).attr("id") === "projectDomain" || $(element).attr("id") === "projectTechnology" || $(element).attr("id") === "projectStatus") {
+                // custom placement
+                element.parent().append(error);
+            } else if ($(element).attr("id") === "pStartDate") {
+                // custom placement
+                element.parent().parent().parent().append(error);
+            } else if ($(element).attr("id") === "pEndDate") {
+                // custom placement
+                element.parent().parent().parent().append(error);
+            } else if ($(element).attr("id") === "description") {
+                // custom placement
+                element.parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        focusInvalid: true, // set focus the last invalid input
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            projectName: {
+                required: true,
+                /*    remote:
+                 {
+                 url: baseUrl + 'validate',
+                 type: "post",
+                 dataType: 'json',
+                 data:
+                 {
+                 project: function ()
+                 {
+                 return JSON.stringify({name: $("#projectName").val(),
+                 id: $("#projectId").val()});
+                 }
+                 }
+                 }
+                 */
+            },
+            start_date: {
+                required: true
+            },
+            end_date: {
+                required: true
+            },
+            projectOwner: {
+                required: true
+            },
+            projectManager: {
+                required: true
+            },
+            projectStatus: {
+                required: true
+            },
+            projectAccess: {
+                required: false
+            },
+            description: {
+                required: true
+            }
+        },
+        messages: {
+            projectName: {
+                required: "Project name is required.",
+                //                             remote: ' already in database'
+                //                           remote: jQuery.validator.format("{0} is already taken.")
+                //                           
+            },
+            start_date: {
+                required: "Start date is required."
+            },
+            end_date: {
+                required: "End date is required."
+            },
+            projectOwner: {
+                required: "Project owner is required"
+            },
+            projectManager: {
+                required: "Project manager is required"
+            },
+            projectStatus: {
+                required: "Project status is required"
+            },
+            projectAccess: {
+                required: "Project access is required"
+            },
+            description: {
+                required: "Description is required"
+            }
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $('.modal').on('hidden.bs.modal', function (e) {
+            // console.log("Modal is closed");
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        })
+    });
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            // console.log("Modal is open");
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+
+</script>
+
+<!-- Suvrat Issue#3159 -->
+<script>
+    $('#pStartDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#pEndDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>
+<!-- --------------------- -->

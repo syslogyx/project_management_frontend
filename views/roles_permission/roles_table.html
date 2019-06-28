@@ -1,0 +1,94 @@
+<section class="content">
+    <div class="container-fluid">
+        <!-- Suvrat Change position of breadcrumb and other elements -->
+        <div class="row">
+            <div class="col-md-5 col-sm-5 col-xs-7">
+                <ol id="breadcrumb" class="ab-nav breadcrumb">
+                    <i class="glyphicon glyphicon-home"></i>&nbsp;
+                    <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path"
+                        ng-class="{ active: $last }">
+                        <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                            class="margin-right-xs"></a>
+                        <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="col-md-2 col-sm-2 col-xs-3">
+                <h4>Roles</h4>
+            </div>
+
+            <div class="col-md-4 col-sm-4 col-xs-10" style="margin-top:8px;">
+                <div class="dataTables_length showtable text-right" id="example_length"><label>Show
+                        <select id="table_length" aria-controls="example" style='outline: 0;'>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        entries</label>
+                </div>
+            </div>
+
+            <div class="col-md-1 col-sm-1 col-xs-2 pull-right" style="margin-top: 8px;">
+                <button type="button" ng-if="can('user.resourcematrix.roles.add')"
+                    class="btn btn-primary btn-circle btn-sm pull-right" data-toggle="modal" title="Add new"
+                    data-target="" data-ng-click="rpc.addNewRoles()"><i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        <!-- ---------------------------------------------- -->
+        <!-- Roles table  -->
+        <div class="table-responsive">
+            <table class="table table-striped table-condensed table-hover">
+                <thead class="thead-default">
+                    <tr>
+                        <th style="text-align: center;">Sr No.</th>
+                        <th>Name</th>
+                        <th style="width:35%;">Description</th>
+                        <th style="text-align: center;" ng-if="can('user.resourcematrix.roles.manage')">Action</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-repeat="roles in rpc.allRoles">
+                        <td style="text-align: center;" ng-bind="(rpc.pageno - 1) * rpc.limit + ($index + 1)"></td>
+                        <td>{{roles.display_name}}</td>
+                        <td style="width:35%;text-align: justify;">{{roles.description}}</td>
+                        <td style="text-align: center;">
+                            <a ng-if="can('user.resourcematrix.roles.edit')" ng-href="role/edit?id={{roles.id}}"
+                                title="Edit" style="outline: 0;"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                        </td>
+                        <td style="text-align: center;">
+                            <a ng-if="can('user.resourcematrix.roles.manage')"
+                                href="/role/permissions/?role_name={{roles.name}}" data-roleid="1"
+                                class="btn btn-outline btn-circles btn-sm green">
+                                <i class="fa fa-edit"></i> Manage Permission
+                            </a>
+                        </td>
+                    </tr>
+                    <tr ng-if="rpc.allRoles == null || rpc.allRoles.length == 0">
+                        <td style="text-align: center;" colspan="5">No Records Found</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row col-sm-12" style="padding-right: 0px;">
+                <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px" ng-if="rpc.allRoles.length > 0">
+                    <span style="float: left;margin-top: 17px;margin-bottom: 10px;font-weight: 700;">Showing
+                        {{rpc.fromValue != null ? rpc.fromValue : 0}} to {{rpc.toValue != null ? rpc.toValue : 0}} out
+                        of {{rpc.totalEntries != null ? rpc.totalEntries : 0}} results</span>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px">
+                    <ul id="pagination-sec" class="pagination-sm"
+                        style="float: right;margin-top: 10px;margin-bottom: 10px"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+    });
+</script>

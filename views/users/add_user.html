@@ -1,0 +1,1253 @@
+<style type="text/css">
+   .table>tbody>tr>th,
+   .table>tbody>tr>td {
+      padding: 8px;
+      line-height: 1.42857143;
+      vertical-align: top;
+      border-top: 0px solid #ddd;
+   }
+
+   #circle {
+      width: 15px;
+      height: 15px;
+      -webkit-border-radius: 25px;
+      -moz-border-radius: 25px;
+      border-radius: 25px;
+      /*background: red;*/
+      float: left;
+      margin-right: 10px;
+   }
+
+   .panel-heading .panel-title:after {
+      /* symbol for "opening" panels */
+      font-family: 'Glyphicons Halflings';
+      /* essential for enabling glyphicon */
+      content: "\e082";
+      float: right;
+      opacity: 0.6;
+   }
+
+   .panel-heading.collapsed .panel-title:after {
+      /* symbol for "collapsed" panels */
+      content: "\e081";
+   }
+
+   .pad-left {
+      padding-left: 15px;
+   }
+
+   .panel .tab-pane {
+      padding-bottom: 15px;
+   }
+
+   .panel-heading {
+      background-color: gainsboro;
+   }
+
+   a.disabled {
+      pointer-events: none;
+      cursor: no-drop;
+      opacity: 0.4;
+   }
+
+   .theadClass {
+      text-align: right;
+      width: 25%;
+   }
+
+   /* end refresh plugin */
+</style>
+<!-- <section class="ng-cloak" style="padding-top: 50px;" ng-init="usc.getUserwithId();"> -->
+<!-- Suvrat Issue#2817 -->
+<section class="ng-cloak" ng-init="usc.getUserwithId();">
+   <!-- This is done to fix the navbar overlapping and unreachable content when using a mobile device -->
+   <!-- ////////////// -->
+   <!-- general form elements disabled -->
+   <!--  <form  role="form" name="addForm" > -->
+   <div class="container-fluid">
+      <!-- Suvrat Change the location of breadcrumb -->
+      <div class="col-md-12 col-sm-12 col-xs-12">
+         <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+               <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label" class="margin-right-xs"></a>
+               <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+         </ol>
+      </div>
+      <!-- -------------------------------- -->
+      <div class="row">
+         <div class="" style="padding-right: 0px; padding-left: 13px; padding-right: 13px;"
+            data-ng-if="!usc.editPageVisibility">
+            <ul class="nav nav-pills">
+               <li class="active " id="personalTab"><a
+                     style="border-radius: 0px; font-weight: 500;outline: 0;text-decoration: none;" data-toggle="pill"
+                     onclick="return false;" href="#personalInfotab">Personal Information</a></li>
+               <li><a style="border-radius: 0px;font-weight: 500;outline: 0;text-decoration: none;" data-toggle="pill"
+                     onclick="return false;" href="#otherInfotab" ng-click="usc.getUserInfoFromHRMS()">Other
+                     Information</a></li>
+               <li ng-if="can('user.resourcematrix.user_roles')"><a
+                     style="border-radius: 0px;font-weight: 500;outline: 0;text-decoration: none;" data-toggle="pill"
+                     onclick="return false;" href="#rolestab" ng-click="usc.getUserRoles()">Roles</a></li>
+               <li ng-if="can('user.resourcematrix.user_technologies')"><a
+                     style="border-radius: 0px;font-weight: 500;outline: 0;text-decoration: none;" data-toggle="pill"
+                     onclick="return false;" href="#technologytab" ng-click="usc.resetDataOfDropDown();">Technology</a>
+               </li>
+               <li id="projectSectionId" class=""><a
+                     style="border-radius: 0px;font-weight: 500;outline: 0;text-decoration: none;" data-toggle="pill"
+                     onclick="return false;" href="#projectstab" ng-click="usc.setTabData()">Project</a></li>
+               <!--  <li id="projectSectionId" class=""><a style="border-radius: 0px;font-weight: 500;outline: 0;text-decoration: none;" data-toggle="pill" onclick="return false;" href="#projectstab" ng-click="usc.setTabData()">Project/Technology</a></li> -->
+            </ul>
+         </div>
+         <div class="container" style="padding-right: 0px;" data-ng-if="usc.editPageVisibility">
+            <ul class="nav nav-pills">
+               <li class="active" data-ng-click="usc.showAddDomainTab()"><a data-toggle="pill" href="#genInfoTab"
+                     style="border-radius: 0px; font-weight: 500;outline: 0;text-decoration: none;"
+                     onclick="return false;">Previous Company Project</a></li>
+               <li data-ng-click="usc.showAddDomainTechnologyTab()"><a data-toggle="pill" href="#domainTechTab"
+                     style="border-radius: 0px; font-weight: 500;outline: 0;text-decoration: none;"
+                     onclick="return false;">Technologies</a></li>
+            </ul>
+         </div>
+         <div class="container-fluid" style="height:auto;">
+            <div class="tab-content">
+               <!-- Personal Information block start here -->
+               <div id="personalInfotab" class="tab-pane fade in active" style="height: auto;">
+                  <div class="box box-default paddingLeft0">
+                     <div class="box-header with-border">
+                        <div class="formHeadDiv">
+                           <h1 class="formheading paddingLeft0">
+                              {{usc.data.userInfo.name}}'s Personal Information
+                              <button type="button" class="btn btn-primary btn-circle btn-sm pull-right" title="Sync"
+                                 data-ng-click="usc.syncByUsersId()"><i class="fa fa-refresh"></i></button>
+                           </h1>
+                        </div>
+                     </div>
+                     <!-- /.box-header -->
+                     <!-- <div class="box-body "> -->
+                     <!-- Suvrat -->
+                     <div class="box-body table-responsive">
+                        <!-- ---------- -->
+                        <table class="table" border="0">
+                           <!--{{usc.data|json}}-->
+                           <tr>
+                              <th class="theadClass">Full Name :</th>
+                              <td>{{usc.data.userInfo.name}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Gender :</th>
+                              <td>{{usc.data.userInfo.gender}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Total Experience :</th>
+                              <td>{{usc.data.userInfo.total_experience.split(".")[0]}}
+                                 {{usc.data.userInfo.total_experience.split(".")[0] > 1 ? "years" : "year"}}
+                                 {{usc.data.userInfo.total_experience.split(".")[1]}}
+                                 {{usc.data.userInfo.total_experience.split(".")[1] > 1 ? "months" : "month"}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Department :</th>
+                              <td>{{usc.data.userInfo.department}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Designation :</th>
+                              <td>{{usc.data.userInfo.designation}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Manager Name :</th>
+                              <td>{{usc.data.userInfo.manager_name == null ? 'NA':usc.data.userInfo.manager_name}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Lead Name :</th>
+                              <td>{{usc.data.userInfo.mentor_name == null ? 'NA':usc.data.userInfo.mentor_name}}</td>
+                           </tr>
+                           <!-- Email block start here -->
+                           <tr>
+                              <th class="theadClass">Email :</th>
+                              <td>{{usc.data.userInfo.email}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Internal Email :</th>
+                              <td>{{usc.data.userInfo.email_internal}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">External Email :</th>
+                              <td>{{usc.data.userInfo.email_external}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Personal Email :</th>
+                              <td>{{usc.data.hrmsUserInfo.personal_email}}</td>
+                           </tr>
+                           <!-- Email block end here -->
+                           <!-- Phone no block start here -->
+                           <tr>
+                              <th class="theadClass">Mobile No. :</th>
+                              <td>{{usc.data.hrmsUserInfo.mobile_number}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Alternate Contact No. :</th>
+                              <td>{{usc.data.hrmsUserInfo.alternate_contact_number}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Emergency Contact No. :</th>
+                              <td>{{usc.data.hrmsUserInfo.emergency_contact}}</td>
+                           </tr>
+                           <tr>
+                              <th class="theadClass">Extension No. :</th>
+                              <td>{{usc.data.hrmsUserInfo.extension_no}}</td>
+                           </tr>
+                           <!-- Phone no block end here -->
+                        </table>
+                     </div>
+                     <!-- /.box-body -->
+                  </div>
+               </div>
+               <!-- Personal Information block end here -->
+               <!-- Technology block start here -->
+               <div id="technologytab" class="tab-pane fade" style="height: auto;">
+                  <div class="box box-default paddingLeft0">
+                     <div class="box-header with-border paddingLeft0 marginBorderHead">
+                        <div class="formHeadDiv">
+                           <h1 class="formheading paddingLeft0">
+                              {{usc.data.userInfo.name}}'s Technology
+                           </h1>
+                           <span>Add your Technology here.</span>
+                        </div>
+                     </div>
+                     <!-- /.box-header -->
+                     <div class="box-body">
+                        <div class="row">
+                           <div class="col-md-5">
+                              <div class="form-group">
+                                 <label for="userTechDomain">Domain</label>
+                                 <select id="userTechDomain" name="userTechDomain"
+                                    ng-model="usc.technologyForm.projectDomain" class="form-control s2mn select2"
+                                    data-placeholder="Select domain"
+                                    ng-options="x as x.name for x in usc.allDomains| filter:show" style="width: 100%;"
+                                    ng-change="usc.fetchInfo(usc.technologyForm.projectDomain, 'Technology')">
+                                    <option value="" disabled selected style="display: none;">Select domain</option>
+                                 </select>
+                              </div>
+                           </div>
+                           <div class="col-md-5">
+                              <div class="form-group">
+                                 <label for="technology">Technology</label>
+                                 <select id="technology" name="technology" ng-model="usc.technologyForm.technology_id"
+                                    ng-options="x.id as x.name for x in usc.projectTechnologies" class="form-control"
+                                    style="width: 100%;">
+                                    <option value="" disabled>Select technology</option>
+                                 </select>
+                              </div>
+                           </div>
+                           <div class="col-md-1" ng-if="usc.technologyForm.technology_id">
+                              <button type="button" class="btn btn-default btn-xs pull pull-right moving-pulse-button "
+                                 data-toggle="modal" title="Add more" ng-if="usc.temp != 1"
+                                 data-ng-click="usc.addMoreTechnologyExperirence()"
+                                 style="margin-right: 40px;margin-top: 30px;bottom: 4px;left: 16px;"><i
+                                    style="color: black;padding-bottom: 0px;padding-right: 0px;"
+                                    class="fa fa-plus-circle" aria-hidden="true"></i>
+                              </button>
+                              <button type="button" class="btn btn-success btn-xs pull pull-right moving-pulse-button "
+                                 data-toggle="modal" title="Edit" ng-if="usc.temp" data-ng-click="usc.update()"
+                                 style="margin-right: 40px;margin-top: 30px;bottom: 4px;left: 16px;"><i
+                                    style="color: black;padding-bottom: 0px;padding-right: 0px;" class="fa fa-edit"
+                                    aria-hidden="true"></i>
+                              </button>
+                           </div>
+                        </div>
+                        <div class="row">
+                           <!-- <div class="col-md-12"> -->
+                           <!-- Suvrat -->
+                           <div class="col-md-12 table-responsive">
+                              <!-- ------ -->
+                              <table class="table ">
+                                 <thead>
+                                    <tr>
+                                       <th>Domains</th>
+                                       <th>Technology</th>
+                                       <th>Experience</th>
+                                       <th style="text-align: center;">Action</th>
+                                    </tr>
+                                 </thead>
+                                 <!-- <pre>{{usc.data.userTechnology|json}} </pre> -->
+                                 <tbody>
+                                    <tr ng-repeat="data in usc.data.userTechnology">
+                                       <td ng-bind="usc.userDomainList[$index].name">
+                                       <td ng-bind="usc.userTechnologyList[$index].name"></td>
+                                       <!-- Subtracting the index by 1 to get the value of exact index -->
+                                       <td>{{data.duration}}</td>
+                                       <td style="padding-left: 0px; text-align: center;">
+                                          <span>&nbsp;</span>
+                                          <a type="button" ng-hide='data.duration !== ""' title="Remove"
+                                             data-ng-click="usc.removeRowPageTable(data.id)"
+                                             style="outline: 0;text-decoration: none;"><i class="fa fa-times"
+                                                aria-hidden="true"></i>
+                                          </a>
+                                       </td>
+                                    </tr>
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- /.box-body -->
+                  </div>
+               </div>
+               <!-- Technology block end here -->
+               <!-- Other information block start here -->
+               <div id="otherInfotab" class="tab-pane fade" style="height: auto;">
+                  <div class="box box-default paddingLeft0">
+                     <div class="box-header with-border paddingLeft0 marginBorderHead">
+                        <div class="formHeadDiv">
+                           <h1 class="formheading paddingLeft0">
+                              {{usc.data.userInfo.name}}'s Other Information
+                           </h1>
+                           <span> </span>
+                        </div>
+                     </div>
+                     <!-- /.box-header -->
+                     <div class="box-body">
+                        <!-- <div> -->
+                        <!-- Suvrat -->
+                        <div class="table-responsive">
+                           <!-- ---- -->
+                           <table class="table" border="0">
+                              <tr>
+                                 <th class="theadClass">Correspondence Address :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.corresponding_address == "NULL"|| usc.data.hrmsUserInfo.corresponding_address == "" ? "-" : usc.data.hrmsUserInfo.corresponding_address}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Permanent Address :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.permanent_address == "NULL"|| usc.data.hrmsUserInfo.permanent_address == "" ? "-" : usc.data.hrmsUserInfo.permanent_address}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">PAN No. :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.pan_number == "NULL"|| usc.data.hrmsUserInfo.pan_number == "" || usc.data.hrmsUserInfo.pan_number == "na" || usc.data.hrmsUserInfo.pan_number == "-" ? "NA":usc.data.hrmsUserInfo.pan_number}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Passport No. :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.passport_number == "NULL"|| usc.data.hrmsUserInfo.passport_number== "" || usc.data.hrmsUserInfo.passport_number== "na" || usc.data.hrmsUserInfo.passport_number== "-"  ? "NA":usc.data.hrmsUserInfo.passport_number}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Aadhaar No. :</th>
+                                 <td>{{usc.data.hrmsUserInfo.aadhar_number.join("-")}}</td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Date of Birth :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.date_of_birth == ""|| usc.data.hrmsUserInfo.date_of_birth == "NULL" ? "-" : usc.data.hrmsUserInfo.date_of_birth}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Marital Status :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.marital_status == "" ? "-" : usc.maritalStatusValues[usc.data.hrmsUserInfo.marital_status]}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Blood Group :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.blood_group == "" ? "-" : usc.bloodGroupValue[usc.data.hrmsUserInfo.blood_group] }}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Id Card No. :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.id_card == "NULL" || usc.data.hrmsUserInfo.id_card == "na" || usc.data.hrmsUserInfo.id_card == "" || usc.data.hrmsUserInfo.id_card == "-" ? "NA" : usc.data.hrmsUserInfo.id_card}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Spark Id. :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.spark_id_no == "NULL" || usc.data.hrmsUserInfo.spark_id_no == "na" || usc.data.hrmsUserInfo.spark_id_no == "" || usc.data.hrmsUserInfo.spark_id_no == "-" ? "NA" : usc.data.hrmsUserInfo.spark_id_no}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">RFID No. :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.rfid == "NULL" || usc.data.hrmsUserInfo.rfid == "na" || usc.data.hrmsUserInfo.rfid == "" || usc.data.hrmsUserInfo.rfid == "-" ? "NA" : usc.data.hrmsUserInfo.rfid}}
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <th class="theadClass">Desk Id :</th>
+                                 <td>
+                                    {{usc.data.hrmsUserInfo.desk_id_no == "NULL"|| usc.data.hrmsUserInfo.desk_id_no == "na" || usc.data.hrmsUserInfo.desk_id_no == "" || usc.data.hrmsUserInfo.desk_id_no == "-" ? "NA" : usc.data.hrmsUserInfo.desk_id_no}}
+                                 </td>
+                              </tr>
+                           </table>
+                        </div>
+                     </div>
+                     <!-- /.box-body -->
+                  </div>
+               </div>
+               <!-- Other information block end here -->
+               <!-- Roles block start here -->
+               <div id="rolestab" class="tab-pane fade" style="height: auto;">
+                  <div class="box box-default paddingLeft0">
+                     <div class="box-header with-border paddingLeft0 marginBorderHead">
+                        <div class="formHeadDiv">
+                           <h1 class="formheading paddingLeft0">
+                              {{usc.data.userInfo.name}}'s Role
+                              <button type="button" class="btn btn-primary btn-circle btn-sm pull-right"
+                                 ng-click="usc.getAllRoles()" title="Add"><i class="fa fa-plus"
+                                    style="padding-bottom: 4px;padding-right: 1px;"></i></button>
+                           </h1>
+                           <span>Manage roles here.</span>
+                        </div>
+                     </div>
+                     <!-- /.box-header -->
+                     <div class="box-body userRoleBody">
+                        <div class="" style="float:left;">
+                           <a class="btn btn-outline btn-circles btn-sm green" ng-repeat="data in usc.userRoles"
+                              style="margin-right: 10px;">{{data.display_name}}&nbsp;&nbsp;<i class="fa fa-close"
+                                 ng-click="usc.deleteRole(data.id);"></i></a>
+                        </div>
+                     </div>
+                     <!-- /.box-body -->
+                  </div>
+               </div>
+               <!-- Roles block end here -->
+               <!-- Project block start here -->
+               <div id="projectstab" class="tab-pane fade" style="height: auto;">
+                  <div class="box box-default paddingLeft0">
+                     <div class="box-header with-border paddingLeft0 marginBorderHead">
+                        <div class="formHeadDiv">
+                           <div class="row">
+                              <div class="col-md-8">
+                                 <h1 class="formheading paddingLeft0">{{usc.data.userInfo.name}}'s project </h1>
+                                 <span>View project here.</span>
+                              </div>
+                              <div class="col-md-4">
+                                 <div class="col-md-2 pull-right" style="margin-top:7%">
+                                    <button type="button" class="btn btn-primary btn-circle btn-sm pull-right"
+                                       title="Add previous company" ng-click="usc.addPreviousCompany();"
+                                       ng-if="usc.projectTable"><i class="fa fa-plus"
+                                          style="padding-right:0.3px"></i></button>
+                                    <button type="button" class="btn btn-primary btn-circle btn-sm pull-right"
+                                       title="Back" ng-click="usc.editBack()" ng-if="usc.showBackbtn"><i
+                                          class="fa fa-arrow-left" onclick="removeActiveClass();"
+                                          style="padding-right:0.3px"></i></button>
+                                 </div>
+                                 <div class="col-md-10 pull-right" ng-if="usc.projectTable">
+                                    <div class="form-group">
+                                       <label for="listStatus">Select status</label>
+                                       <select id="listStatus" name="listStatus" ng-model="usc.listProjectStatus"
+                                          class="form-control s2mn" data-placeholder="Select status"
+                                          ng-options="x.id as x.name for x in  usc.listStatus" style="width: 100%;"
+                                          ng-change="usc.getUserProjectData(usc.listProjectStatus)">
+                                          <option value="" disabled selected style="display: none;">Select status
+                                          </option>
+                                       </select>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- /.box-header -->
+                     <div class="box-body userRoleBody">
+                        <h5 ng-if="!usc.userProjectLists.length && usc.projectTable">No project is available!! <i
+                              class="mdi mdi-emoticon-sad"></i> </h5>
+                        <div ng-if="usc.projectTable">
+                           <div class="ziehharmonika">
+                              <div id="div_data" ng-repeat="data in usc.userProjectLists">
+                                 <h3 style="font-size: 15px !important">{{data.company_name}} <span
+                                       style="float: right;">({{data.total_duration}})</span> </h3>
+                                 <!-- <div> -->
+                                 <!-- Suvrat -->
+                                 <div class="table-responsive">
+                                    <!-- --- -->
+                                    <p>
+                                       <table class="table " ng-if="usc.userProjectLists.length > 0">
+                                          <thead>
+                                             <tr>
+                                                <th>Project Name</th>
+                                                <th>Duration in Years(till date)</th>
+                                                <th>Domain</th>
+                                                <!--<th>Technology List</th>-->
+                                                <th style="text-align: center">Action</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             <!--<pre>{{data.project_list | json}}</pre>-->
+                                             <tr ng-repeat="data1 in data.project_list">
+                                                <td>{{data1.name}}</td>
+                                                <td>
+                                                   {{data1.duration_in_years}}
+                                                   <div
+                                                      ng-init=" sDate = data1.start_date.split(' ')[0]; eDate = data1.due_date.split(' ')[0]">
+                                                      ( {{sDate| date:'dd-MM-yyyy'}} - {{eDate| date:'dd-MM-yyyy'}} )
+                                                   </div>
+                                                </td>
+                                                <td>
+                                                   <div ng-repeat="domain in data1.domains">
+                                                      <div>
+                                                         <b>{{domain.name ? domain.name : 'Manager'}}</b>
+                                                      </div>
+                                                      <ul style="list-style:none;">
+                                                         <li ng-repeat="tech in domain.technologies">{{tech.name}}</li>
+                                                      </ul>
+                                                   </div>
+                                                </td>
+                                                <td style="text-align: center">
+                                                   <a type="button" ng-if="data1.type == 2" class="disabled"
+                                                      title="Edit" ng-href="/project/{{data1.id}}/info"
+                                                      style="cursor: pointer;"><i class="fa fa-pencil"></i></a>
+                                                   <!--For previous company project-->
+                                                   <a type="button" ng-if="data1.type == 1" class="btn-default"
+                                                      title="Edit"><i class="fa fa-pencil"
+                                                         ng-click="usc.editPreviousCompany(data1.id);"
+                                                         style="cursor: pointer;"></i></a>
+                                                </td>
+                                             </tr>
+                                          </tbody>
+                                       </table>
+                                    </p>
+                                    <button type="button" class="btn btn-primary" ng-click="usc.openIdleInfoModal(data)"
+                                       ng-disabled="data.total_idle == ''">Idle Info</button>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- Add previous company section begins here -->
+                        <div ng-hide="usc.projectTable">
+                           <form id="previousCompanyForm" role="form">
+                              <div data-ng-if="usc.technologyTabVisibility">
+                                 <h4>{{usc.addEdit}} previous company project</h4>
+                                 <br>
+                                 <div class="row">
+                                    <div class="col-md-6">
+                                       <input type="hidden" id="projectId" name="projectId" value="{{usc.pId}}">
+                                       <div class="form-group">
+                                          <label class="mandatory" for="projectName">Name</label>
+                                          <input type="text" class="form-control" id="projectName" name="projectName"
+                                             ng-model="usc.prevCompForm.projectName" placeholder="Enter project name">
+                                       </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                       <div class="form-group">
+                                          <label class="mandatory" for="organisationName">Company/ Institute</label>
+                                          <select id="organisationName" name="organisationName"
+                                             ng-model="usc.prevCompForm.organisationName"
+                                             class="form-control s2mn select2"
+                                             data-placeholder="Select Company/ Institute name"
+                                             ng-options="x as x.companyName disable when  x.id == '3' for x in usc.companies track by x.id"
+                                             selected="selected" style="width: 100%;"
+                                             ng-change="usc.setStartAndEndDateOfCompany(usc.prevCompForm.organisationName);">
+                                             <option value="" disabled selected style="display: none;">Select Company/
+                                                Institute</option>
+                                          </select>
+                                          <input type="hidden" id="companyStartDate" name="companyStartDate"
+                                             ng-model="usc.compStartDate" value="{{usc.compStartDate}}">
+                                          <input type="hidden" id="companyEndDate" name="companyEndDate"
+                                             ng-model="usc.compEndDate" value="{{usc.compEndDate}}">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <!-- <div class="row">
+                                    <div class="col-md-6">
+                                       <div class="form-group">
+                                          <label class="mandatory" for="projectRole">Role</label>
+                                          <input type="text" class="form-control" id="projectRole" name="projectRole" ng-model="usc.prevCompForm.projectRole" placeholder="Enter role">
+                                       </div>
+                                    </div>
+                                 </div> -->
+                                 <div class="row">
+                                    <div class="col-md-6">
+                                       <div class="form-group">
+                                          <label class="mandatory" for="startDate" style="display: inherit;">Start
+                                             Date</label>
+                                          <input name="startExperienceMonths" id="startExperienceMonths"
+                                             ng-model="usc.prevCompForm.duration_S_months" class="form-control"
+                                             placeholder="Select start date" ng-change="usc.calculateDateDuration();"
+                                             readonly='true' style="cursor:default;background-color: white;" />
+                                       </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                       <div class="form-group">
+                                          <label class="mandatory" for="endDate" style="display: inherit;">End
+                                             Date</label>
+                                          <input name="endExperienceMonths" id="endExperienceMonths"
+                                             ng-model="usc.prevCompForm.duration_E_months" class="form-control"
+                                             placeholder="Select end date" ng-change="usc.calculateDateDuration();"
+                                             readonly='true' style="cursor:default;background-color: white;" />
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="row">
+                                    <div class="col-md-6">
+                                       <div class="form-group">
+                                          <label for="duration">Duration</label>
+                                          <input type="text" class="form-control" id="duration" name="duration"
+                                             ng-model="usc.prevCompForm.duration" placeholder=" Total Duration"
+                                             disabled>
+                                       </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                       <div class="form-group">
+                                          <label class="mandatory" for="projectRole">Role</label>
+                                          <input type="text" class="form-control" id="projectRole" name="projectRole"
+                                             ng-model="usc.prevCompForm.projectRole" placeholder="Enter role">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="row">
+                                    <div class="col-md-12">
+                                       <div class="form-group" id="descDiv">
+                                          <label class="mandatory" for="description">Project Description</label><br>
+                                          <textarea type="text" rows="6" cols="90"
+                                             ng-model="usc.prevCompForm.description" name="description" id="description"
+                                             class="form-control" placeholder="Enter project description"></textarea>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <br>
+                                 <div class="row">
+                                    <div class="col-md-12">
+                                       <div class="form-group  pull pull-right" ng-if="usc.addEdit != 'Add'">
+                                          <button type="button" data-ng-click="usc.savePreviousProject()"
+                                             class="btn btn-primary"> Save</button>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </form>
+                           <div class="panel" data-ng-if="usc.showDomainTechnologyTab">
+                              <div class="panel-heading" data-toggle="collapse" data-target="#collapse1">
+                                 <h3 class="panel-title">
+                                    Add Technologies
+                                 </h3>
+                              </div>
+                              <div id="collapse1" class="collapse in panel panel-default">
+                                 <div class="panel-body">
+                                    <div class="row">
+                                       <div class="col-md-3">
+                                          <input type="hidden" ng-model="usc.checkSelect2Plugin" name="">
+                                          <div class="form-group">
+                                             <label class="mandatory" for="technology"
+                                                style="color: {{usc.highlightcolordomaintec}};">Domain</label>
+                                             <select id="projectDomain" name="projectDomain"
+                                                ng-model="usc.projectForm.projectDomain" class="form-control s2mn"
+                                                data-placeholder="Select domain"
+                                                ng-options="x as x.name for x in usc.domains"
+                                                style="border-color: {{usc.highlightcolordomaintec}};width: 100%;"
+                                                ng-change="usc.fetchInfo(usc.projectForm.projectDomain, 'Domain')">
+                                                <option value="" disabled selected style="display: none;">Select domain
+                                                </option>
+                                             </select>
+                                             <span ng-if="usc.domainTechnologyExperience < 1"
+                                                style="color:#dd4b39;border-color:#dd4b39">{{usc.errDomainTecMessage}}</span>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-3">
+                                          <div class="form-group">
+                                             <label style="margin-bottom: 10px;" for="technology">Technologies</label>
+                                             <select id="technology" name="technology"
+                                                ng-model="usc.projectForm.projectTechnology" class="form-control s2mn"
+                                                data-placeholder="Select technologies"
+                                                ng-options="x as x.name for x in usc.projectTechnologies"
+                                                style="width: 100%;">
+                                                <option value="">Select technology</option>
+                                             </select>
+                                          </div>
+                                       </div>
+                                       <div class="col-md-2">
+                                          <div class="form-group">
+                                             <label style="margin-bottom: 10px; display: inherit;"
+                                                for="tecStartDate">Start Date</label>
+                                             <input name="tecExpStartMY" id="tecExpStartMY"
+                                                ng-model="usc.projectForm.duration_start_months"
+                                                class="form-control date-picker" placeholder="Start Date"
+                                                ng-change="usc.calculateDomainTechDateDuration();" readonly='true'
+                                                style="cursor:default;background-color: white;padding: 6px 6px !important;" />
+                                          </div>
+                                       </div>
+                                       <div class="col-md-2">
+                                          <div class="form-group">
+                                             <label style="margin-bottom: 10px; display: inherit;" for="tecEndDate">End
+                                                Date</label>
+                                             <input name="tecExpEndMY" id="tecExpEndMY"
+                                                ng-model="usc.projectForm.duration_end_months"
+                                                class="form-control date-picker" placeholder="End Date"
+                                                ng-change="usc.calculateDomainTechDateDuration();" readonly='true'
+                                                style="cursor:default;background-color: white;padding: 6px 6px !important;" />
+                                             <span style="color:#dd4b39;border-color:#dd4b39">{{usc.errMessage2}}</span>
+                                             <input type="hidden" name="tecExpDuration" id="tecExpDuration"
+                                                ng-model="usc.projectForm.duration" class="form-control" />
+                                          </div>
+                                       </div>
+                                       <div class="col-md-1 col-sm-offset-1"
+                                          style="margin-top: 30px; margin-left: 18px;">
+                                          <div
+                                             ng-if="usc.projectForm.projectDomain && usc.projectForm.projectTechnology && usc.projectForm.duration_start_months && usc.projectForm.duration_end_months">
+                                             <button type="button"
+                                                class="btn btn-default btn-xs pull pull-right moving-pulse-button "
+                                                data-toggle="modal" title="Add more" ng-if="usc.temp != 1"
+                                                data-ng-click="usc.calculateDomainTechDateDuration();usc.addMoreProjectTechnologyExperirence()"><i
+                                                   style="color: black;padding-bottom: 0px;padding-right: 0px;"
+                                                   class="fa fa-plus-circle" aria-hidden="true"></i>
+                                             </button>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div class="row">
+                                       <!-- <div class="col-md-12"> -->
+                                       <!-- Suvrat -->
+                                       <div class="col-md-12 table-responsive">
+                                          <!-- ---- -->
+                                          <table class="table" style="{{usc.checkValidation}}">
+                                             <thead>
+                                                <tr>
+                                                   <th style="text-align: center;">Sr No.</th>
+                                                   <th>Domain</th>
+                                                   <th>Technologies</th>
+                                                   <th ng-if="usc.addEdit == 'Add'">Duration in Years</th>
+                                                   <th style="text-align: center;">Action</th>
+                                                </tr>
+                                             </thead>
+                                             <tbody>
+                                                <!-- <pre>{{usc.domainTechnologyExperience|json}}</pre> -->
+                                                <tr ng-repeat="data in usc.domainTechnologyExperience">
+                                                   <td style="text-align: center;">{{$index + 1}}</td>
+                                                   <td>{{data.projectDomain.name}}</td>
+                                                   <td style="padding-left: 4%;"
+                                                      ng-if="data.projectTechnology.length > 0">
+                                                      <ul>
+                                                         <li ng-repeat="tech in data.projectTechnology"> {{tech.name}}
+                                                         </li>
+                                                      </ul>
+                                                   </td>
+                                                   <!-- For edit -->
+                                                   <td ng-if="data.projectTechnology.name">
+                                                      {{data.projectTechnology.name}}</td>
+                                                   <!-- For add -->
+                                                   <!--<td>{{data.duration}}</td>-->
+                                                   <td ng-if="usc.addEdit == 'Add'"> {{data.duration.split('.')[0]}}
+                                                      years {{data.duration.split('.')[1]}} months </td>
+                                                   <td style="padding-left: 0px;text-align: center;">
+                                                      <div ng-if="data.removeParam == 'add'">
+                                                         <button type="button" class="btn btn-default btn-xs"
+                                                            title="Remove"
+                                                            data-ng-click="usc.removeRowPageTableAdd($index, data.removeParam)"
+                                                            style="border-color: #fff!important;margin-top: -8%;"><i
+                                                               class="fa fa-times" aria-hidden="true"></i>
+                                                         </button>
+                                                      </div>
+                                                      <!-- <pre>{{data.projectTechnology.technology_id}}</pre> -->
+                                                      <div ng-if="data.removeParam != 'add'">
+                                                         <ul style="list-style: none;">
+                                                            <li ng-repeat="tech in data.projectTechnology">
+                                                               <button type="button"
+                                                                  class="btn btn-default btn-xs remv_btn" title="Remove"
+                                                                  data-ng-click="usc.removeRowPageTableEdit(tech.project_id, tech.project_category_id, tech.technology_id)"
+                                                                  style="border-color: #fff!important;margin-top: -8%;cursor: pointer;">
+                                                                  <i class="fa fa-times" aria-hidden="true"></i>
+                                                            </li>
+                                                         </ul>
+                                                      </div>
+                                                   </td>
+                                                </tr>
+                                             </tbody>
+                                          </table>
+                                          <span ng-if="usc.checkValidation" style="color:red;"> Domain-technology
+                                             duplication not allowed !! </span>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <br>
+                           <div class="row">
+                              <div class="col-md-12">
+                                 <div class="form-group  pull pull-right" ng-if="usc.addEdit == 'Add'">
+                                    <button type="button" data-ng-click="usc.savePreviousProject()"
+                                       class="btn btn-primary"> Save</button>
+                                    <button type="button" class="btn btn-warning"
+                                       data-ng-click="usc.cancelPreviousProject()">Cancel</button>
+                                 </div>
+                              </div>
+                           </div>
+                           <!--</form>-->
+                        </div>
+                     </div>
+                     <!-- Add previous company section ends here -->
+                  </div>
+                  <!-- /.box-body -->
+               </div>
+               <!-- Project block end here -->
+            </div>
+         </div>
+      </div>
+   </div>
+   <!--        </div>
+      </form>-->
+   <!-- modal to add roles -->
+   <div class="modal fade" id="addRoleModal" role="dialog">
+      <div class="modal-dialog modal-md">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal">&times;</button>
+               <div class="row">
+                  <div class="col-sm-12" style="text-align:center;">
+                     <h4 class="modal-title">Add Role </h4>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-body">
+               <form id="caddRoleForm">
+                  <div class="form-group">
+                     <label class="mandatory" for="role_name">Select Role :</label>
+                     <!--{{usc.allRoles}}-->
+                     <select id="roleId" name="role_name" class="form-control" style="width: 100%;">
+                        <option value="">Select Roles</option>
+                        <option ng-repeat="x in usc.unsignedRoles" value="{{x.id}}">{{x.name}}</option>
+                     </select>
+                     <!-- <select id="roleId" name="role_name" class="form-control s2mn" data-ng-model="usc.roleIds" placeholder="Select Roles" ng-options="x.id as x.name in usc.unsignedRoles" style="width: 100%;">
+                          <option value="">Select Roles</option>
+                         
+                      </select> -->
+                  </div>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary btn-sm" data-dismiss=""
+                  ng-click="usc.attachRoleToUser();">Update</button>
+               <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Cancel</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- modal to check idle time -->
+   <div class="modal fade" id="checkIdleDetails" role="dialog">
+      <div class="modal-dialog modal-md">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal">&times;</button>
+               <div class="row">
+                  <div class="col-sm-12" style="text-align:center;">
+                     <h4 class="modal-title">Idle Duration </h4>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-body">
+               <form id="checkIdleDetailsForm">
+                  <table class="table ">
+                     <thead>
+                        <tr>
+                           <th style="text-align: center;">Start Date</th>
+                           <th style="text-align: center;">End Date</th>
+                           <th style="text-align: center;">Duration</th>
+                        </tr>
+                     </thead>
+                     <tbody ng-repeat="data1 in usc.selectedProjectData.project_list" ng-show="$last">
+                        <!--<pre>{{usc.userProjectList|json}}</pre>-->
+                        <tr ng-repeat="data in data1.idle_info"
+                           ng-init=" sDate = data.idle_start_date.split(' ')[0]; eDate = data.idle_due_date.split(' ')[0]">
+                           <td ng-if="data.idle_days_duration" ng-bind="sDate | date :'dd - MM - yyyy'"
+                              style="text-align: center;"></td>
+                           <td ng-if="data.idle_days_duration" ng-bind="eDate | date :'dd - MM - yyyy'"
+                              style="text-align: center;"></td>
+                           <td style="text-align: center;">{{data.idle_days_duration}}</td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </form>
+            </div>
+            <div class="modal-footer">
+               <div class="col-md-12">
+                  <div class="form-group">
+                     <div class="col-md-6">
+                        <label for="totalDuration">Total : </label>
+                     </div>
+                     <div class="col-md-6">
+                        <input name="totalDuration" id="totalDuration" class="form-control" disabled=""
+                           ng-value="usc.selectedProjectData.total_idle" />
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</section>
+<script>
+   function initialiseCKEditor() {
+      $('#description').ckeditor();
+      CKEDITOR.instances.description.on('change', function () {
+         if (CKEDITOR.instances.description.getData().length > 0) {
+            $('#description-error').hide();
+            $('#cke_1_top').removeAttr('style');
+            $('#cke_1_bottom').removeAttr('style');
+            $('#descDiv').removeClass('has-error');
+         }
+
+         if (CKEDITOR.instances.description.getData().length == 0) {
+            $('#description-error').show();
+            $('#cke_1_top,#cke_1_bottom').css({ 'border-color': 'red' });
+            $('#descDiv').addClass('has-error');
+         }
+      });
+   }
+
+   function applyPlugins() {
+      $('#description').ckeditor();
+      CKEDITOR.instances.description.on('change', function () {
+         if (CKEDITOR.instances.description.getData().length > 0) {
+            $('#description-error').hide();
+            $('#cke_1_top').removeAttr('style');
+            $('#cke_1_bottom').removeAttr('style');
+            $('#descDiv').removeClass('has-error');
+         }
+
+         if (CKEDITOR.instances.description.getData().length == 0) {
+            $('#description-error').show();
+            $('#cke_1_top,#cke_1_bottom').css({ 'border-color': 'red' });
+            $('#descDiv').addClass('has-error');
+         }
+      });
+
+      $('#startExperienceMonths').datepicker({
+         autoclose: true,
+      }).on('show', function () {
+         // $('#startExperienceMonths').datepicker('update');
+         // $('#startExperienceMonths').val('').datepicker('update');
+      }).on('changeDate', function (e) {
+         var selected = $(this).val();
+         // console.log(selected);
+         // $("#startExperienceMonths").datepicker('setStartDate', selected);
+         $('#tecExpStartMY').datepicker('setStartDate', selected).datepicker('setDate', selected);
+         $('#endExperienceMonths').datepicker('setStartDate', selected);
+      });
+
+      $('#endExperienceMonths').datepicker({
+         autoclose: true,
+      }).on('show', function () {
+         // $('#endExperienceMonths').datepicker('update');
+         // $('#endExperienceMonths').val('').datepicker('update');
+      }).on('changeDate', function (e) {
+         var selected = $(this).val();
+         // console.log(selected);
+         // $('#endExperienceMonths').datepicker('setStartDate', selected);
+         setTimeout(function () {
+            $('#tecExpEndMY').datepicker('setDate', '').datepicker('setEndDate', '');
+            $('#tecExpEndMY').datepicker('setDate', selected).datepicker('setEndDate', selected);
+         }, 100);
+         //$('#endExperienceMonths').datepicker('setDate', selected);
+      });
+
+      $('#tecExpStartMY').datepicker({
+         autoclose: true,
+      }).on('show', function () {
+         // $('#tecExpStartMY').datepicker('update');
+         // $('#tecExpStartMY').val('').datepicker('update');
+      }).on('changeDate', function (e) {
+         var selected = $(this).val();
+         $('#tecExpEndMY').datepicker('setStartDate', '');
+         $('#tecExpEndMY').datepicker('setStartDate', selected);
+      });
+
+      $('#tecExpEndMY').datepicker({
+         autoclose: true,
+      }).on('show', function () {
+         // $('#tecExpEndMY').datepicker('update');
+         // $('#tecExpEndMY').val('').datepicker('update');
+      }).on('changeDate', function (e) {
+      });
+
+      //Initialize Select2 Elements
+      $(".select2").select2();
+
+      setCompData();
+   }
+
+   function removeActiveClass() {
+      $("#personalTab").removeClass('active');
+      $("#projectSectionId").addClass('active');
+   }
+
+   function setCompData() {
+      var sdate = $("#companyStartDate").val();
+      var edate = $("#companyEndDate").val();
+
+      var sd = new Date(sdate);
+      var ed = new Date(edate);
+
+      if (sdate == "" && edate == "") {
+         $('#startExperienceMonths').datepicker('setDate', '');
+         $('#endExperienceMonths').datepicker('setDate', '');
+         $('#tecExpStartMY').datepicker('setDate', '');
+         $('#tecExpEndMY').datepicker('setDate', '');
+         // return false;
+      } else {
+         $('#startExperienceMonths').datepicker().datepicker('setDate', '').datepicker('setStartDate', '').datepicker('setEndDate', '');
+         $('#endExperienceMonths').datepicker().datepicker('setDate', '').datepicker('setStartDate', '').datepicker('setEndDate', '');
+         $('#tecExpStartMY').datepicker().datepicker('setDate', '').datepicker('setStartDate', '').datepicker('setEndDate', '');
+         $('#tecExpEndMY').datepicker().datepicker('setDate', '').datepicker('setStartDate', '').datepicker('setEndDate', '');
+
+         $('#startExperienceMonths').datepicker().datepicker('setDate', sd).datepicker('setStartDate', sd).datepicker('setEndDate', ed);
+         $('#endExperienceMonths').datepicker().datepicker('setDate', ed).datepicker('setStartDate', sd).datepicker('setEndDate', ed);
+         $('#tecExpStartMY').datepicker().datepicker('setDate', sd).datepicker('setStartDate', sd).datepicker('setEndDate', ed);
+         $('#tecExpEndMY').datepicker().datepicker('setDate', ed).datepicker('setStartDate', sd).datepicker('setEndDate', ed);
+      }
+   }
+</script>
+<script type="text/javascript" src="/resources/js/ziehharmonika.js"></script>
+<script>
+   function load_data() {
+      setTimeout(function () {
+         $('.ziehharmonika').ziehharmonika({
+            collapsible: true,
+            prefix: '★'
+         });
+         //                $("#div_data").attr("style", "display:block");
+         // console.log("hiiiiiiiiiiiiii");
+         // Suvrat Issue#2900
+         $('.ziehharmonika h3:eq(0)').ziehharmonika('open');
+         //////////////////////
+      }, 500);
+   }
+   // load_data();
+</script>
+<script type="text/javascript">
+   // var _gaq = _gaq || [];
+   // _gaq.push(['_setAccount', 'UA-36251023-1']);
+   // _gaq.push(['_setDomainName', 'jqueryscript.net']);
+   // _gaq.push(['_trackPageview']);
+   // (function () {
+   //     var ga = document.createElement('script');
+   //     ga.type = 'text/javascript';
+   //     ga.async = true;
+   //     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+   //     var s = document.getElementsByTagName('script')[0];
+   //     s.parentNode.insertBefore(ga, s);
+   // })();
+
+   $(document).ready(function () {
+      $("html, body").animate({ scrollTop: 0 }, "fast");
+
+      $.validator.addMethod("greaterThan", function (value, element, params) {
+         var dt1 = "01-" + value;
+         var dt2 = "01-" + $(params).val();
+         return this.optional(element) || new Date(dt1.split('/')[2], dt1.split('/')[1] - 1, dt1.split('/')[0]) >= new Date(dt2.split('/')[2], dt2.split('/')[1] - 1, dt2.split('/')[0]);
+      }, 'Must be greater than Start date.');
+
+      var baseUrl = Utility.apiBaseUrl;
+
+      $("#previousCompanyForm").validate({
+         focusCleanup: true,
+         onkeyup: false,
+         onselect: true,
+         errorElement: 'span', //default input error message container
+         errorClass: 'help-block help-block-error',
+         focusInvalid: false, // set focus the last invalid input
+         invalidHandler: function (form, validator) {
+
+            if (!validator.numberOfInvalids())
+               return;
+            $(this).find(":input.error:first").focus();
+            $("html, body").animate({ scrollTop: 0 }, "fast");
+
+         },
+         errorPlacement: function (error, element) {
+
+            var type = $(element).attr("type");
+            if ($(element).attr("id") === "startExperienceMonths") {
+               // custom placement
+               element.parent().append(error);
+            } else if ($(element).attr("id") === "endExperienceMonths") {
+               // custom placement
+               element.parent().append(error);
+            } else if ($(element).attr("id") === "description") {
+               // custom placement
+               element.parent().append(error);
+            } else if ($(element).attr("id") === "organisationName") {
+               // custom placement
+               element.parent().append(error);
+            } else {
+               error.insertAfter(element);
+            }
+         },
+         ignore: [], // validate all fields including form hidden input
+         rules: {
+            projectName: {
+               required: true,
+               remote: {
+                  url: baseUrl + 'validate',
+                  type: "post",
+                  dataType: 'json',
+                  data: {
+                     project: function () {
+                        return JSON.stringify({
+                           name: $("#projectName").val(),
+                           id: $("#projectId").val(),
+                           type: "Old"
+                        });
+                     }
+                  }
+               }
+            },
+            organisationName: {
+               required: true
+            },
+            projectRole: {
+               required: true
+            },
+            startExperienceMonths: {
+               required: true
+            },
+            endExperienceMonths: {
+               required: true
+            },
+            duration: {
+               required: true
+            },
+            description: {
+               required: true
+            }
+         },
+         messages: {
+            projectName: {
+               required: "Project name is required.",
+               // remote: jQuery.validator.format("{0} is already taken.")
+               remote: "Project name is already taken."
+            },
+            organisationName: {
+               required: "Company/ Institute name is required."
+            },
+            projectRole: {
+               required: "Project Role is required."
+            },
+            startExperienceMonths: {
+               required: "Start duration is required."
+            },
+            endExperienceMonths: {
+               required: "End duration is required."
+            },
+            duration: {
+               required: "Duration is required."
+            },
+            description: {
+               required: "Description is required."
+            }
+         },
+         highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+         },
+         unhighlight: function (element, errorClass, validClass) {
+            var elem = $(element);
+            elem.removeClass(errorClass);
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+
+         },
+         success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+         }
+      });
+
+      $("#caddRoleForm").validate({
+         focusCleanup: true,
+         onkeyup: false,
+         onselect: true,
+         errorElement: 'span', //default input error message container
+         errorClass: 'help-block help-block-error',
+         focusInvalid: false, // set focus the last invalid input
+         invalidHandler: function (form, validator) {
+            if (!validator.numberOfInvalids())
+               return;
+            $(this).find(":input.error:first").focus();
+            $("html, body").animate({ scrollTop: 0 }, "fast");
+         },
+         errorPlacement: function (error, element) {
+            var type = $(element).attr("type");
+            if ($(element).attr("id") === "startExperienceMonths") {
+               // custom placement
+               element.parent().append(error);
+            } else {
+               error.insertAfter(element);
+            }
+         },
+         ignore: [], // validate all fields including form hidden input
+         rules: {
+            role_name: {
+               required: true
+            }
+         },
+         messages: {
+            role_name: {
+               required: "Role is required."
+            }
+         },
+         highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+         },
+         unhighlight: function (element, errorClass, validClass) {
+            var elem = $(element);
+            elem.removeClass(errorClass);
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+
+         },
+         success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+         }
+      });
+
+   });
+   // debugger
+   // $("#emailtab").ready(function () {
+   //     $("html, body").animate({scrollTop: 0}, "fast");
+   // });
+
+   function setCSS() {
+      if ($('.modal').is(':visible') == true) {
+         // console.log("Modal is open");
+         $('header').css('z-index', '900');
+         $('footer').css('z-index', '900');
+      } else {
+         $('header').css('z-index', '1053');
+         $('footer').css('z-index', '1053');
+      }
+   }
+   setCSS();
+
+</script>
+
+<!-- Suvrat Issue#3159 -->
+<script>
+   $('#startExperienceMonths').bind('keydown', function (e) {
+      if (e.which == 13) //13 is Enter/Return key.
+         e.stopImmediatePropagation();
+   }).datepicker({
+      autoclose: true,
+      todayHighlight: true
+   });
+   $('#endExperienceMonths').bind('keydown', function (e) {
+      if (e.which == 13) //13 is Enter/Return key.
+         e.stopImmediatePropagation();
+   }).datepicker({
+      autoclose: true,
+      todayHighlight: true
+   });
+</script>
+<!-- --------------------- -->
+
+<!-- Suvrat   To select the default value as All in project section -->
+<script>
+   $(document).ready(function () {
+      $('#listStatus').val($('#listStatus option:eq(1)').val()).trigger('change');
+   });
+</script>
+<!-- --------------------------------------------- -->

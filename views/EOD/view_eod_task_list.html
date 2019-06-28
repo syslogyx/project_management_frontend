@@ -1,0 +1,705 @@
+<section class="content" ng-init=eod.viewTodaysTaskAndWorkingList(1);>
+  <div class="container-fluid">
+    <!-- Start Breadcrumb Section -->
+    <!-- Suvrat Change the layout of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <ol id="breadcrumb" class="ab-nav breadcrumb">
+        <i class="glyphicon glyphicon-home"></i>&nbsp;
+        <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+          <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label" class="margin-right-xs"></a>
+          <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+        </li>
+      </ol>
+    </div>
+    <!-- ------------------------------- -->
+    <!-- End Breadcun Section -->
+    <br><br>
+    <!-- Start EOD Report Section-->
+    <div class="box box-default" style="margin-top: 2%;">
+      <form id="add_miscellaneous_reason_form">
+        <div class="row boxhead box-header with-border boxhead">
+          <div class="col-md-6 ">
+            <div class="">
+              <h1 class="formheading">
+                <b>EOD Report</b>
+              </h1>
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <!-- Start EOD Report Search Section-->
+          <div class="row" style="display: none;">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="" for="">Employees</label>
+                <select id="employeList" name="employeList" ng-model="eod.employee" class="form-control"
+                  style="width: 100%;" ng-options="x.id as x.name for x in eod.employeList">
+                  <option value="">Select Employee</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="" for="">Date</label>
+                <input type="text" class="form-control pull-right" id="eodDate" name="eod_date" ng-model="eod.eodDate"
+                  autocomplete="off" placeholder="Enter date" readonly='true'
+                  style="cursor:default;background-color: white;">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <br>
+                <!-- <input type="button" value="Search" ng-click="eod.viewTodaysTaskList()" class="btn btn-primary" style="margin-top:5px" /> -->
+                <button value="Search" ng-click="eod.viewTodaysTaskAndWorkingList()" class="btn btn-primary"
+                  style="margin-top:5px"> Search
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- End EOD Report Search Section-->
+          <br>
+          <!-- Start EOD Task List Section-->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h1 style="font-size: 15px; margin-left: 7px; margin-top: 0;margin-bottom: 0px;">
+                    <b>Task List</b>
+                  </h1>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="box-body">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead class="thead-default">
+                        <tr>
+                          <th style="text-align: center;">Sr. No.</th>
+                          <th style="text-align: left;  width: 20% !important;">Title</th>
+                          <th style="text-align: left;">Assigned</th>
+                          <th style="text-align: center;">Estimated Hours</th>
+                          <th style="text-align: center;">Total Spent Time</th>
+                          <th style="text-align: center;">Today's Spent Time</th>
+                          <th style="text-align: center;">Status</th>
+                          <th style="text-align: center;">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-if="eod.todayTaskList.length > 0" ng-repeat="ed in eod.todayTaskList">
+                          <td style="text-align: center;">{{$index+1}}</td>
+                          <td style="text-align: left; width: 20% !important;">{{ed.title}}</td>
+                          <td style="text-align: left;">{{ed.project_resource.user.name}}</td>
+                          <td style="text-align: center;">{{ed.estimated_time}}</td>
+                          <td style="text-align: center;">{{ed.spent_time}}</td>
+                          <td style="text-align: center;">{{ed.todays_spent_time}}</td>
+                          <td style="text-align: center;">{{ed.status_id}}</td>
+                          <td style="text-align: center;">
+                            <a ng-href="" title="View" style="outline:0;" data-ng-click="eod.getTaskInfo(ed.id)"><button
+                                type="button" class="btn btn-default btn-xs"
+                                style="border-color: #fff!important;color: #428bca;text-align: center;"><i
+                                  class="fa fa-eye" aria-hidden="true"></i></button></a>
+
+                            <button type="button" class="btn btn-default btn-xs" title="Add Comment" data-toggle="modal"
+                              data-target="#addCommentToTaskModale"
+                              style="border-color: #fff!important;text-align: center;"
+                              ng-if='ed.status_id == "Pending-approved" || ed.status_id == "Pending"'
+                              ng-click="resetChangeStatusForm(); eod.setDataForComment($index);"><i
+                                class="fa fa-comments" aria-hidden="true" style="color:#428bca;"></i></button>
+                          </td>
+                        </tr>
+                        <tr ng-if="eod.todayTaskList.length == 0">
+                          <td colspan="8" style="text-align: center;">No Record Found </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End EOD Task List Section-->
+          <!-- Start Meeting/Break Section-->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h1 style="font-size: 15px; margin-left: 7px; margin-top: 0;margin-bottom: 0px;">
+                    <b>Meeting/Break Logs</b>
+                  </h1>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="box-body">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead class="thead-default">
+                        <tr>
+                          <th style="text-align: center;">Start Time</th>
+                          <th style="text-align: center;">End Time</th>
+                          <th style="text-align: center;">Break Duration</th>
+                          <th style="text-align: left;width: 20% !important;">Reason</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-if="eod.todayMeetingList.length > 0" ng-repeat="ed in eod.todayMeetingList">
+                          <td style="text-align: center;">{{ed.start_time}}</td>
+                          <td style="text-align: center;">{{ed.end_time}}</td>
+                          <!-- <td style="text-align: center;">{{ed.total_duration}}{{ed.total_duration !='0'?' min':''}}</td> -->
+                          <!-- Suvrat Issue#3358 -->
+                          <td style="text-align: center;">{{ed.total_duration}}{{ed.total_duration!=''?' min':''}}</td>
+                          <!-- ----------------- -->
+                          <!-- <td style="text-align: left;width: 20% !important;">{{ed.reason}}</td> -->
+                          <!-- Suvrat Issue#3358 -->
+                          <td style="text-align: left;width: 20% !important;" ng-if="ed.reason != 'null'">{{ed.reason}}
+                          </td>
+                          <td style="text-align: left;width: 20% !important;" ng-if="ed.reason == 'null'"></td>
+                          <!-- ----------------- -->
+                        </tr>
+                        <tr ng-if="eod.todayBreakList.length > 0" ng-repeat="ed in eod.todayBreakList">
+                          <td style="text-align: center;">{{ed.start_time}}</td>
+                          <td style="text-align: center;">{{ed.end_time}}</td>
+                          <td style="text-align: center;">{{ed.total_duration}}{{ed.total_duration!=''?' min':''}}</td>
+                          <!-- Suvrat Issue#3358 -->
+                          <!-- <td style="text-align: center;">{{ed.total_duration}}{{ed.total_duration!='0'?'':' min'}}</td> -->
+                          <!-- ----------------- -->
+                          <!-- <td style="text-align: left;width: 20% !important;">{{ed.reason}}</td> -->
+                          <!-- Suvrat Issue#3358 -->
+                          <td style="text-align: left;width: 20% !important;" ng-if="ed.reason != 'null'">{{ed.reason}}
+                          </td>
+                          <td style="text-align: left;width: 20% !important;" ng-if="ed.reason == 'null'"></td>
+                          <!-- ----------------- -->
+                        </tr>
+                        <tr ng-if="eod.todayMeetingList.length == 0 && eod.todayBreakList.length == 0">
+                          <td colspan="8" style="text-align: center;">No Record Found </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Meeting/Break Section-->
+          <!-- Start Working Time Log Section-->
+          <div class="row" ng-if="eod.todayMiscellaneousTime !='00:00:00'">
+            <div class="col-md-12">
+              <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h1 style="font-size: 15px; margin-left: 7px; margin-top: 0;margin-bottom: 0px;">
+                    <b>Working Time Log</b>
+                  </h1>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="box-body">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead class="thead-default">
+                        <tr>
+                          <th style="text-align: center;">HRMS Working Time</th>
+                          <th style="text-align: center;">Tasks Total Spend Time</th>
+                          <th style="text-align: center;">Meetings Total Spend Time</th>
+                          <th style="text-align: center;">Miscellaneous Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="text-align: center;">{{eod.hrmsWrkgTime}}</td>
+                          <td style="text-align: center;">{{eod.taskTodaySpendTime}}</td>
+                          <td style="text-align: center;">{{eod.meetingTodaySpendTime}}</td>
+                          <td style="text-align: center;">{{eod.todayMiscellaneousTime}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Working Time Log Section-->
+          <!-- Start Miscellaneous Time Section-->
+          <div class="row"
+            ng-if="eod.todayMiscellaneousTime !='00:00:00' || eod.todayMiscellaneousList.length > 0 || eod.remainingMiscTime != '00:00:00'">
+            <div class="col-md-12">
+              <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h1 style="font-size: 15px; margin-left: 7px; margin-top: 0;margin-bottom: 0px;">
+                    <b>Miscellaneous Time Logs</b>
+                  </h1>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="box-body">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead class="thead-default">
+                        <tr>
+                          <th style="text-align: center;">Miscellaneous Time</th>
+                          <th style="text-align: left;">Miscellaneous Reason</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-if="eod.todayMiscellaneousList.length > 0" ng-repeat="em in eod.todayMiscellaneousList">
+                          <td style="text-align: center;">{{em.miscellaneous_time}}</td>
+                          <td style="text-align: left;">{{em.miscellaneous_reason}}</td>
+                        </tr>
+                        <tr ng-if="eod.remainingMiscTime != '00:00:00'">
+                          <td style="text-align: center;">{{eod.remainingMiscTime}}</td>
+                          <td style="text-align: left;">
+                            <div class="form-group">
+                              <label class="" for="">Reason</label>
+                              <textarea type="text" rows="1" cols="10" name="miscellaneousTimeReason"
+                                id="miscellaneousTimeReason" class="form-control" placeholder="Enter Reason"
+                                ng-model="eod.miscellaneousTimeReason" style="resize: vertical"></textarea>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Miscellaneous Time Section-->
+        </div>
+        <div class="box-footer">
+          <div class="pull pull-right" ng-if="eod.todayTaskList.length > 0 || eod.remainingMiscTime != '00:00:00'">
+            <input type="submit" value="Send" data-ng-click="eod.checkTaskAndHRMSBreakStatus()" class="btn btn-success"
+              id="sendEodButton" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- End EOD Report Section-->
+    <!-- Start View Task modal -->
+    <div class="modal fade" id="viewTaskModal" role="dialog">
+      <div class="modal-dialog modal-xs">
+        <form id="changeTaskStatusForm" role="form">
+          <input type="hidden" id="projectId" ng-model="projectId">
+          <div class="modal-content" style="border-radius: 0px!important;">
+            <div class="modal-header" style="text-align:center;">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Task Info</h4>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="" for="">Project Name</label>
+                    <div>{{eod.project_name}}</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="" for="">Milestone Name</label>
+                    <div>{{eod.milestoneName}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="" for="">Task Name</label>
+                <div>{{eod.taskName}}</div>
+              </div>
+              <div class="form-group">
+                <label class="" for="">Description</label>
+                <div ng-bind-html="eod.taskDescription | htmlToText" style="overflow: auto;max-height: 200px;"></div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="" for="">Status</label>
+                    <div>{{eod.taskStatusData}}</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="" for="">Priority</label>
+                    <div>{{eod.priorities[eod.priority - 1].name}}</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="" for="">Assigned To</label>
+                    <div>{{eod.assignedToName}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="" for="">Estimated Hours</label>
+                    <div>{{eod.task_estimation}}</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="" for="">Total Spent Time</label>
+                    <div>{{eod.spent_time}}</div>
+                  </div>
+                </div>
+                <div class="col-md-4" style="margin-top: 4px">
+                  <div class="form-group">
+                    <label for="">Today's Spent Time</label>
+                    <div>{{eod.todays_spent_time}}</div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="row">
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <label class="" for="">Spent Time</label>
+                          <div>{{eod.spent_time}}</div> 
+                      </div>
+                  </div>
+                  <div class="col-md-4" style="margin-top: 4px">
+                      <div class="form-group">
+                          <label for="">Break Time</label>
+                          <div>{{eod.break_time}}</div> 
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          
+                     </div>
+                  </div>
+                  </br>
+              </div>  -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- End View Task modal -->
+    <!-- Start Comment Drop down modal -->
+    <div class="modal fade" id="addCommentToTaskModale" role="dialog" data-backdrop="static">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button ng-click="clearModelComments()" type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="row col-md-12" style="text-align:center;">
+              <div class="">
+                <h4 class="modal-title">Task Comment</h4>
+              </div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <form id="addCommentToTaskForm" role="form" ng-submit="addRow()">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <label class="mandatory">Comment</label>
+                  <input type="text" class="form-control" name="comment" ng-model="comment" />
+                </div>
+                <div class="form-group col-sm-6">
+                  <div style="margin-top: 26px">
+                    <input type="submit" value="Add" class="btn btn-primary" />
+                  </div>
+                </div>
+              </div>
+            </form>
+            <table class="table">
+              <tr>
+                <th>Sr. No.</th>
+                <th>Comment</th>
+                <th>Action</th>
+              </tr>
+              <tr ng-repeat="cmt in comments">
+                <td>{{$index+1}}</td>
+                <td>{{cmt}}</td>
+                <td>
+                  <button type="button" class="btn btn-default btn-xs" title="Remove" data-ng-click="removeRow($index)"
+                    style="border-color: #fff!important;" ng-if="!pjc.id"><i class="fa fa-times" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button id="addComment" type="button" class="btn btn-primary btn-sm"
+              ng-click="addCommentToTask();">Submit</button>
+            <button ng-click="clearModelComments()" type="button" class="btn btn-warning btn-sm"
+              data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Comment Drop down modal -->
+    <!-- Start HRMS Break end modal -->
+    <div class="modal fade" id="endHRMSBreakModal" role="dialog">
+      <div class="modal-dialog modal-xs">
+        <form id="endHRMSBreakForm" role="form">
+          <!-- <input type="hidden" id ="projectId" ng-model="projectId"> -->
+          <div class="modal-content" style="border-radius: 0px!important;width: 80%; margin-left: 10%;">
+            <div class="modal-header" style="text-align:center;">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <div class="row col-md-12" style="text-align:center;">
+                <div class="">
+                  <h4 class="modal-title">End HRMS Break</h4>
+                </div>
+              </div>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-12 form-group" style="min-height:90px;margin-bottom:0px">
+                  <label class="mandatory" for="">Reason</label>
+                  <select id="endBreakReason" name="endBreakReason" ng-model="eod.endBreakReason"
+                    class="form-control select2 s2mn" style="width: 100%;"
+                    ng-options="key as value for (key , value) in eod.HRMSBreakReasonList">
+                    <option value="">Select reason</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row" ng-if="eod.endBreakReason=='Other'">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="mandatory" for="end_break_comment">Add comment</label>
+                    <textarea type="text" rows="3" cols="90" ng-model="eod.end_break_comment" name="end_break_comment"
+                      id="end_break_comment" class="form-control" placeholder="Enter comment"
+                      style="resize: vertical"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button data-ng-click="eod.closeHRMSBreakModal()" class="btn btn-primary">End Break</button>
+              <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- End HRMS Break end modal -->
+  </div>
+</section>
+
+<script>
+  $(document).ready(function () {
+    $("html, body").animate({ scrollTop: 0 }, "fast");
+
+    $("#eodDate").datepicker({
+      autoclose: true,
+      todayHighlight: true
+    });
+    setTimeout(function () {
+      $('#eodDate').datepicker("setDate", new Date());
+      $('#eodDate').datepicker("setEndDate", 'today');
+    }, 100);
+    // $("#addCommentToTaskForm").modal({backdrop: "static"});
+    $('.modal').on('hidden.bs.modal', function (e) {
+      $('header').css('z-index', '1053');
+      $('footer').css('z-index', '1053');
+    })
+  });
+  function setCSS() {
+    if ($('.modal').is(':visible') == true) {
+      $('header').css('z-index', '900');
+      $('footer').css('z-index', '900');
+    } else {
+      $('header').css('z-index', '1053');
+      $('footer').css('z-index', '1053');
+    }
+  }
+  setCSS();
+
+  function validateData() {
+    $("#changeTaskStatusForm").validate({
+      errorElement: 'span', //default input error message container
+      errorClass: 'help-block help-block-error',
+      focusInvalid: false, // set focus the last invalid input
+      // invalidHandler: function (form, validator) {
+
+      //     if (!validator.numberOfInvalids())
+      //         return;
+      //     $(this).find(":input.error:first").focus();
+      //     $("html, body").animate({scrollTop: 0}, "fast");
+
+      // },
+      errorPlacement: function (error, element) {
+        var type = $(element).attr("type");
+        if (type === "radio") {
+          // custom placement
+          element.parent().parent().append(error);
+        } else if ($(element).attr("id") === "changeStatusTo") {
+          // custom placement
+          element.parent().append(error);
+        } else {
+          error.insertAfter(element);
+        }
+      },
+      ignore: [], // validate all fields including form hidden input
+      rules: {
+        changeStatusTo: {
+          required: true
+        },
+        task_status_comment: {
+          required: true
+        }
+      },
+      messages: {
+        changeStatusTo: {
+          required: "Status is required."
+        },
+        task_status_comment: {
+          required: "Comment is required."
+        }
+      },
+      highlight: function (element) { // hightlight error inputs
+        $(element).closest('.form-group').addClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+        // set error class to the control group
+      },
+      unhighlight: function (element) { // revert the change done by hightlight
+        $(element).closest('.form-group').removeClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+      },
+      success: function (label) {
+        label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+      }
+    });
+    $("#giveReasonForm").validate({
+      errorElement: 'span', //default input error message container
+      errorClass: 'help-block help-block-error',
+      focusInvalid: false, // set focus the last invalid input
+      errorPlacement: function (error, element) {
+        var type = $(element).attr("type");
+        if (type === "radio") {
+          element.parent().parent().append(error);
+        } else if ($(element).attr("id") === "changeStatusTo") {
+          element.parent().append(error);
+        } else {
+          error.insertAfter(element);
+        }
+      },
+      ignore: [], // validate all fields including form hidden input
+      rules: {
+        task_reason: {
+          required: true
+        }
+      },
+      messages: {
+        task_reason: {
+          required: "Reason is required."
+        }
+      },
+      highlight: function (element) { // hightlight error inputs
+        $(element).closest('.form-group').addClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+        // set error class to the control group
+      },
+      unhighlight: function (element) { // revert the change done by hightlight
+        $(element).closest('.form-group').removeClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+      },
+      success: function (label) {
+        label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+      }
+    });
+
+    $("#add_miscellaneous_reason_form").validate({
+      errorElement: 'span', //default input error message container
+      errorClass: 'help-block help-block-error',
+      focusInvalid: false, // set focus the last invalid input
+      errorPlacement: function (error, element) {
+        var type = $(element).attr("type");
+        if (type === "radio") {
+          element.parent().parent().append(error);
+        } else if ($(element).attr("id") === "miscellaneousTimeReason") {
+          element.parent().append(error);
+        } else {
+          error.insertAfter(element);
+        }
+      },
+      ignore: [], // validate all fields including form hidden input
+      rules: {
+        miscellaneousTimeReason: {
+          required: true
+        }
+      },
+      messages: {
+        miscellaneousTimeReason: {
+          required: "Reason is required."
+        }
+      },
+      highlight: function (element) { // hightlight error inputs
+        $(element).closest('.form-group').addClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+        // set error class to the control group
+      },
+      unhighlight: function (element) { // revert the change done by hightlight
+        $(element).closest('.form-group').removeClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+      },
+      success: function (label) {
+        label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+      }
+    });
+
+    $("#endHRMSBreakForm").validate({
+      errorElement: 'span', //default input error message container
+      errorClass: 'help-block help-block-error',
+      focusInvalid: false, // set focus the last invalid input
+      errorPlacement: function (error, element) {
+        var type = $(element).attr("type");
+        if (type === "radio") {
+          // custom placement
+          element.parent().parent().append(error);
+        } else if ($(element).attr("id") === "endBreakReason") {
+          // custom placement
+          element.parent().append(error);
+        } else {
+          error.insertAfter(element);
+        }
+      },
+      ignore: [], // validate all fields including form hidden input
+      rules: {
+        endBreakReason: {
+          required: true
+        },
+        end_break_comment: {
+          required: true
+        }
+      },
+      messages: {
+        endBreakReason: {
+          required: "Reason is required."
+        },
+        end_break_comment: {
+          required: "Comment is required."
+        }
+      },
+      highlight: function (element) { // hightlight error inputs
+        $(element).closest('.form-group').addClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+        // set error class to the control group
+      },
+      unhighlight: function (element) { // revert the change done by hightlight
+        $(element).closest('.form-group').removeClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+      },
+      success: function (label) {
+        label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+      }
+    });
+  }
+  validateData();
+</script>
+<script>
+  $('#eodDate').bind('keydown', function (e) {
+    if (e.which == 13) //13 is Enter/Return key.
+      e.stopImmediatePropagation();
+  }).datepicker({
+    autoclose: true,
+    todayHighlight: true
+  });
+</script>

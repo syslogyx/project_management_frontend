@@ -1,0 +1,317 @@
+<style>
+    /* Style the tab */
+    .tab {
+        /*overflow: hidden;*/
+        /*border: 1px solid #ccc;*/
+        padding-left: 20px;
+        /*background-color: #f1f1f1;*/
+    }
+
+    /* Style the buttons inside the tab */
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+    }
+
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+        background-color: #ddd;
+    }
+
+    /* Create an active/current tablink class */
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        /*padding: 6px 12px;*/
+        /*border: 1px solid #ccc;*/
+        /*border-top: none;*/
+    }
+
+    #message-to-send {
+        width: 87%;
+        border: none;
+        /*padding: 10px 20px;*/
+        padding: 6px 20px 10px 20px;
+        /*font: 14px/22px "Lato", Arial, sans-serif;*/
+        margin-bottom: 10px;
+        border-radius: 5px;
+        resize: none;
+        background-color: #fff;
+        border: 1px solid gainsboro;
+        margin-left: 34px;
+    }
+
+    .user-search {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+        border-radius: 6px;
+        -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+        box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+        background-clip: padding-box;
+        outline: 0;
+    }
+
+    .list-group {
+        width: 293px;
+        height: 212px;
+        overflow: auto;
+    }
+
+    .list-group-item.active {
+        background-color: #f5f5f5;
+    }
+
+    .user-search:hover {
+        cursor: pointer;
+    }
+
+    .user-search .list-group-item.active {
+        color: #fff;
+        background-color: #428bca;
+        border-color: #428bca;
+    }
+
+    .user-search .list-group-item.active .text-muted {
+        color: #ccc;
+    }
+
+    .user-search .list-group-item.active .text-primary {
+        color: #fff;
+    }
+
+    .user-search .list-group-item {
+        padding: 5px;
+    }
+
+    .user-search .user-photo {
+        max-width: 30px;
+        max-height: 30px;
+        border-radius: 15px;
+    }
+
+    .user-photo {
+        max-width: 30px;
+        max-height: 30px;
+        border-radius: 15px;
+    }
+
+    #circle {
+        width: 15px;
+        height: 15px;
+        -webkit-border-radius: 25px;
+        -moz-border-radius: 25px;
+        border-radius: 25px;
+        /*background: red;*/
+        float: left;
+        margin-right: 10px;
+    }
+
+    /* Suvrat Add a new legend for tables */
+    #legendd {
+        margin-bottom: 10px;
+    }
+
+    @media (min-width: 1360px) {
+        #legend1 {
+            width: 11%;
+        }
+
+        #legend2 {
+            width: 11%;
+        }
+
+        #legend3 {
+            width: 16%;
+        }
+
+        #legend4 {
+            width: 17%;
+        }
+
+        #legend5 {
+            width: 11%;
+        }
+
+        #legend6 {
+            width: 16%;
+        }
+    }
+
+    /* ////////////////////////////////////////// */
+</style>
+<section class="content">
+    <!-- Suvrat Change the position of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <br><br>
+    <!-- View Milestones Section -->
+    <form>
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border boxhead">
+                <div class="col-md-6 ">
+                    <div class="">
+                        <h1 class="formheading">
+                            <b>Milestone Details </b>
+                        </h1>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="pull-right" style="margin-top: 5px; margin-right: 30px;">
+                        <a ng-href="/project/milestone/{{mst.project_id}}/"><button type="button"
+                                class="btn btn-default btn-sm" data-toggle="modal" title="Back" data-target=""
+                                data-ng-click="" style="border:white;color:#428bca;"><i class="fa fa-arrow-left"
+                                    aria-hidden="true"></i></button></a>
+
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Milestone Title</label>
+                            <div style="overflow: auto;height: auto; max-height: {{ mst.hgt }}px;">
+                                {{ mst.milestoneName}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label class="" for="">Description</label>
+                            <div ng-bind-html="mst.description | htmlToText"
+                                style="overflow: auto;height: auto; max-height: {{ mst.hgt }}px;"></div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Start Date</label>
+                            <div>{{mst.milestoneStartDate}}</div>                            
+                        </div>
+                    </div> -->
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Start Date</label>
+                            <div>{{mst.milestoneStartDate}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">End Date</label>
+                            <div>{{mst.milestoneEndDate}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Status</label>
+                            <!-- <div>{{mst.milestoneStatus}}</div> -->
+                            <div><a class="btn status-btn {{mst.milestoneStatus}}"
+                                    title="Status">{{mst.milestoneStatus}}</a></div>
+                        </div>
+                    </div>
+                </div>
+                </br>
+            </div>
+        </div>
+    </form>
+</section>
+<section class="content" style="margin-top: 0; ">
+    <!-- <div class="container-fluid"> -->
+    <div class="box box-default">
+        <div class="row boxhead box-header with-border boxhead">
+            <div class="col-md-6 ">
+                <div class="">
+                    <h1 class="formheading">
+                        <b>Tasks </b>
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+            <!-- Suvrat Legend for table -->
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+                    <div id="legendd" class="" style="display: inline-block;">
+                        <!-- <div id="legend1" class="legend-item col-md-2 col-sm- col-xs-4"> -->
+                        <span id="circle" ng-class="tk.status_id" class="Resolved"></span>
+                        <span class="status_name">Resolved</span>
+                        <!-- </div> -->
+                        <!-- <div id="legend2" class="legend-item col-md-2 col-sm-3 col-xs-4"> -->
+                        <span id="circle" ng-class="tk.status_id" class="Pending"></span>
+                        <span class="status_name">Pending</span>
+                        <!-- </div> -->
+                        <!-- <div id="legend3" class="legend-item col-md-2 col-sm-3 col-xs-4"> -->
+                        <span id="circle" ng-class="tk.status_id" class="Start"></span>
+                        <span class="status_name">In-progress/Start</span>
+                        <!-- </div> -->
+                        <!-- <div id="legend4" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+                        <span id="circle" ng-class="tk.status_id" class="Approval-Pending"></span>
+                        <span class="status_name">Approval-Pending</span>
+                        <!-- </div> -->
+                        <!-- <div id="legend5" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+                        <span id="circle" ng-class="tk.status_id" class="Assigned"></span>
+                        <span class="status_name">Assigned</span>
+                        <!-- </div> -->
+                        <!-- <div id="legend6" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+                        <span id="circle" ng-class="tk.status_id" class="Paused"></span>
+                        <span class="status_name">On-hold/Paused</span>
+                        <!-- </div> -->
+                        <!-- <div id="legend7" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+                        <span id="circle" ng-class="tk.status_id" class="Closed"></span>
+                        <span class="status_name">Closed</span>
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ------------------------------- -->
+            <div class="table-responsive">
+                <table class="table  table-striped" width="100%">
+                    <thead class="thead-default">
+                        <tr>
+                            <th width="7%" style="text-align: center;">Sr. No.</th>
+                            <th width="33%">Task</th>
+                            <th width="20%">Milestone</th>
+                            <th width="20%">Assigned</th>
+                            <th width="5%">Status</th>
+                            <th width="15%" style="text-align: center;">Estimated Hours</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-if="mst.tasks.length > 0" ng-repeat="tk in mst.tasks">
+                            <!-- <td style="text-align: center;" ng-bind="pr.name"></td> -->
+                            <td width="7%" style="text-align: center;" ng-bind="($index + 1)"></td>
+                            <td width="33%">{{tk.title}}</td>
+                            <td width="20%">{{mst.milestoneName}}</td>
+                            <td width="20%">{{tk.project_resource.user.name}}</td>
+                            <td width="5%"><span id="circle" ng-class="tk.status_id" data-toggle="tooltip"
+                                    title={{tk.status_id}} style="margin-left: 10px;"></span></td>
+                            <td width="15%" style="text-align: center;">{{tk.estimated_time}}</td>
+                        </tr>
+                        <tr ng-if="mst.tasks == null || mst.tasks.length == 0">
+                            <td colspan="6" style="text-align: center">No Records Found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- </div> -->
+</section>

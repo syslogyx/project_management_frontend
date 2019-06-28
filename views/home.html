@@ -1,0 +1,826 @@
+<style>
+    section {
+        padding: 0000;
+    }
+
+    .panel-body {
+        border: 0.1px solid darkgrey;
+        background-color: white;
+    }
+
+    .nav-tabs-custom {
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-tabs-custom {
+        margin-bottom: 0px;
+    }
+
+    .listanchor {
+        cursor: pointer;
+    }
+
+    .nav-tabs-custom>.nav-tabs>li.active>a {
+        font-weight: bolder;
+    }
+
+    .jqx-chart-title-text .view_btn {
+        color: #428bca !important;
+        fill: #428bca !important;
+    }
+
+    .header-fixed {
+        width: 100%
+    }
+
+    .header-fixed>thead,
+    .header-fixed>tbody,
+    .header-fixed>thead>tr,
+    .header-fixed>tbody>tr,
+    .header-fixed>thead>tr>th,
+    .header-fixed>tbody>tr>td {
+        display: block;
+    }
+
+    .header-fixed>tbody>tr:after,
+    .header-fixed>thead>tr:after {
+        content: ' ';
+        display: block;
+        visibility: hidden;
+        clear: both;
+    }
+
+    .header-fixed>tbody {
+        overflow-y: auto;
+        height: 262px;
+    }
+
+    .header-fixed>tbody>tr>td,
+    .header-fixed>thead>tr>th {
+        /*width: 20%;*/
+        float: left;
+    }
+
+    .jqx-chart-label-text a {
+        color: #337ab7 !important;
+    }
+
+    .dashbaordContainer {
+        /*padding-top: 40px !important;*/
+    }
+
+    .table>thead>tr>th {
+        vertical-align: middle;
+        border-bottom: 0px solid #ddd;
+    }
+
+    .table>tbody>tr>td {
+        vertical-align: middle;
+        border-bottom: 0px solid #ddd;
+    }
+
+    .header-fixed>tbody>tr>td,
+    .header-fixed>thead>tr>th {
+        word-wrap: break-word;
+    }
+
+    #circle,
+    #circle1 {
+        width: 15px;
+        height: 15px;
+        -webkit-border-radius: 25px;
+        -moz-border-radius: 25px;
+        border-radius: 25px;
+        /*background: red;*/
+        float: left;
+        margin-right: 10px;
+    }
+
+    /*Suvrat To prevent overscroll(no word wrap) in tables in mobile view*/
+    @media (max-width: 767px) {
+        .table-responsive>.table>tbody>tr>td {
+            white-space: normal !important;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        .table-responsive>.table>tbody>tr>td {
+            white-space: normal !important;
+        }
+    }
+
+    /*-----------------*/
+
+    /* Suvrat Add a new legend for tables */
+    @media (min-width: 768px) {
+        #legendd {
+            margin-bottom: 9px;
+        }
+
+        #legendd2 {
+            margin-bottom: 9px;
+        }
+    }
+
+    @media (min-width: 1360px) {
+        #legendd {
+            margin-top: 9px;
+        }
+    }
+
+    /* ////////////////////////////////////////// */
+</style>
+
+<section class="content dashboard">
+    <div class="container-fluid dashbaordContainer">
+        <div class="row">
+            <!-- Suvrat Move breadcrumb to left -->
+            <!-- <div class="pull-right"> -->
+            <ol id="breadcrumb" class="ab-nav breadcrumb" style="margin-bottom:1px">
+                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                    <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                        class="margin-right-xs"></a>
+                    <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                </li>
+            </ol>
+            <!-- </div> -->
+            <!-- ------------------------ -->
+        </div>
+
+        <div class="row">
+            <!-- <div class="col-md-12">
+                <div class="col-md-6" style="padding-left: 0px !important; padding-right: 0px !important;" ng-if="can('user.dashboard.content.projects')">
+                    <div id='chartContainer' style="width: 100%; height: 500px; ">
+                    </div>
+                </div>
+                <div class="col-md-6" style="padding-left: 0px !important; padding-right: 0px !important;" ng-if="can('user.dashboard.content.resourcematrix')">
+
+                    <div id='chartContainer1' style="width: 100%; height: 500px;">
+                    </div> -->
+            <!-- <div id="eventText"></div> -->
+            <!-- </div>
+            </div> -->
+            <!-- Suvrat issue#2817 to fix dashboard charts -->
+            <div class="col-md-12">
+                <div class="col-md-6" style="padding-left: 0px !important; padding-right: 0px !important">
+                    <div class="panel-body" ng-if="can('user.dashboard.content.projects')" id='chartContainer'
+                        style="width:100%;height:500px;">
+                    </div>
+                </div>
+                <div class="col-md-6" style="padding-right: 0px !important; padding-left:0 !important">
+                    <div class="panel-body" ng-if="can('user.dashboard.content.resourcematrix')" id='chartContainer1'
+                        style="width:100%;height:500px;">
+                        <!-- <div id="eventText"></div> -->
+                    </div>
+                </div>
+            </div>
+            <!-- ------------------------------------- -->
+        </div>
+
+        <div class="row" id="task_sec" ng-if="can('user.dashboard.content.task_info')">
+            <div class="col-md-12">
+                <div class="">
+                    <div class="panel-heading" style="padding-top:1px">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>My Tasks</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-body" style="height: auto; min-height: 450px;">
+                        <div class="nav-tabs-custom ">
+                            <ul class="nav nav-tabs" style="background-color:#e1e9f1">
+                                <!-- <li ng-if="can('user.dashboard.content.task_info.assigned_to_me')" class="active listanchor"><a data-target="#task-list" data-toggle="tab" ng-click="hme.getTaskInfo('assigned_to_me')">Assigned To Me</a></li>
+                                <li ng-if="can('user.dashboard.content.task_info.assigned_by_me')"><a class="listanchor" data-target="#task-list" data-toggle="tab" ng-click="hme.getTaskInfo('assigned_by_me')">Assigned By Me</a></li>
+                                <li ng-if="can('user.dashboard.content.task_info.pending_for_approval')"><a class="listanchor" data-target="#task-list" data-toggle="tab" ng-click="hme.getTaskInfo('pending')">Pending For Approval</a></li>
+                                <li ng-if="can('user.dashboard.content.task_info.all_task')"><a class="listanchor" data-target="#task-list" data-toggle="tab" ng-click="hme.getTaskInfo('all')">All Tasks</a></li> -->
+
+                                <!-- Suvrat Issue#3183 -->
+                                <li ng-if="can('user.dashboard.content.task_info.assigned_to_me')"
+                                    class="active listanchor"><a data-target="#task-list" data-toggle="tab"
+                                        ng-click="hme.getTaskInfo('assigned_to_me')"
+                                        onclick="drp_chng('Assigned To Me');">Assigned To Me</a></li>
+                                <li ng-if="can('user.dashboard.content.task_info.assigned_by_me')"><a class="listanchor"
+                                        data-target="#task-list" data-toggle="tab"
+                                        ng-click="hme.getTaskInfo('assigned_by_me')"
+                                        onclick="drp_chng('Assigned By Me');">Assigned By Me</a></li>
+                                <li ng-if="can('user.dashboard.content.task_info.pending_for_approval')"><a
+                                        class="listanchor" data-target="#task-list" data-toggle="tab"
+                                        ng-click="hme.getTaskInfo('pending')"
+                                        onclick="drp_chng('Pending For Approval');">Pending For Approval</a></li>
+                                <li ng-if="can('user.dashboard.content.task_info.all_task')"><a class="listanchor"
+                                        data-target="#task-list" data-toggle="tab" ng-click="hme.getTaskInfo('all')"
+                                        onclick="drp_chng('All Tasks');">All Tasks</a></li>
+                                <!-- -------------- -->
+                            </ul>
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="task-list">
+                                    <div class="row">
+                                        <div class="pull-right" style="margin-bottom: 1%;margin-right: 1.4%;"
+                                            id="innerFilterBtn">
+                                            <button type="button" data-target="#innerFilterBox"
+                                                class="btn btn-primary btn-circle btn-sm " title="Filter"
+                                                style="outline: 0;margin: 5px;" aria-expanded="true"
+                                                ng-click="hme.enableFilters();"><i class="fa fa-filter"
+                                                    aria-hidden="true" style="padding-right:0.3px"></i>
+                                            </button>
+                                        </div>
+                                        <div class="pull-right" style="margin-top: 0.5%;margin-right: 1.5%;">
+                                            <div class="dataTables_length text-right" id="example_length"><label>Show
+                                                    <select id="table_length" aria-controls="example"
+                                                        style='outline: 0;'>
+                                                        <option value="5">5</option>
+                                                        <option value="10">10</option>
+                                                        <option value="25">25</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select> entries</label>
+                                            </div>
+                                        </div>
+                                        <div class="pull-right" style="margin-top: 0.3%;margin-right: 1.5%;">
+                                            <label>Sort By </label>
+                                            <span class="dropdown">
+                                                <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+                                                    title="Sort by" data-toggle="dropdown"
+                                                    style="border:white; background-color:transparent!important;"><i
+                                                        class="fa fa-chevron-down"></i>
+                                                </button>
+                                                <div class="dropdown-menu"
+                                                    style="min-width:190px!important;    margin-left: -160px;">
+                                                    <div class="radio">
+                                                        <input type="radio" name="sort_by" ng-model="hme.sort_by"
+                                                            value="latest_update" id="latest_update"
+                                                            ng-change='hme.filterTaskData(value)'><label
+                                                            for="latest_update">Latest Updated</label>
+                                                    </div>
+                                                    <div class="radio">
+                                                        <input type="radio" name="sort_by" ng-model="hme.sort_by"
+                                                            value="pn_a_z" id="pn_a_z"
+                                                            ng-change='hme.filterTaskData(value)'><label
+                                                            for="pn_a_z">Project Name (A-Z) </label>
+                                                    </div>
+                                                    <div class="radio">
+                                                        <input type="radio" name="sort_by" ng-model="hme.sort_by"
+                                                            value="pn_z_a" id="pn_z_a"
+                                                            ng-change='hme.filterTaskData(value)'><label
+                                                            for="pn_z_a">Project Name (Z-A) </label>
+                                                    </div>
+                                                    <!-- <div class="radio">
+                                                      <input type="radio" name="sort_by" ng-model="hme.sort_by" value="created_by_a_z" id="created_by_a_z" ng-change='hme.filterTaskData(value)'><label for="created_by_a_z">Created By (A-Z) </label>
+                                                    </div>
+                                                    <div class="radio">
+                                                      <input type="radio" name="sort_by" id="created_by_z_a" ng-model="hme.sort_by" value="created_by_z_a" ng-change='hme.filterTaskData(value)'><label for="created_by_z_a">Created By (Z-A) </label>
+                                                    </div> -->
+                                                    <!-- Suvrat Issue#3184 -->
+                                                    <div class="radio aby">
+                                                        <input type="radio" name="sort_by" ng-model="hme.sort_by"
+                                                            value="created_by_a_z" id="created_by_a_z"
+                                                            ng-change='hme.filterTaskData(value)'><label
+                                                            for="created_by_a_z">Assigned By (A-Z) </label>
+                                                    </div>
+                                                    <div class="radio aby">
+                                                        <input type="radio" name="sort_by" id="created_by_z_a"
+                                                            ng-model="hme.sort_by" value="created_by_z_a"
+                                                            ng-change='hme.filterTaskData(value)'><label
+                                                            for="created_by_z_a">Assigned By (Z-A) </label>
+                                                    </div>
+                                                    <div class="radio ato" style="display:none;">
+                                                        <input type="radio" name="sort_by" ng-model="hme.sort_by"
+                                                            value="assigned_to_a_z" id="assigned_to_a_z"
+                                                            ng-change='hme.filterTaskData(value)'><label
+                                                            for="assigned_to_a_z">Assigned To (A-Z) </label>
+                                                    </div>
+                                                    <div class="radio ato" style="display:none;">
+                                                        <input type="radio" name="sort_by" id="assigned_to_z_a"
+                                                            ng-model="hme.sort_by" value="assigned_to_z_a"
+                                                            ng-change='hme.filterTaskData(value)'><label
+                                                            for="assigned_to_z_a">Assigned To (Z-A) </label>
+                                                    </div>
+                                                    <!-- --------------- -->
+                                                </div>
+                                            </span>
+                                        </div>
+                                        <!-- Suvrat Legend for table -->
+                                        <div class="col-md-8 col-sm-12 col-xs-12"
+                                            style="text-align: left;margin-top: 0.6%;">
+                                            <div id="legendd" class="" style="display: inline-block;">
+                                                <!-- <div id="legend2" class="legend-item col-md-2 col-sm-6 col-xs-5"> -->
+                                                <span id="circle" ng-class="tk.status_id" class="Pending"></span>
+                                                <span class="status_name">Pending</span>
+                                                <!-- </div> -->
+                                                <!-- <div id="legend3" class="legend-item col-md-3 col-sm-6 col-xs-7"> -->
+                                                <span id="circle" ng-class="tk.status_id" class="Start"></span>
+                                                <span class="status_name">In-progress</span>
+                                                <!-- </div> -->
+                                                <!-- <div id="legend5" class="legend-item col-md-2 col-sm-6 col-xs-5"> -->
+                                                <span id="circle" ng-class="tk.status_id" class="Assigned"></span>
+                                                <span class="status_name">Assigned</span>
+                                                <!-- </div> -->
+                                                <!-- <div id="legend6" class="legend-item col-md-3 col-sm-6 col-xs-7"> -->
+                                                <span id="circle" ng-class="tk.status_id" class="Paused"></span>
+                                                <span class="status_name">Paused</span>
+                                                <!-- </div> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Add filter -->
+                                    <div class="row collapse" id="innerFilterBox">
+                                        <div class="col-md-12">
+                                            <div class="box box-primary paddingLeft0">
+                                                <div class="box-body marginEmailBody">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label class="" for="">Project</label>
+                                                                <select id="projectName" name="projectName"
+                                                                    ng-model="hme.projectName"
+                                                                    class="form-control select2 s2mn"
+                                                                    style="width: 100%;"
+                                                                    ng-options="x.id as x.name for x in hme.allProjects">
+                                                                    <option value="">Select projects</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label class="" for="">Status</label>
+                                                                <select id="taskStatus" name="taskStatus"
+                                                                    ng-model="hme.taskStatusName"
+                                                                    class="form-control select2 s2mn"
+                                                                    style="width: 100%;"
+                                                                    ng-options="x.name as x.name for x in hme.taskStatus">
+                                                                    <option value="">Select status</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label>Assigned By </label>
+                                                                <select id="taskAssignedBy" name="taskAssignedBy"
+                                                                    ng-model="hme.taskAssignedBy"
+                                                                    class="form-control select2 s2mn"
+                                                                    style="width: 100%;"
+                                                                    ng-options="x.id as x.name for x in hme.taskCreationUserList">
+                                                                    <option value="">Select user</option>
+                                                                </select>
+                                                                <!-- /.input group -->
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label>Assigned To </label>
+                                                                <select id="taskAssignedTo" name="taskAssignedTo"
+                                                                    ng-model="hme.taskAssignedTo"
+                                                                    class="form-control select2 s2mn"
+                                                                    style="width: 100%;"
+                                                                    ng-options="x.id as x.name for x in hme.userList">
+                                                                    <option value="">Select user</option>
+                                                                </select>
+                                                                <!-- /.input group -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- /.box-body -->
+
+                                                <div class="box-footer"
+                                                    style="margin-right:14px!important;border-top: 1px solid lightgrey!important;">
+                                                    <div class="row">
+                                                        <div class="pull-right">
+                                                            <div class="">
+                                                                <button type="button"
+                                                                    class="btn btn-primary fa fa-search btn-md"
+                                                                    ng-click="hme.filterTaskData()"></button>&nbsp
+
+                                                                <button type="button"
+                                                                    class="btn btn-primary fa fa-refresh"
+                                                                    ng-click="hme.refreshfilter()"></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- ------------------------------- -->
+                                    <!-- <div class="fixNavheight table-responsive"> -->
+                                    <!-- Suvrat Fix table -->
+                                    <div class="fixNavheight table-responsive">
+                                        <!-- --------------- -->
+                                        <!-- <table class="table table-striped table-condensed table-hover header-fixed"> -->
+                                        <table class="table table-striped table-condensed table-hover">
+                                            <thead class="thead-default">
+                                                <tr>
+                                                    <th style="text-align: center;">Sr No.</th>
+                                                    <th>Task Name</th>
+                                                    <th>Milestone Name</th>
+                                                    <th>Project Name</th>
+                                                    <th ng-if="hme.taskType != 'assigned_by_me'">Assigned By</th>
+                                                    <th ng-if="hme.taskType != 'assigned_to_me'">Assigned To</th>
+                                                    <th>Time (Spent/Estd)</th>
+                                                    <th>Status</th>
+                                                    <th ng-if="hme.taskType != 'pending'">Updated On</th>
+                                                    <th ng-if="hme.taskType == 'pending'">Req. Extension Time</th>
+                                                    <!-- <th >Action</th> -->
+                                                    <!-- Suvrat Issue#3345 -->
+                                                    <th style="text-align: center;">Action</th>
+                                                    <!-- ----------------- -->
+                                                </tr>
+                                            </thead>
+
+                                            <tbody style="width: 102%;">
+                                                <tr ng-repeat="tk in hme.taskInfo" ng-if="hme.taskInfo.length > 0">
+                                                    <td style="text-align: center;"
+                                                        ng-bind="(hme.pageno - 1) * hme.limit + ($index + 1)"></td>
+                                                    <td>{{tk.title}}</td>
+                                                    <td>{{tk.milestones.title}}</td>
+                                                    <td>{{tk.milestones.project.name}}</td>
+                                                    <td ng-if="hme.taskType != 'assigned_by_me'">{{tk.created_by_name}}
+                                                    </td>
+                                                    <td ng-if="hme.taskType != 'assigned_to_me'">
+                                                        {{tk.project_resource.user.name}}
+                                                    </td>
+                                                    <td>{{tk.spent_time?tk.spent_time:0}}<b>/</b>{{tk.estimated_time}}
+                                                    </td>
+                                                    <!-- <td width="10%">{{tk.status_id}}</td> -->
+                                                    <td>
+                                                        <span id="circle" ng-class="tk.status_id" data-toggle="tooltip"
+                                                            title={{tk.status_id}} style="margin-left: 10px;">
+                                                        </span>
+                                                    </td>
+                                                    <td ng-if="hme.taskType != 'pending'"
+                                                        ng-init=" cDate = tk.updated_at.split(' ')[0]; ctime = tk.updated_at.split(' ')[1]">
+                                                        {{cDate | date :'dd/MM/yyyy'}} {{ctime}}
+                                                    </td>
+                                                    <td ng-if="hme.taskType == 'pending'"
+                                                        ng-init="exTime = tk.extension_time.split('.').join(':')">
+                                                        {{exTime}}
+                                                    </td>
+
+                                                    <td style="text-align: center; width: 65px;">
+                                                        <a ng-href="/project/task/view/{{tk.milestones.project_id}}?id={{tk.id}}"
+                                                            title="View" style="outline:0;">
+                                                            <button ng-if="can('user.projects.tasks.view')"
+                                                                type="button" class="btn btn-default btn-xs"
+                                                                style="border-color: #fff!important;color: #428bca;text-align: center;">
+                                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                                            </button>
+                                                        </a>
+
+                                                        <!-- Namrata : Action to Approve Estimation-->
+                                                        <a ng-href="" title="Approve Extension" style="outline:0;">
+                                                            <button
+                                                                ng-if="hme.taskType == 'pending' && !tk.is_approved && tk.milestones.project.lead_id == hme.userId "
+                                                                type="button" class="btn btn-default btn-xs"
+                                                                style="border-color: #fff!important;color: #428bca;text-align: center;"
+                                                                ng-click="hme.openApproveTimeEstimationModal(tk.id)">
+                                                                <i class="fa fa-edit" aria-hidden="true"></i>
+                                                            </button>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="!hme.taskInfo.length > 0">
+                                                    <td style="text-align: center !important;float: inherit;"
+                                                        colspan="10">No Record Found </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="row col-sm-12" style="padding-right: 0px;">
+                                            <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px"
+                                                ng-if="hme.taskInfo.length > 0">
+                                                <span
+                                                    style="float: left;margin-top: 17px;margin-bottom: 10px;font-weight: 700;">Showing
+                                                    {{hme.fromValue != null ? hme.fromValue : 0}} to
+                                                    {{hme.toValue != null ? hme.toValue : 0}} out of
+                                                    {{hme.totalEntries != null ? hme.totalEntries : 0}} results</span>
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px">
+                                                <ul id="pagination-sec" class="pagination-sm"
+                                                    style="float: right;margin-top: 10px;margin-bottom: 10px"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="can('user.dashboard.content.upcomin_delivery')">
+            <div class="col-md-12">
+                <div class="">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Upcoming Deliveries</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="nav-tabs-custom ">
+                            <ul class="nav nav-tabs" style="background-color:#e1e9f1">
+                                <li class="active listanchor"><a data-target="#list" data-toggle="tab"
+                                        ng-click="hme.updateUpcomingDeliveryData('today')">Today</a></li>
+                                <li><a class="listanchor" data-target="#list" data-toggle="tab"
+                                        ng-click="hme.updateUpcomingDeliveryData('week')">This Week</a></li>
+                                <li><a class="listanchor" data-target="#list" data-toggle="tab"
+                                        ng-click="hme.updateUpcomingDeliveryData('month')">This Month</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="list">
+                                    <!-- Suvrat Add a new legend for tables -->
+                                    <div class="container-fluid col-md-12 col-sm-12 col-xs-12"
+                                        style="text-align: center;">
+                                        <div id="legendd2" class="row" style="display: inline-block;">
+                                            <!-- <span style="display: inline-block;"> -->
+                                            <!-- <div class="legend-item col-md-3 col-sm-3 col-xs-6"> -->
+                                            <span id="circle" ng-class="pj.status_id" class="Pending"></span>
+                                            <span class="status_name">Pending</span>
+                                            <!--                                             </div>
+                                            <div class="legend-item col-md-3 col-sm-3 col-xs-6"> -->
+                                            <span id="circle" ng-class="pj.status_id" class="Start"></span>
+                                            <span class="status_name">In-progress</span>
+                                            <!-- </div>
+                                            <div class="legend-item col-md-3 col-sm-3 col-xs-6"> -->
+                                            <span id="circle" ng-class="pj.status_id" class="Paused"></span>
+                                            <span class="status_name">Paused</span>
+                                            <!-- </div>
+                                            <div class="legend-item col-md-3 col-sm-3 col-xs-6"> -->
+                                            <span id="circle" ng-class="pj.status_id" class="Active"></span>
+                                            <span class="status_name">Active</span>
+                                            <!-- </div> -->
+                                            <!-- </span> -->
+                                        </div>
+                                    </div>
+                                    <!-- ------------------------------- -->
+                                    <div class="fixNavheight table-responsive" style="overflow-x: inherit;">
+                                        <table class="table table-striped table-condensed table-hover header-fixed">
+                                            <thead class="thead-default">
+                                                <tr>
+                                                    <th width="10%" style="text-align: center;">Sr No.</th>
+                                                    <th width="30%">Project Name</th>
+                                                    <th width="20%">Milestone Name</th>
+                                                    <th width="10%">Status</th>
+                                                    <th width="10%">Delivery Date</th>
+                                                    <th width="20%" style="text-align: center;">Balance/Delay (Days)
+                                                    </th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody style="width: 101.5%;">
+                                                <tr ng-repeat="pj in hme.todayProjectData"
+                                                    ng-if="hme.todayProjectData.length > 0">
+                                                    <td width="10%" style="text-align: center;">{{$index+1}}</td>
+                                                    <td width="30%">{{pj.name}}</td>
+                                                    <td width="20%">{{pj.m_title}}</td>
+                                                    <!-- <td width="10%" style="text-align: center; padding-left: 2%;"><span id="circle1" ng-class="pj.status_id" data-toggle="tooltip" title={{pj.status_id}}></span></td> -->
+                                                    <td width="10%"><span id="circle1" ng-class="pj.status_id"
+                                                            data-toggle="tooltip" title={{pj.status_id}}></span></td>
+                                                    <td width="10%">{{pj.m_due_date}}</td>
+                                                    <td width="20%" style="text-align: center;">
+                                                        <span ng-if="pj.delay !== 0" data-toggle="tooltip"
+                                                            title="{{pj.delay > 0 ? 'Delay' : 'Balance'}}"
+                                                            ng-class="pj.delay > 0 ? 'Delay' : 'Balance'"
+                                                            style="color:white; min-width: 25px; min-height: 20px; width: auto;height: auto; padding: 2%;  float: left; margin-left: 35%; font-weight: bolder;">{{pj.delay | positive}}</span>
+
+                                                        <span ng-if="pj.delay == 0" data-toggle="tooltip"
+                                                            title="{{pj.delay == 0 ? 'On Time' : ''}}"
+                                                            ng-class="pj.delay > 0 ? 'Delay' : 'Balance'"
+                                                            style="color:white; min-width: 25px; min-height: 20px; width: auto;height: auto; padding: 2%;  float: left; margin-left: 35%; font-weight: bolder;">{{pj.delay | positive}}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr ng-if="!hme.todayProjectData.length > 0">
+                                                    <td style="text-align: center !important;float: inherit;"
+                                                        colspan="6">No Record Found </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" ng-if="can('user.dashboard.content.project_highlights')">
+            <div class="col-md-12">
+                <div class="">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Project Highlights</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="fixheight table-responsive">
+                            <table class="table table-striped table-condensed table-hover header-fixed">
+                                <thead class="thead-default">
+                                    <tr>
+                                        <th width="10%" style="text-align: center;">Sr No.</th>
+                                        <th width="25%">Project Name</th>
+                                        <th width="25%">Client Name</th>
+                                        <th width="20%">POC</th>
+                                        <th width="20%">Lead</th>
+                                    </tr>
+                                </thead>
+                                <!-- <pre>{{hme.projectHighlightData |json}}</pre> -->
+                                <tbody>
+                                    <tr ng-repeat="pj in hme.projectHighlightData">
+                                        <td width="10%" style="text-align: center;padding-left: 0.5%;">{{$index+1}}</td>
+                                        <td width="25%" style='padding-left: 0.5%;'>
+                                            <a ng-href="/project/view/{{pj.id}}"
+                                                style="text-decoration: none;outline: 0">{{pj.name}}</a>
+                                        </td>
+                                        <td width="25%">
+                                            <a ng-if="can('user.resourcematrix.clients.view')"
+                                                ng-href="/client/view?id={{pj.client_id}}"
+                                                style="text-decoration: none;outline: 0">{{pj.client.name}}</a>
+                                            <span
+                                                ng-if="!can('user.resourcematrix.clients.view')">{{pj.client.name}}</span>
+                                        </td>
+                                        <td width="20%">
+                                            <!-- <pre>{{pj.project_poc |json}}</pre> -->
+                                            <ul style="list-style: none;">
+                                                <li ng-repeat="pc in pj.project_poc">{{pc.name}}</li>
+                                            </ul>
+                                        </td>
+                                        <td width="20%">{{pj.leads.name}}</td>
+                                    </tr>
+                                    <tr ng-if="!hme.projectHighlightData.length > 0">
+                                        <td style="text-align: center !important;float: inherit;" colspan="5">No Record
+                                            Found </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- Sonal:color-scheme for status -->
+        <!-- <div class="row table-responsive">
+            <div class="col-md-12">
+                <table class="table" cellspacing="1" width="100%" style="margin-bottom:1px;color:white;font-size:9px;font-weight:600">
+                    <tbody>
+                        <tr>
+                            <td class="Pending" width="10%" style="padding: 5px;">Pending</td>
+                            <td class="Assigned" width="10%" style="padding: 5px;">Assigned</td>
+                            <td class="Approval-Pending" width="10%" style="padding: 5px;">Approval-Pending</td>
+                            <td class="On-hold Paused" width="10%" style="padding: 5px;">On-hold/ Paused</td>
+                            <td class="Active" width="10%" style="padding: 5px;">Active</td>
+                            <td class="In-progress Start" width="10%" style="padding: 5px;">In-progress/ Start</td>
+                            <td class="Stop" width="10%" style="padding: 5px;">Stop</td>
+                            <td class="Closed" width="10%" style="padding: 5px;">Closed</td>
+                            <td class="Resolved" width="10%" style="padding: 5px;">Resolved</td>
+                            <td class="Deleted" width="10%" style="padding: 5px;">Deleted</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> -->
+    </div>
+
+    <!-- Namrata : Modal for Time Extension Approval -->
+    <!-- <div class="modal fade" id="approveTimeExtensionModal" role="dialog"> -->
+    <!-- Suvrat Issue#3349 -->
+    <div class="modal fade" id="approveTimeExtensionModal" role="dialog">
+        <!-- --------------------- -->
+        <div class="modal-dialog modal-md">
+            <form id="approveTimeExtension" role="form">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <div class="row col-md-12" style="text-align:center;">
+                            <div class="">
+                                <h4 class="modal-title">Approve Time Extension </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label class="mandatory" for="">Remark</label>
+                                <div class="form-group">
+                                    <textarea class="form-control" ng-model="hme.remark" id="approvalRemark"
+                                        name="approvalRemark">
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="margin-top: 0px">
+                        <button data-ng-click="hme.approveTimeExtension()" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        // window.location.reload();
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+
+        $("#innerFilterBtn").click(function () {
+            // console.log($("#innerFilterBox").is(':visible'));
+            // $("#filterBox").collapse();
+            // if(!$("#filterBox").is(':visible')){
+            $("#innerFilterBox").collapse("toggle");
+            // }
+            // else{
+            //     $("#filterBox").collapse("hide");
+            // }
+        });
+
+        $("#projectName").select2();
+        $("#taskStatus").select2();
+        $("#taskAssignedTo").select2();
+        $("#taskAssignedBy").select2();
+    });
+
+    /**
+    * Namrata : Validation for Time Extension Modal
+    */
+    $("#approveTimeExtension").validate({
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            approvalRemark: {
+                required: true
+            }
+        },
+        messages: {
+            approvalRemark: {
+                required: "Please enter remark.",
+            }
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+
+</script>
+
+<!-- Suvrat Issue#3183 -->
+<script>
+    function drp_chng(arg) {
+        if (arg == "Assigned To Me") {
+            $('.aby').css("display", "block");
+            $('.ato').css("display", "none");
+        }
+        else if (arg == "Assigned By Me") {
+            $('.aby').css("display", "none");
+            $('.ato').css("display", "block");
+        }
+        else if (arg == "All Tasks") {
+            $('.aby').css("display", "block");
+            $('.ato').css("display", "block");
+        }
+        else {
+            $('.aby').css("display", "block");
+            $('.ato').css("display", "none");
+        }
+    }
+</script>
+<!-- ------------- -->
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $('.modal').on('hidden.bs.modal', function (e) {
+            // console.log("Modal is closed");
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        });
+    });
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            // console.log("Modal is open");
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+</script>

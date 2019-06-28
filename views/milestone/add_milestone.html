@@ -1,0 +1,528 @@
+<section class="content">
+    <!-- Suvrat Change the position of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <!-- -------------------------------------- -->
+    <br><br>
+    <!-- Milestone Add Form-->
+    <form role="form" name="addMilestoneForm" id="milestoneForm">
+        <input type="hidden" id="projectId" ng-model="mst.project_id">
+        <input type="hidden" id="sprojStartDate" value="{{mst.projectStartDate}}">
+        <input type="hidden" id="sprojEndDate" value="{{mst.projectEndDate}}">
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border boxhead">
+                <div class="col-md-6 ">
+                    <div class="">
+                        <h1 class="formheading">
+                            <b> {{mst.title}}</b>
+                        </h1>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="pull-right" style="margin-top: 5px; margin-right: 30px;">
+                        <a ng-href="/project/milestone/{{mst.project_id}}/"><button type="button"
+                                class="btn btn-default btn-sm" data-toggle="modal" title="Back" data-target=""
+                                data-ng-click="" style="border:white;color:#428bca;"><i class="fa fa-arrow-left"
+                                    aria-hidden="true"></i></button></a>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Milestone Title</label>
+                            <input type="text" class="form-control" name="milestoneTitle" id="milestoneTitle"
+                                ng-model="mst.milestoneName" placeholder="Enter milestone title">
+                        </div>
+                    </div>
+                </div><br>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Description</label><br>
+                            <textarea type="text" rows="6" cols="90" ng-model="mst.description" name="description"
+                                id="description" class="form-control" placeholder="Milestone overview"></textarea>
+                        </div>
+                    </div>
+                </div><br>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Start Date</label>
+                            <div>
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" class="form-control pull-right" id="startDate" name="start_date"
+                                        ng-model="mst.milestoneStartDate" autocomplete="off"
+                                        placeholder="Enter start date" readonly='true'
+                                        style="cursor:default;background-color: white;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory">End Date</label>
+                            <div>
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" class="form-control pull-right" id="endDate" name="end_date"
+                                        ng-model="mst.milestoneEndDate" autocomplete="off" placeholder="Enter end date"
+                                        readonly='true' style="cursor:default;background-color: white;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="milestoneStatus">Status</label>
+                            <select id="milestoneStatus" name="milestoneStatus" ng-model="mst.milestoneStatus"
+                                class="form-control s2mn" style="width: 100%;"
+                                ng-options="x.name as x.name for x in mst.status" disabled="">
+                                <option value="">Select status</option>
+                            </select>
+                        </div>
+                    </div>
+                </div><br>
+                <div class="row">
+                    <!--  <div class="col-md-6">
+                         <div class="form-group">
+                           <label for="">Project Name</label>
+                                 <select  id="projectName" data-ng-model="mst.projectName.id" name="projectName" id="projectName" class="form-control">
+                                     <option value="">Select project name</option>
+                                     <option ng-repeat="x in mst.projects" value="{{x.id}}">{{x.pname}}</option>
+                             </select>
+                         </div> 
+                     </div>   -->
+                    <div class="col-md-6" style="display: none;">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Version</label>
+                            <!-- <button type="button" class="btn btn-default btn-sm pull-right inputDisabled" data-toggle="modal" title="edit" id="enableDropDown" style="border:white;"><a ng-href=""><i class="fa fa-remove" aria-hidden="true"></i></a>
+                            </button> -->
+
+                            <!-- <select  id="milestoneIndex" data-ng-model="mst.milestoneIndex.id" name="milestoneIndex" class="form-control">
+                                <option value="">Select milestone version</option>
+                                <option ng-repeat="x in mst.milestonIndex" value="{{x.id}}">{{x.mindex}}</option>  </select> -->
+                            <select name="milestoneIndex" class="form-control select2" id="milestoneIndex"
+                                ng-model="mst.version"
+                                ng-options="option.id as option.name for option in mst.milestonIndex"
+                                style="width:100%">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row">
+                   <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="">Status</label>
+                                <select  id="milestoneStatus" data-ng-model="mst.milestoneStatus.id" name="milestoneStatus" class="form-control">
+                                  <option value="">Select milestone status</option>
+                                  <option ng-repeat="x in status" value="{{x.id}}">{{x.name}}</option>
+                            </select>
+                        </div>
+                   </div>
+                   <div class="col-md-6">
+                  </div>
+                </div>-->
+            </div>
+            <div class="box-footer">
+                <div class="pull pull-right">
+                    <!-- Suvrat Issue#3196 Add cancel button -->
+                    <a ng-href="/project/milestone/{{mst.project_id}}/"><button type="button"
+                            class="btn btn-danger">Cancel</button></a>
+                    <!-- ----------------------------------- -->
+                    <input type="submit" value="Save" data-ng-click="mst.saveMilestone()" class="btn btn-success"
+                        ng-disabled="mst.submitClicked" />
+                    <input ng-if="mst.title == 'Add New milestone'" type="reset" value="Reset" ng-click="resetForm()"
+                        class="btn btn-warning" />
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Suvrat Issue#3172 -->
+    <div class="modal fade" id="taskOptionModal" role="dialog">
+        <div class="modal-dialog modal-xs">
+            <form id="taskOptionForm" role="form">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Select Task Source</h4> <!-- Added closing tag -->
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" style="margin-bottom: 20px;text-align:center;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="radio radio-info radio-inline" style="padding-left:15px;">
+                                        <input type="radio" data-ng-model="mst.taskOptionSelected" name="radioInline"
+                                            id="new" value="new" ng-change="mst.activateSelect2()" />
+                                        <label for="new">New</label>
+                                    </div>
+                                    <div class="radio radio-info radio-inline">
+                                        <input type="radio" data-ng-model="mst.taskOptionSelected"
+                                            id="copy_from_existing" name="radioInline" value="copy_from_existing"
+                                            ng-change="mst.activateSelect2()" />
+                                        <label for="copy_from_existing">Copy from Existing</label>
+                                    </div>
+                                    <div class="radio radio-info radio-inline">
+                                        <input type="radio" data-ng-model="mst.taskOptionSelected"
+                                            id="copy_from_default" name="radioInline" value="copy_from_default"
+                                            ng-change="mst.activateSelect2()" disabled="" />
+                                        <label for="copy_from_default">Copy from Default</label>
+                                    </div>
+                                    <!-- Suvrat Issue#3175 -->
+                                    <div class="radio radio-info radio-inline">
+                                        <input type="radio" data-ng-model="mst.taskOptionSelected"
+                                            id="copy_from_project" name="radioInline" value="copy_from_project"
+                                            ng-change="mst.getProjectList()" />
+                                        <label for="copy_from_project">
+                                            Copy from Project
+                                        </label>
+                                    </div>
+                                    <!-- -------------  -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"
+                            ng-if="mst.taskOptionSelected == 'copy_from_existing' || mst.taskOptionSelected == 'copy_from_default'">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Milestone</label>
+                                    <select id="milestoneLists" name="milestoneLists" ng-model="mst.milestoneIdForTask"
+                                        class="form-control" style="width: 100%;"
+                                        ng-options="x.id as x.title for x in mst.milestoneList"
+                                        ng-change="mst.getTaskListByMilestoneID(mst.milestoneIdForTask)">
+                                        <option value="">Select milestone</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-if="mst.milestoneIdForTask">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Task</label>
+                                    <select id="taskList" name="taskList" ng-model="mst.taskListId" class="form-control"
+                                        style="width: 100%;"
+                                        ng-options="x.id as x.title for x in mst.taskListOfMilestone | unique:'title'">
+                                        <option value="">Select task</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Suvrat Issue#3175 -->
+                        <div class="row" ng-if="mst.taskOptionSelected == 'copy_from_project'">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Project</label>
+                                    <select id="projectLists" name="projectLists" ng-model="mst.projectIdForMilestone"
+                                        class="form-control select2 s2mn" style="width:100%;"
+                                        ng-options="x.id as x.name for x in mst.projectList"
+                                        ng-change="mst.getMilestoneForProject(mst.projectIdForMilestone)">
+                                        <option value="">Select Project</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-if="mst.projectIdForMilestone">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Milestone</label>
+                                    <select id="milestoneLst" name="milestoneLst" ng-model="mst.milestoneTask"
+                                        class="form-control select2 s2mn" style="width:100%;"
+                                        ng-options="x.id as x.title for x in mst.projectMilestone"
+                                        ng-change="mst.getTaskForMilestone(mst.milestoneTask)">
+                                        <option value="">Select Milestone</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12" ng-if="mst.milestoneTask">
+                                <div class="form-group">
+                                    <label class="mandatory" for="">Task</label>
+                                    <select id="taskLst" name="taskLst" ng-model="mst.taskLst"
+                                        class="form-control select2 s2mn" style="width:100%;"
+                                        ng-options="x.id as x.title for x in mst.milestoneTaskL | unique:'title'">
+                                        <option value="">Select Task</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ----------------------- -->
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="mst.saveSelectedOption()" class="btn btn-primary">Next</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal"
+                            data-ng-click="mst.cancelTaskAdd()">Cancel</a></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Pop up modal for redirect to specific pages -->
+    <div class="modal fade switchToTask" id="switchToTask" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header" id="popUpModalHeader" style="text-align:center;">
+                    <i class="glyphicon glyphicon-check"
+                        style=" font-size: 30px!important; color: #337ab7;!important; text-align: center!important;"></i>
+                </div>
+                <div class="modal-title popUpModalTitle">Success</div>
+                <div class="modal-body popUpModalBody ">Are you want to create task?</div>
+                <div class="modal-footer">
+                    <button type="button" id="pwd-successful-change" class="btn btn-primary" data-dismiss="modal"
+                        style="font-family:Comic Sans MS; margin : 10px 5px 0 0; font-style: bold"
+                        ng-click="mst.redirectMilestoneOk()">OK</button>
+                    <button type="button" id="pwd-successful-change" class="btn btn-warning" data-dismiss="modal"
+                        style="font-family:Comic Sans MS; margin : 10px 5px 0 0; font-style: bold"
+                        ng-click="mst.redirectMilestoneCancel()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        $('#description').ckeditor();
+    });
+
+    $("#enableDropDown").click(function (event) {
+        event.preventDefault();
+        $('#milestoneIndex').prop("disabled", false); // Element(s) are now enabled.
+    });
+
+    $(function () {
+        //bootstrap WYSIHTML5 - text editor
+        $(".textarea").wysihtml5();
+    });
+
+    //Date picker
+    // $('#endDate').datepicker({
+    //     autoclose: true
+    // }).on('changeDate', function (e) {
+    //     $(this).valid();
+    // });
+
+    // //Date picker
+    // $('#startDate').datepicker({
+    //     autoclose: true
+    // }).on("changeDate", function () {
+    //     $(this).valid();
+    //     var selected = $(this).val();
+    //     $('#endDate').datepicker('setStartDate', selected);
+    // });
+
+    setTimeout(function () {
+        var sd = $("#sprojStartDate").val();
+        var ed = $("#sprojEndDate").val();
+
+        $('#startDate').datepicker({
+            autoclose: true
+        }).on("changeDate", function () {
+            $(this).valid();
+            var selected = $(this).val();
+            $('#endDate').datepicker('setStartDate', selected);
+        });
+
+        $('#endDate').datepicker({
+            autoclose: true
+        }).on('changeDate', function (e) {
+            $(this).valid();
+            var selected = $(this).val();
+            $('#startDate').datepicker('setEndDate', selected);
+        });
+    }, 800);
+
+    //Initialize Select2 Elements
+    // $(".select2").select2();
+
+    $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+        return arg !== value;
+    }, "Value must not equal arg.");
+
+    //For form validations
+    function validateclientForm() {
+        $("#milestoneForm").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            errorPlacement: function (error, element) {
+                var type = $(element).attr("type");
+                if ($(element).attr("id") === "milestoneIndex") {
+                    element.parent().append(error);
+                } else if ($(element).attr("id") === "startDate") {
+                    element.parent().parent().parent().append(error);
+                } else if ($(element).attr("id") === "endDate") {
+                    element.parent().parent().parent().append(error);
+                } else if ($(element).attr("id") === "description") {
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            focusInvalid: true, // set focus the last invalid input
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                milestoneTitle: {
+                    required: true
+                },
+                start_date: {
+                    required: true
+                },
+                end_date: {
+                    required: true
+                },
+                milestoneIndex: {
+                    required: true
+                },
+                description: {
+                    required: true
+                },
+                milestoneStatus: {
+                    required: true
+                }
+            },
+            messages: {
+                milestoneTitle: {
+                    required: "Milestone title is required."
+                },
+                start_date: {
+                    required: "Start date is required."
+                },
+                end_date: {
+                    required: "End date is required."
+                },
+                milestoneIndex: {
+                    required: "Milestone Index is required"
+                },
+                description: {
+                    required: "Description is required"
+                },
+                milestoneStatus: {
+                    required: "Status is required"
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');// set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+    }
+    validateclientForm();
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+    });
+</script>
+<!-- Suvrat Issue#3159 -->
+<script>
+    $('#startDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#endDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>
+<!-- --------------------- -->
+<!-- Suvrat Issue#3172 -->
+<script>
+    function validateData() {
+        $("#taskOptionForm").validate({
+            focusCleanup: true,
+            onkeyup: false,
+            onselect: true,
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            invalidHandler: function (form, validator) {
+                if (!validator.numberOfInvalids())
+                    return;
+                $(this).find(":input.error:first").focus();
+                $("html, body").animate({ scrollTop: 0 }, "fast");
+            },
+            errorPlacement: function (error, element) {
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("id") === "milestoneLists" || $(element).attr("id") === "taskList" || $(element).attr("id") === "projectLists" || $(element).attr("id") === "milestoneLst" || $(element).attr("id") === "taskLst") {
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                milestoneLists: {
+                    required: true
+                },
+                taskList: {
+                    required: true
+                },
+                // Suvrat Issue#3175
+                projectLists: {
+                    required: true
+                },
+                milestoneLst: {
+                    required: true
+                },
+                taskLst: {
+                    required: true
+                },
+                ///////////////////
+            },
+            messages: {
+                milestoneLists: {
+                    required: "Milestone is required."
+                },
+                taskList: {
+                    required: "Task is required."
+                },
+                // Suvrat Issue#3175
+                projectLists: {
+                    required: "Project is required."
+                },
+                milestoneLst: {
+                    required: "Milestone is required."
+                },
+                taskLst: {
+                    required: "Task is required."
+                },
+                ///////////////////////
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');// set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+    }
+    validateData();
+</script>

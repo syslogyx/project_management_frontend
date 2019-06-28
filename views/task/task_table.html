@@ -1,0 +1,811 @@
+<section class="content" ng-init="tsk.searchMilestone($id = null, $page = -1);">
+  <style>
+    #circle {
+      width: 15px;
+      height: 15px;
+      -webkit-border-radius: 25px;
+      -moz-border-radius: 25px;
+      border-radius: 25px;
+      /*background: red;*/
+      float: left;
+      margin-right: 10px;
+    }
+
+    .btn-group,
+    .btn-group-vertical {
+      display: block !important;
+    }
+
+    .btn-group>.btn,
+    .btn-group-vertical>.btn {
+      float: none;
+    }
+
+    /* The container */
+    .container {
+      display: block;
+      position: relative;
+      padding-left: 35px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 22px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* Hide the browser's default radio button */
+    .container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Create a custom radio button */
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 25px;
+      width: 25px;
+      background-color: #eee;
+      border-radius: 50%;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .container:hover input~.checkmark {
+      background-color: #ccc;
+    }
+
+    /* When the radio button is checked, add a blue background */
+    .container input:checked~.checkmark {
+      background-color: #2196F3;
+    }
+
+    /* Create the indicator (the dot/circle - hidden when not checked) */
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    /* Show the indicator (dot/circle) when checked */
+    .container input:checked~.checkmark:after {
+      display: block;
+    }
+
+    /* Style the indicator (dot/circle) */
+    .container .checkmark:after {
+      top: 9px;
+      left: 9px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    table.width100 {
+      width: 100%;
+      border: solid 1px #000000;
+    }
+
+    /*Suvrat Make legend table responsive*/
+    #legend {
+      margin-bottom: 10px;
+    }
+
+    .legend-item {
+      padding-bottom: 10px;
+    }
+
+    @media (min-width: 992px) {
+      #legend3 {
+        width: 24%;
+      }
+
+      #legend4 {
+        width: 25%;
+      }
+
+      #legend6 {
+        width: 23%;
+      }
+    }
+
+    @media (min-width: 1360px) {
+      #legend1 {
+        width: 11%;
+      }
+
+      #legend2 {
+        width: 11%;
+      }
+
+      #legend3 {
+        width: 16%;
+      }
+
+      #legend4 {
+        width: 16%;
+      }
+
+      #legend5 {
+        width: 11%;
+      }
+
+      #legend6 {
+        width: 15%;
+      }
+
+      #addBtn {
+        margin-left: -60px;
+      }
+    }
+
+    /*//////////////////////////*/
+  </style>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-5 col-sm-6 col-xs-10">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+          <i class="glyphicon glyphicon-home"></i>&nbsp;
+          <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+            <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label" class="margin-right-xs"></a>
+            <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+          </li>
+        </ol>
+      </div>
+      <div class="col-md-2 col-sm-1 col-xs-2">
+        <h4>Tasks</h4>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-6" style="margin-top: 11px;">
+        <div class="dataTables_length text-right" id="example_length"><label>Show
+            <select id="table_length" aria-controls="example" style='outline: 0;'>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            entries</label>
+        </div>
+      </div>
+      <div id="addBtn" class="col-md-2 col-sm-2 col-xs-2 pull-right" style="margin-top: 8px;"
+        ng-if="can('user.projects.tasks.add')">
+        <button type="button" class="btn btn-primary btn-circle btn-sm pull-right" data-toggle="modal" title="Add new"
+          data-target="" data-ng-click="tsk.addNewTask()"><i class="fa fa-plus" aria-hidden="true"
+            style="padding-right:0.3px"></i>
+        </button>
+        <button id="innerFilterBtn" type="button" data-target="#innerFilterBox"
+          class="btn btn-primary btn-circle btn-sm pull-right" title="Filter" style="outline: 0;margin-right: 15px;"
+          aria-expanded="true"><i class="fa fa-filter" aria-hidden="true" style="padding-right:0.3px"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Suvrat Replace filter inside a collapsible div -->
+    <div class="row collapse pull right" id="innerFilterBox">
+      <div class="col-md-12">
+        <div class="box box-primary paddingLeft0">
+          <div class="box-body marginEmailBody">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label class="" for="">Milestone</label>
+                  <select id="milestoneList" name="milestoneList" ng-model="tsk.milestoneId"
+                    class="form-control select2 s2mn" style="width: 100%;"
+                    ng-options="x.id as x.title for x in tsk.milestoneList"
+                    ng-change="tsk.getAssignedUserList(tsk.milestoneId)">
+                    <option value="">Select milestone</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3" ng-if="tsk.milestoneId !='' && tsk.roleStatus">
+                <div class="form-group">
+                  <label class="" for="">Assigned To</label>
+                  <select id="userList" name="userList" ng-model="tsk.taskUserId" class="form-control select2 s2mn"
+                    style="width: 100%;" ng-options="x.id as x.name for x in tsk.milestoneAssignedUserList">
+                    <option value="">Select user</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label class="" for="">Status</label>
+                  <select id="taskStatusList" name="taskStatusList" ng-model="tsk.taskStatusName"
+                    class="form-control select2 s2mn" style="width: 100%;"
+                    ng-options="x.name as x.name for x in tsk.taskStatus">
+                    <option value="">Select status</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3" ng-if="can('user.projects.tasks.task_category')">
+                <div class="form-group" style="padding-top: 16px;text-align: center;">
+                  <label class="radio-inline">
+                    <input type="radio" data-ng-model="tsk.task_cat" ng-value="true"
+                      ng-change="tsk.searchMilestone(tsk.milestoneId,-1)">Assigned to Me
+                  </label>
+                  <label class="radio-inline" style="margin-left:2px">
+                    <input type="radio" data-ng-model="tsk.task_cat" ng-value="false"
+                      ng-change="tsk.searchMilestone(tsk.milestoneId,-1)">Assigned by Me
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.box-body -->
+
+          <div class="box-footer">
+            <div class="pull pull-right">
+              <input type="button" value="Search" ng-click="tsk.searchMilestone(tsk.milestoneId,-1)"
+                class="btn btn-primary" />
+              <button type="button" class="btn btn-primary fa fa-refresh"
+                ng-click="tsk.searchMilestone($id = null, $page = -1)"></button>
+              <!-- <button type="button" ng-if="can('user.projects.tasks.add')" class="btn btn-primary fa fa-plus" data-toggle="modal" title="Add New Milestone" data-ng-click="tsk.addNewMilestone()"></button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- -------------------------------------------------- -->
+    <!-- Suvrat Legend for table -->
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+        <div id="legendd" class="" style="display: inline-block;">
+          <!-- <div id="legend1" class="legend-item col-md-2 col-sm- col-xs-4"> -->
+          <span id="circle" ng-class="tk.status_id" class="Resolved"></span>
+          <span class="status_name">Resolved</span>
+          <!-- </div> -->
+          <!-- <div id="legend2" class="legend-item col-md-2 col-sm-3 col-xs-4"> -->
+          <span id="circle" ng-class="tk.status_id" class="Pending"></span>
+          <span class="status_name">Pending</span>
+          <!-- </div> -->
+          <!-- <div id="legend3" class="legend-item col-md-2 col-sm-3 col-xs-4"> -->
+          <span id="circle" ng-class="tk.status_id" class="Start"></span>
+          <span class="status_name">In-progress</span>
+          <!-- </div> -->
+          <!-- <div id="legend4" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+          <span id="circle" ng-class="tk.status_id" class="Approval-Pending"></span>
+          <span class="status_name">Approval-Pending</span>
+          <!-- </div> -->
+          <!-- <div id="legend5" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+          <span id="circle" ng-class="tk.status_id" class="Assigned"></span>
+          <span class="status_name">Assigned</span>
+          <!-- </div> -->
+          <!-- <div id="legend6" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+          <span id="circle" ng-class="tk.status_id" class="Paused"></span>
+          <span class="status_name">Paused</span>
+          <!-- </div> -->
+          <!-- <div id="legend7" class="legend-item col-md-2 col-sm-3 col-xs-3"> -->
+          <span id="circle" ng-class="tk.status_id" class="Closed"></span>
+          <span class="status_name">Closed</span>
+          <!-- </div> -->
+        </div>
+      </div>
+    </div>
+    <!-- --------------------------------------------------------- -->
+    <!-- <div class="box box-default">
+      <div class="box-body">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="" for="">Milestone</label>
+              <select id="milestoneList" name="milestoneList" ng-model="tsk.milestoneId" class="form-control select2 s2mn" style="width: 100%;" ng-options="x.id as x.title for x in tsk.milestoneList" ng-change="tsk.getAssignedUserList(tsk.milestoneId)">
+                <option value="">Select milestone</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3" ng-if="tsk.milestoneId !='' && tsk.roleStatus">
+            <div class="form-group">
+              <label class="" for="">Assigned To</label>
+              <select id="userList" name="userList" ng-model="tsk.taskUserId" class="form-control select2 s2mn" style="width: 100%;" ng-options="x.id as x.name for x in tsk.milestoneAssignedUserList" >
+                <option value="">Select user</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="" for="">Status</label>
+                <select id="taskStatusList" name="taskStatusList" ng-model="tsk.taskStatusName" class="form-control select2 s2mn" style="width: 100%;" ng-options="x.name as x.name for x in tsk.taskStatus" >
+                    <option value="">Select status</option>
+                </select>
+            </div>
+          </div>
+          <div class="col-md-3" ng-if="can('user.projects.tasks.task_category')">
+            <div class="form-group" style="padding-top: 16px;text-align: center;">
+              <label class="radio-inline">
+                <input type="radio" data-ng-model="tsk.task_cat" ng-value="true" ng-change="tsk.searchMilestone(tsk.milestoneId,-1)">Assigned to Me
+              </label>
+              <label class="radio-inline" style="margin-left:2px">
+                <input type="radio" data-ng-model="tsk.task_cat" ng-value="false" ng-change="tsk.searchMilestone(tsk.milestoneId,-1)">Assigned by Me
+              </label>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      <div class="box-footer">
+          <div class="pull pull-right" >
+              <input type="button" value="Search" ng-click="tsk.searchMilestone(tsk.milestoneId,-1)" class="btn btn-primary"  />
+              <button type="button" class="btn btn-primary fa fa-refresh" ng-click="tsk.searchMilestone($id = null, $page = -1)"></button>
+              <button type="button" ng-if="can('user.projects.tasks.add')" class="btn btn-primary fa fa-plus" data-toggle="modal" title="Add New Milestone" data-ng-click="tsk.addNewMilestone()"></button>
+          </div>
+      </div>
+    </div> -->
+
+    <!-- Task table  -->
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead class="thead-default">
+          <tr>
+            <th style="text-align: center;">Sr. No.</th>
+            <th style="text-align: left;  width: 20% !important;">Task</th>
+            <th style="text-align: left; width: 20% !important;">Milestone</th>
+            <th style="text-align: left;" ng-if="tsk.task_cat || tsk.roleStatus">Assigned By</th>
+            <th style="text-align: left;" ng-if="!tsk.task_cat || tsk.roleStatus">Assigned To</th>
+            <th>Status</th>
+            <th style="text-align: center;">Estimated Hours</th>
+            <th style="text-align: center;"
+              ng-if="can('user.projects.tasks.view') || can('user.projects.tasks.edit') || can('user.projects.tasks.status')">
+              Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="tsk.searchTaskList.length > 0" ng-repeat="tk in tsk.searchTaskList ">
+            <!-- <td style="text-align: center;" ng-bind="pr.name"></td> -->
+            <!-- <td style="text-align: center;" ng-bind="($index + 1)"></td> -->
+            <td style="text-align: center;" ng-bind="(tsk.pageno - 1) * tsk.limit + ($index + 1)"></td>
+            <!-- <td style="text-align: center;" ng-bind="(tsk.pageno - 1) * tsk.limit + ($index + 1)"></td> -->
+            <td style="text-align: left; width: 20% !important;">{{tk.title}}</td>
+            <td style="text-align: left;">{{tk.milestones.title}}</td>
+            <td style="text-align: left;" ng-if="tsk.task_cat || tsk.roleStatus">{{tk.created_by_name}}</td>
+            <td style="text-align: left;" ng-if="!tsk.task_cat || tsk.roleStatus">{{tk.project_resource.user.name}}</td>
+            <td><span id="circle" ng-class="tk.status_id" data-toggle="tooltip" title={{tk.status_id}}
+                style="margin-left: 10px;"></span></td>
+            <td style="text-align: center;">{{tk.estimated_time}}</td>
+            <td style="text-align: center;width: 10% !important;"
+              ng-if="can('user.projects.tasks.view') || can('user.projects.tasks.edit') || can('user.projects.tasks.status')">
+              <a ng-href="/project/task/view/{{tsk.project_id}}?id={{tk.id}}" title="View" style="outline:0;"><button
+                  ng-if="can('user.projects.tasks.view')" type="button" class="btn btn-default btn-xs"
+                  style="border-color: #fff!important;color: #428bca;text-align: center;"><i class="fa fa-eye"
+                    aria-hidden="true"></i></button></a>
+
+              <a ng-href="/project/task/edit/{{tsk.project_id}}?id={{tk.id}}" title="Edit" style="outline:0;"><button
+                  ng-if="can('user.projects.tasks.edit')" type="button" class="btn btn-default btn-xs"
+                  style="border-color: #fff!important;color: #428bca;text-align: center;"><i class="fa fa-pencil"
+                    aria-hidden="true"></i></button></a>
+
+              <a ng-href="" title="Change Status" style="outline:0;" data-toggle="modal"
+                data-target="#changeStatusModal"
+                data-ng-click="tsk.clearForm(tk.id, tk.milestone_id); resetChangeStatusForm();"><button
+                  ng-if="can('user.projects.tasks.status')" type="button" class="btn btn-default btn-xs"
+                  style="border-color: #fff!important; color: #428bca; text-align: center;"><i class="fa fa-edit"
+                    aria-hidden="true"></i></button></a>
+            </td>
+          </tr>
+          <tr ng-if="tsk.searchTaskList == null || tsk.searchTaskList.length == 0">
+            <td colspan="8" style="text-align: center">No Records Found</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row col-sm-12" style="padding-right: 0px;">
+        <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px" ng-if="tsk.searchTaskList.length > 0">
+          <span style="float: left;margin-top: 17px;margin-bottom: 10px;font-weight: 700;">Showing
+            {{tsk.fromValue != null ? tsk.fromValue : 0}} to {{tsk.toValue != null ? tsk.toValue : 0}} out of
+            {{tsk.totalEntries != null ? tsk.totalEntries : 0}} results</span>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px">
+          <ul id="pagination-sec" class="pagination-sm" style="float: right;margin-top: 10px;margin-bottom: 10px"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="changeStatusModal" role="dialog">
+    <div class="modal-dialog modal-xs">
+      <form id="changeTaskStatusForm" role="form">
+        <input type="hidden" id="projectId" ng-model="projectId">
+        <div class="modal-content" style="border-radius: 0px!important;width: 80%; margin-left: 10%;">
+          <div class="modal-header" style="text-align:center;">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="row col-md-12" style="text-align:center;">
+              <div class="">
+                <h4 class="modal-title">Change Status </h4>
+              </div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 form-group" style="min-height:90px;margin-bottom:0px">
+                <label class="mandatory" for="">Change Status To</label>
+                <select id="changeStatusTo" name="changeStatusTo" ng-model="tsk.changeStatusTo"
+                  class="form-control select2 s2mn" style="width: 100%;"
+                  ng-options="x.name as x.name for x in tsk.taskStatus">
+                  <option value="">Select status</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <!-- <label for="status_comment">Add comment</label> -->
+                  <!-- Suvrat Issue#3347 -->
+                  <label class="mandatory" for="status_comment">Add comment</label>
+                  <!-- ------------------- -->
+                  <textarea type="text" rows="3" cols="90" ng-model="tsk.status_comment" name="task_status_comment"
+                    id="task_comment" class="form-control" placeholder="Enter comment"
+                    style="resize: vertical"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button data-ng-click="tsk.updateTask()" class="btn btn-primary">Update</button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade" id="giveReasonModal" role="dialog">
+    <div class="modal-dialog modal-xs">
+      <form id="giveReasonForm" role="form">
+        <div class="modal-content" style="border-radius: 0px!important;">
+          <div class="modal-header" style="text-align:center;">
+            <h4 class="modal-title">You spent more time on task. Please specify the reason.</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 form-group">
+                <label class="mandatory" for="">Reason</label>
+                <textarea type="text" rows="3" cols="90" ng-model="tsk.status_reason" name="task_reason"
+                  id="task_reason" class="form-control" placeholder="Enter Reason" style="resize: vertical"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button data-ng-click="tsk.updateTaskForReason()" class="btn btn-primary"> Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade" id="taskOptionModal" role="dialog">
+    <div class="modal-dialog modal-xs">
+      <form id="taskOptionForm" role="form">
+        <div class="modal-content" style="border-radius: 0px!important;">
+          <div class="modal-header" style="text-align:center;">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Select Task Source</h4> <!-- Added closing tag -->
+          </div>
+          <div class="modal-body">
+            <div class="row" style="margin-bottom: 20px;text-align:center;">
+              <!-- Suvrat Issue#3342 -->
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="form-group">
+                  <div class="radio radio-info radio-inline col-xs-12 col-sm-5 col-md-1"
+                    style="padding-left:10px;padding-right: 0px">
+                    <input type="radio" data-ng-model="tsk.taskOptionSelected" name="radioInline" id="new" value="new"
+                      ng-change="tsk.activateSelect2()" />
+                    <label for="new">New</label>
+                  </div>
+                  <div class="radio radio-info radio-inline col-xs-12 col-sm-6 col-md-3"
+                    style="padding-left:0px;padding-right:0px;margin-left:18px;">
+                    <input type="radio" data-ng-model="tsk.taskOptionSelected" id="copy_from_existing"
+                      name="radioInline" value="copy_from_existing" ng-change="tsk.activateSelect2()" />
+                    <label for="copy_from_existing">
+                      Copy from Existing
+                    </label>
+                  </div>
+                  <div class="radio radio-info radio-inline col-xs-12 col-sm-5 col-md-3"
+                    style="margin-left:14px;padding-left:0px;padding-right:0px;">
+                    <input type="radio" data-ng-model="tsk.taskOptionSelected" id="copy_from_default" name="radioInline"
+                      value="copy_from_default" ng-change="tsk.activateSelect2()" disabled="" />
+                    <label for="copy_from_default">
+                      Copy from Default
+                    </label>
+                  </div>
+                  <!-- Suvrat Issue#3175 & Issue#3342-->
+                  <div class="radio radio-info radio-inline col-xs-12 col-sm-6 col-md-4"
+                    style="padding-left:0px;padding-right:0px;margin-left:14px;">
+                    <input type="radio" data-ng-model="tsk.taskOptionSelected" id="copy_from_project" name="radioInline"
+                      value="copy_from_project" ng-change="tsk.getProjectList()" ng-click="tsk.activateSelect2()" />
+                    <label for="copy_from_project">
+                      <!-- Copy from Project -->
+                      <!-- Suvrat Issue#3342 -->
+                      Copy from another Project
+                      <!-- ------------- -->
+                    </label>
+                  </div>
+                  <!-- -------------  -->
+                </div>
+              </div>
+            </div>
+            <div class="row"
+              ng-if="tsk.taskOptionSelected == 'copy_from_existing' || tsk.taskOptionSelected == 'copy_from_default'">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="mandatory" for="">Milestone</label>
+                  <select id="milestoneLists" name="milestoneLists" ng-model="tsk.milestoneIdForTask"
+                    class="form-control select2 s2mn" style="width: 100%;"
+                    ng-options="x.id as x.title for x in tsk.milestoneList"
+                    ng-change="tsk.getTaskListByMilestoneID(tsk.milestoneIdForTask)">
+                    <option value="">Select milestone</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6" ng-if="tsk.milestoneIdForTask">
+                <div class="form-group">
+                  <label class="mandatory" for="">Task</label>
+                  <select id="taskList" name="taskList" ng-model="tsk.taskListId" class="form-control select2 s2mn"
+                    style="width: 100%;" ng-options="x.id as x.title for x in tsk.taskListOfMilestone | unique:'title'">
+                    <option value="">Select task</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <!-- Suvrat Issue#3175 -->
+            <div class="row" ng-if="tsk.taskOptionSelected == 'copy_from_project'">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="mandatory" for="">Project</label>
+                  <select id="projectLists" name="projectLists" ng-model="tsk.projectIdForMilestone"
+                    class="form-control select2 s2mn" style="width:100%;"
+                    ng-options="x.id as x.name for x in tsk.projectList"
+                    ng-change="tsk.getMilestoneForProject(tsk.projectIdForMilestone)">
+                    <option value="">Select Project</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6" ng-if="tsk.projectIdForMilestone">
+                <div class="form-group">
+                  <label class="mandatory" for="">Milestone</label>
+                  <select id="milestoneLst" name="milestoneLst" ng-model="tsk.milestoneTask"
+                    class="form-control select2 s2mn" style="width:100%;"
+                    ng-options="x.id as x.title for x in tsk.projectMilestone"
+                    ng-change="tsk.getTaskForMilestone(tsk.milestoneTask)">
+                    <option value="">Select Milestone</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-12" ng-if="tsk.milestoneTask">
+                <div class="form-group">
+                  <label class="mandatory" for="">Task</label>
+                  <select id="taskLst" name="taskLst" ng-model="tsk.taskLst" class="form-control select2 s2mn"
+                    style="width:100%;" ng-options="x.id as x.title for x in tsk.milestoneTaskL | unique:'title'">
+                    <option value="">Select Task</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <!-- ----------------------- -->
+          </div>
+          <div class="modal-footer">
+            <button data-ng-click="tsk.saveSelectedOption()" class="btn btn-primary">Next</button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function () {
+    $("html, body").animate({ scrollTop: 0 }, "fast");
+
+    $(".select2").select2();
+    // $(".s2mn").on("change", function () { $(this).valid(); });
+
+    $('.modal').on('hidden.bs.modal', function (e) {
+      // console.log("Modal is closed");
+      $('header').css('z-index', '1053');
+      $('footer').css('z-index', '1053');
+    });
+  });
+  function setCSS() {
+    if ($('.modal').is(':visible') == true) {
+      // console.log("Modal is open");
+      $('header').css('z-index', '900');
+      $('footer').css('z-index', '900');
+    } else {
+      $('header').css('z-index', '1053');
+      $('footer').css('z-index', '1053');
+    }
+  }
+  setCSS();
+
+  function validateData() {
+    $("#changeTaskStatusForm").validate({
+      errorElement: 'span', //default input error message container
+      errorClass: 'help-block help-block-error',
+      focusInvalid: false, // set focus the last invalid input
+      // invalidHandler: function (form, validator) {
+
+      //     if (!validator.numberOfInvalids())
+      //         return;
+      //     $(this).find(":input.error:first").focus();
+      //     $("html, body").animate({scrollTop: 0}, "fast");
+
+      // },
+      errorPlacement: function (error, element) {
+        var type = $(element).attr("type");
+        if (type === "radio") {
+          // custom placement
+          element.parent().parent().append(error);
+        } else if ($(element).attr("id") === "changeStatusTo") {
+          // custom placement
+          element.parent().append(error);
+        } else {
+          error.insertAfter(element);
+        }
+      },
+      ignore: [], // validate all fields including form hidden input
+      rules: {
+        changeStatusTo: {
+          required: true
+        },
+        task_status_comment: {
+          required: true
+        }
+      },
+      messages: {
+        changeStatusTo: {
+          required: "Status is required."
+        },
+        task_status_comment: {
+          required: "Comment is required."
+        }
+      },
+      highlight: function (element) { // hightlight error inputs
+        $(element).closest('.form-group').addClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+        // set error class to the control group
+      },
+      unhighlight: function (element) { // revert the change done by hightlight
+        $(element).closest('.form-group').removeClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+      },
+      success: function (label) {
+        label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+      }
+    });
+    $("#giveReasonForm").validate({
+      errorElement: 'span', //default input error message container
+      errorClass: 'help-block help-block-error',
+      focusInvalid: false, // set focus the last invalid input
+      // invalidHandler: function (form, validator) {
+
+      //     if (!validator.numberOfInvalids())
+      //         return;
+      //     $(this).find(":input.error:first").focus();
+      //     $("html, body").animate({scrollTop: 0}, "fast");
+
+      // },
+      errorPlacement: function (error, element) {
+        var type = $(element).attr("type");
+        if (type === "radio") {
+          // custom placement
+          element.parent().parent().append(error);
+        } else if ($(element).attr("id") === "changeStatusTo") {
+          // custom placement
+          element.parent().append(error);
+        } else {
+          error.insertAfter(element);
+        }
+      },
+      ignore: [], // validate all fields including form hidden input
+      rules: {
+        task_reason: {
+          required: true
+        }
+      },
+      messages: {
+        task_reason: {
+          required: "Reason is required."
+        }
+      },
+      highlight: function (element) { // hightlight error inputs
+        $(element).closest('.form-group').addClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+        // set error class to the control group
+      },
+      unhighlight: function (element) { // revert the change done by hightlight
+        $(element).closest('.form-group').removeClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+      },
+      success: function (label) {
+        label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+      }
+    });
+    $("#taskOptionForm").validate({
+      focusCleanup: true,
+      onkeyup: false,
+      onselect: true,
+      errorElement: 'span', //default input error message container
+      errorClass: 'help-block help-block-error',
+      focusInvalid: false, // set focus the last invalid input
+      invalidHandler: function (form, validator) {
+        if (!validator.numberOfInvalids())
+          return;
+        $(this).find(":input.error:first").focus();
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+
+      },
+      errorPlacement: function (error, element) {
+        var type = $(element).attr("type");
+        if (type === "radio") {
+          // custom placement
+          element.parent().parent().append(error);
+        } else if ($(element).attr("id") === "milestoneLists" || $(element).attr("id") === "taskList" || $(element).attr("id") === "projectLists" || $(element).attr("id") === "milestoneLst" || $(element).attr("id") === "taskLst") {
+          // custom placement
+          element.parent().append(error);
+        } else {
+          error.insertAfter(element);
+        }
+      },
+      ignore: [], // validate all fields including form hidden input
+      rules: {
+        milestoneLists: {
+          required: true
+        },
+        taskList: {
+          required: true
+        },
+        // Suvrat Issue#3175
+        projectLists: {
+          required: true
+        },
+        milestoneLst: {
+          required: true
+        },
+        taskLst: {
+          required: true
+        },
+        ///////////////////
+      },
+      messages: {
+        milestoneLists: {
+          required: "Milestone is required."
+        },
+        taskList: {
+          required: "Task is required."
+        },
+        // Suvrat Issue#3175
+        projectLists: {
+          required: "Project is required."
+        },
+        milestoneLst: {
+          required: "Milestone is required."
+        },
+        taskLst: {
+          required: "Task is required."
+        },
+        ///////////////////////
+      },
+      highlight: function (element) { // hightlight error inputs
+        $(element).closest('.form-group').addClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+        // set error class to the control group
+      },
+      unhighlight: function (element) { // revert the change done by hightlight
+        $(element).closest('.form-group').removeClass('has-error');
+        $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+      },
+      success: function (label) {
+        label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+      }
+    });
+  }
+  validateData();
+</script>
+<!-- Suvrat Task table filter -->
+<script>
+  $(document).ready(function () {
+    $("#innerFilterBtn").click(function () {
+      $("#innerFilterBox").collapse("toggle");
+    });
+  });
+</script>
+<!-- ------------------------ -->

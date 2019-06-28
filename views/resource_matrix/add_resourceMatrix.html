@@ -1,0 +1,323 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="pull-right">
+            <ol class="ab-nav breadcrumb">
+                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+                    <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                        class="margin-right-xs"></a>
+                    <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                </li>
+            </ol>
+        </div>
+
+        <h3>Resource Matrix</h3>
+
+
+        <!-- For filter section -->
+
+        <div class="row">
+            <div class="col-md-12 pull-right">
+                <button type="button" data-toggle="collapse" data-target="#filterBox"
+                    class="btn btn-default btn-md pull pull-right" title="Filter">Filter &nbsp;<i class="fa fa-filter"
+                        aria-hidden="true"></i>
+                </button>
+            </div>
+        </div> <br>
+
+        <div class="row collapse" id="filterBox">
+            <div class="col-md-12">
+                <div class="box box-primary paddingLeft0">
+
+                    <div class="box-header with-border paddingLeft0 marginBorderHead">
+                        <div class="formHeadDiv">
+                            <h1 class="formheading paddingLeft0">
+                                Filter
+                            </h1>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+
+                    <div class="box-body marginEmailBody">
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+                                    <label for="resourceName">Name</label>
+                                    <select id="resourceName" name="resourceName" ng-model="rmx.matrixForm.user_id"
+                                        ng-options="x.id as x.name for x in rmx.userList" class="form-control"
+                                        style="width: 100%;">
+
+                                        <option value="" disabled>Select name</option>
+
+                                    </select>
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="project">Project</label>
+                                    <select id="project" name="project" ng-model="rmx.matrixForm.project"
+                                        ng-options="x.id as x.name for x in rmx.projectList"
+                                        class="form-control select2" data-placeholder="Select project"
+                                        style="width: 100%;" multiple="multiple">
+
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="technologyGroup">Technology Group</label>
+                                    <select id="technologyGroup" name="technologyGroup"
+                                        ng-model="rmx.matrixForm.technology_group"
+                                        ng-options="x.id as x.name for x in rmx.categoryList"
+                                        data-placeholder="Select technology group" class="form-control select2"
+                                        style="width: 100%;" multiple="multiple">
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="technology">Technology</label>
+                                    <select id="technology" name="technology" ng-model="rmx.matrixForm.technology"
+                                        ng-options="x.id as x.name for x in rmx.technologyList"
+                                        data-placeholder="Select technology" class="form-control select2"
+                                        style="width: 100%;" multiple="multiple">
+
+                                    </select>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+
+
+                            <div class="col-md-3">
+
+                                <div class="form-group" ng-show="rmx.duration">
+                                    <label for="experienceYears">Year</label>
+                                    <select id="experienceYears" name="experienceYears"
+                                        ng-model="rmx.matrixForm.duration.start_year"
+                                        ng-options="x.id as x.name for x in rmx.years" class="form-control"
+                                        style="width: 100%;">
+                                        <option value="" disabled>Select year</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <div class="form-group" ng-show="rmx.duration">
+                                    <label for="experienceMonths">Month</label>
+                                    <select id="experienceMonths" name="experienceMonths"
+                                        ng-model="rmx.matrixForm.duration.start_month"
+                                        ng-options="x.id as x.name for x in rmx.months" class="form-control"
+                                        style="width: 100%;">
+                                        <option value="" disabled>Select month</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                        <div class="pull-right" style="margin-top: 30px;">
+                                            <input type="checkbox" name="duration" ng-model="rmx.duration">
+                                            <label>Duration</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+
+                                        <button type="button" class="btn btn-default btn-md pull pull-right"
+                                            title="Find" ng-click="rmx.findWithFilter();" style="margin-top: 25px;"><i
+                                                class="fa fa-search" aria-hidden="true"></i> &nbsp; Find
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer" style="margin-right:14px!important">
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+        <!-- Filter section ends here -->
+
+        <!-- Project resource table  -->
+        <!-- <div> -->
+        <!-- Suvrat -->
+        <div class="table-responsive">
+            <!-- --------- -->
+            <table class="table  table-striped table-condensed table-responsive table-hover">
+
+                <thead class="thead-default">
+                    <tr>
+                        <th style="text-align: center;">Sr No.</th>
+                        <th style="text-align: center;">Name</th>
+                        <th style="text-align: center;">Project</th>
+                        <th style="text-align: center;">Technology</th>
+                        <th style="text-align: center;">Duration</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-repeat="data in rmx.userArrayList">
+
+                        <td style="text-align: center;">{{$index + 1}}</td>
+                        <td style="text-align: center;" ng-click="rmx.showMore(data, 'User Info');">{{data.name}} <a
+                                href="#" data-toggle="control-sidebar" id="nameTd_{{$index}}"></a></td>
+
+                        <!-- ng-click="rmx.showMore(data,'Project');" -->
+                        <td style="text-align: center;">
+
+                            <ul ng-repeat="x in data.project" style="list-style: none;">
+                                <li>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="pull-right">
+                                                {{x.name}} <a href="#" data-toggle="control-sidebar"
+                                                    id="projTd_{{$index}}"></a>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-5">
+                                            <div class="pull-left">
+                                                <div class="form-group">
+
+                                                    <div>
+                                                        <div class="input-group date">
+
+                                                            <input type="date" class="form-control pull-right"
+                                                                id="endDate_{{$index}}" name="end_date"
+                                                                ng-model="rmx.endDate" ng-change="rmx.onDatechange();"
+                                                                autocomplete="off" readonly='true'
+                                                                style="cursor:default;background-color: white;">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-1">
+                                            <div class="pull-left">
+
+                                                <button type="button"
+                                                    class="btn btn-success btn-xs pull pull-right pulse-button"
+                                                    data-toggle="modal" title="Edit" ng-if="rmx.editData == 1"
+                                                    data-ng-click="rmx.update()"
+                                                    style="top:1px;bottom: 4px;right: 40px;"><i style="color: black;"
+                                                        class="fa fa-edit" aria-hidden="true"></i>
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
+
+
+                        </td>
+
+                        <td style="text-align: center;" ng-click="rmx.showMore(data, 'Technology');">
+                            {{data.technology[0].name}} <a href="#" data-toggle="control-sidebar"
+                                id="techTD_{{$index}}"></a></td>
+
+                        <td style="text-align: center;" ng-click="rmx.showMore(data, 'Technology');">
+                            {{data.user_technology_mapping[0].duration}} <a href="#" data-toggle="control-sidebar"
+                                id="durationTD_{{$index}}"></a></td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(function () {
+
+        $('#project').select2({
+            placeholder: function () {
+                $(this).data('placeholder');
+            }
+        });
+
+        $('#technology').select2({
+            placeholder: function () {
+                $(this).data('placeholder');
+            }
+        });
+
+    });
+
+    /*  //Date picker
+     $('#endDate_1').datepicker({
+     autoclose: true
+     }).on('changeDate', function(e) {
+     $(this).valid();
+     });*/
+
+
+    //Initialize Select2 Elements
+    $(".select2").select2();
+
+    $("#nameTd").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+
+    $("#projTd").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+
+    $("#techTD").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+
+    $("#durationTD").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+    });
+</script>

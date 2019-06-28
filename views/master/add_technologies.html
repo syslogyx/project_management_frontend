@@ -1,0 +1,151 @@
+<section class="content">
+    <!-- Suvrat Change the position of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <br><br>
+    <!-- general form elements disabled -->
+    <form ng-submit="submitTechnologyForm()" role="form" name="technologyForm" id="technologyForm">
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border boxhead">
+                <div class="col-md-6 ">
+                    <div class="">
+                        <h1 class="formheading">
+                            <!-- <b> Add New Category With Technology </b> -->
+                            <b> {{tec.title}}</b>
+                        </h1>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="pull-right" style="margin-top: 5px; margin-right: 30px;">
+                        <a ng-href="/technology"><button type="button" class="btn btn-default btn-sm"
+                                data-toggle="modal" title="Back" data-target="" data-ng-click=""
+                                style="border:white;color:#428bca;"><i class="fa fa-arrow-left"
+                                    aria-hidden="true"></i></button></a>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label class="mandatory" for="">Technology Name</label>
+                                <input type="text" class="form-control" name="technologyName"
+                                    ng-model="tec.technologyName" placeholder="Enter technology name"
+                                    ng-change="tec.copyAddress()">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Technology Alias</label>
+                                <input type="text" class="form-control" name="technologyAlias"
+                                    ng-model="tec.technologyAlias" placeholder="Enter technology alias"
+                                    disabled="disabled">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <!--    <pre> {{cate.technology |json}}</pre> -->
+                            <div class="form-group">
+                                <label for="">Parent</label>
+                                <select id="technology" name="technology" ng-model="tec.technology"
+                                    class="form-control s2mn select2" style="width: 100%;"
+                                    ng-options="x.id as x.name for x in tec.allTechnology">
+                                    <option value="">Select parent</option>
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+
+            </div>
+            <!-- /.box-body -->
+
+            <div class="box-footer">
+                <div class="pull pull-right">
+                    <input type="submit" value="Save" data-ng-click="tec.saveTechnology()" class="btn btn-success"
+                        ng-disabled="tec.submitClicked" />
+                    <!-- <input type="submit" value="Save and Add New" data-ng-click="tsk.saveTask(2)" class="btn btn-default" ng-disabled="tsk.submitClicked"/> -->
+                    <input ng-if="tec.title == 'Add New Technology'" type="reset" value="Reset" ng-click="resetForm()"
+                        class="btn btn-warning" />
+                </div>
+            </div>
+
+        </div>
+    </form>
+</section>
+
+<style type="text/css">
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #ccc !important;
+        border-radius: 0px !important;
+    }
+</style>
+
+<script>
+
+    $("#technologyForm").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        errorPlacement: function (error, element) {
+
+            var type = $(element).attr("type");
+            if ($(element).attr("id") === "") {
+                element.parent().append(error);
+
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        rules: {
+            technologyName: {
+                required: true
+            }
+        },
+        messages: {
+            technologyName: "Technology name is required."
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element)
+                .closest('.form-group').removeClass('has-error');
+            $(element)
+                .next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label
+                .closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $(".select2").select2();
+    });
+</script>

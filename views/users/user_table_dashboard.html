@@ -1,0 +1,115 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Users</h4>
+            </div>
+            <div class="pull-right">
+                <ol class="ab-nav breadcrumb">
+                    <i class="glyphicon glyphicon-home"></i>&nbsp;
+                    <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path"
+                        ng-class="{ active: $last }">
+                        <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                            class="margin-right-xs"></a>
+                        <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1 pull-right">
+                <button type="button" class="btn btn-primary btn-circle btn-lg pull-right" title="Sync"
+                    data-ng-click="usc.syncNewUsers()"><i class="fa fa-refresh"></i></button>
+                <button type="button" class="btn btn-default btn-md" data-toggle="modal" title="Add new user"
+                    data-target="" ng-show="">Add new user &nbsp;<i class="fa fa-user-plus" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="col-md-5 pull-right" style="margin-top:0.5%;">
+                <div class="dataTables_length text-right" id="example_length"><label>Show
+                        <!-- <select id="table_length" aria-controls="example" style='outline: 0;'> -->
+                        <!-- Suvrat Issue#2697 -->
+                        <select id="table_length" aria-controls="example" style='outline: 0;' onchange="sel_upd()">
+                            <!-- -------------- -->
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        entries</label>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- User table  -->
+        <!-- Suvrat Issue#2697 -->
+        <span style="float: right;">Showing <span id="pagin_lvl"></span> out of {{usc.totalEntries}}
+            results</span><br><br>
+        <!-- ---------------------- -->
+        <div>
+            <div class="row">
+                <!-- <div class="col-md-12"> -->
+                <!-- Suvrat -->
+                <div class="col-md-12 table-responsive">
+                    <!-- ------- -->
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Sr No.</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Total Experience</th>
+                                <th style="text-align: center;">Projects</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr ng-if="usc.userList.length > 0"
+                                ng-repeat="data in usc.userList | orderBy:'name' track by data.id">
+                                <td style="text-align: center;" ng-bind="(usc.pageno - 1) * usc.limit + ($index + 1)">
+                                </td>
+                                <td><a ng-href="/user/info/{{data.id}}">{{data.name}}</a></td>
+                                <td>{{data.email}}</td>
+                                <!--<td>{{data.total_experience}}</td>-->
+                                <td>{{data.total_experience.split(".")[0]}}
+                                    {{data.total_experience.split(".")[0] > 1 ? "years" : "year"}}
+                                    {{data.total_experience.split(".")[1]}}
+                                    {{data.total_experience.split(".")[1] > 1 ? "months" : "month"}}</td>
+                                <td style="text-align: center;">
+
+                                    <a ng-href="user/info/{{data.id}}" title="View projects"
+                                        style="outline: 0;text-decoration: none">{{data.project_resource.length}}</a>
+                                </td>
+                            </tr>
+                            <tr ng-if="usc.userList == null || usc.userList.length == 0">
+                                <td style="text-align: center;" colspan="10">No Records Found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row col-sm-12" style="padding-right: 0px;">
+                        <ul id="pagination-sec" class="pagination-sm"
+                            style="float: right;margin-top: 10px;margin-bottom: 10px"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+    });
+</script>
+
+<!-- Suvrat Issue#2697 -->
+<script>
+    var e = document.getElementById("table_length");
+    var sel = e.options[e.selectedIndex].value;
+    document.getElementById("pagin_lvl").innerHTML = sel;
+    function sel_upd() {
+        var e = document.getElementById("table_length");
+        var sel = e.options[e.selectedIndex].value;
+        document.getElementById("pagin_lvl").innerHTML = sel;
+    }
+</script>
+<!-- ---------------------- -->

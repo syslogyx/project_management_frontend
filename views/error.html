@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project Management</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="/resources/plugins/bootstrap/css/bootstrap.min.css">
+    <script src="/resources/jquery.min.js"></script>
+    <script src="/resources/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/resources/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="/resources/css/skins/_all-skins.css">
+    <script src="/resources/js/app.min.js"></script>
+    <script src="/resources/js/adminlte.min.js"></script>
+    <link rel="shortcut icon" href="/resources/img/favicon.ico">
+    <link href="/resources/css/Font_montserrat.css" rel="stylesheet">
+</head>
+<style>
+    body {
+        font-family: montserrat;
+    }
+
+    .main-sidebar,
+    .control-sidebar,
+    footer {
+        display: none
+    }
+
+    .wrapper,
+    html {
+        background-color: #ecf0f5 !important;
+    }
+
+    .content-wrapper,
+    .right-side,
+    .main-footer {
+        margin-left: 0px;
+    }
+
+    .login-page,
+    .register-page {
+        background: #ecf0f5;
+    }
+
+    .error-heading {
+        margin: 50px auto;
+        width: 250px;
+        border: 5px solid;
+        font-size: 126px;
+        line-height: 126px;
+        border-radius: 30px;
+        text-shadow: 6px 6px 5px #000;
+    }
+
+    .error-heading img {
+        width: 100%;
+    }
+
+    .error-main h1 {
+        font-size: 72px;
+        margin: 50px;
+        color: #F3661C;
+        text-shadow: 0px 0px 5px #fff;
+    }
+
+    .error-main p {
+        font-size: 20px;
+    }
+</style>
+
+<body class="hold-transition skin-blue sidebar-mini" ui-view autoscroll="false">
+    <div class="wrapper">
+        <div>
+            <header class="main-header">
+                <a href="/" class="logo" style="background-color: #1d4c89">
+                    <img src="/resources/img/syslogyx_small_logo.png" style="    padding-left: 7px; padding-top: 14px;"
+                        class="logo-mini">
+                    <img src="/resources/img/syslogyx_logo.png" style="padding-left: 30px;padding-top: 2px;"
+                        class="logo-lg">
+                </a>
+                <nav class="navbar navbar-static-top">
+                    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button"
+                        style="text-decoration: none;" id="sidebar-toggle">
+                        <span class="sr-only">Toggle navigation</span>
+                    </a>
+
+                    <!-- <div class="navbar-custom-menu">
+                        <ul class="nav navbar-nav">
+
+                            <li class="dropdown user user-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img ng-src="http://hrms.syslogyx.com/upload/profilepic/{{avtar}}" onerror="this.onerror=null;this.src='resources/img/default_profile.png';" class="user-image img-circle">
+                                    <span class="hidden-xs">{{name}}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="user-header">
+                                        <img ng-src="http://hrms.syslogyx.com/upload/profilepic/{{avtar}}" class="img-circle" onerror="this.onerror=null;this.src='resources/img/default_profile.png';">
+                                        <p>
+                                            {{name}}
+                                        </p>
+                                    </li>
+                                    <li class="user-footer">
+                                        <div class="pull-left">
+                                            <a ng-href="user/info/{{userId}}" class="btn btn-default btn-flat">Profile</a>
+                                        </div>
+                                        <div class="pull-right">
+                                            <a href="#" class="btn btn-default btn-flat" data-ng-click="clearToken()">Sign out</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div> -->
+                </nav>
+            </header>
+        </div>
+
+        <!-- =============================================== -->
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <div id="viewPort" ng-controller="errorCtrl">
+                <div class="wrapper">
+                    <div class="error-main">
+                        <div class="pull-right">
+                            <ol class="ab-nav breadcrumb">
+                                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path"
+                                    ng-class="{ active: $last }">
+                                    <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                                        class="margin-right-xs"></a>
+                                    <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                                </li>
+                            </ol>
+                        </div>
+                        <h1 style="text-align: center;"><b>Oops!</b></h1>
+                        <div class="error-heading">403</div>
+                        <p style="text-align: center;">You do not have permission to access the page that you requested.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+
+
+
+
+
+
+<!-- This is the original error.html file before any changes. To restore, delete above code and uncomment this one. -->
+
+<!-- <style>
+  .main-sidebar,.control-sidebar,footer{
+    display: none
+  }
+ .wrapper,html{
+  background-color: #ecf0f5 !important;
+ }
+ .content-wrapper, .right-side, .main-footer {
+    margin-left: 0px;
+}
+ .login-page, .register-page {
+    background: #ecf0f5;
+}
+.error-heading{
+    margin: 50px auto;
+    width: 250px;
+    border: 5px solid;
+    font-size: 126px;
+    line-height: 126px;
+    border-radius: 30px;
+    text-shadow: 6px 6px 5px #000;
+}
+.error-heading img{
+    width: 100%;
+}
+.error-main h1{
+    font-size: 72px;
+    margin: 50px;
+    color: #F3661C;
+    text-shadow: 0px 0px 5px #fff;
+}
+.error-main p{
+    font-size: 20px;
+}
+</style>
+
+<div class="wrapper">
+    <div class="error-main">
+        <div class="pull-right">
+            <ol class="ab-nav breadcrumb">
+                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                  <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label" class="margin-right-xs"></a>
+                  <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                </li>
+            </ol>
+        </div>
+        <h1 style="text-align: center;">Oops!</h1>
+        <div class="error-heading">403</div>
+        <p style="text-align: center;">You do not have permission to access the page that you requested.</p>
+    </div>
+</div> -->
+<!-- Suvrat This fixes the scroll getting stuck issue -->
+<!-- This is commented originally, keep it commented. -->
+<!-- <script>
+    $(document).ready(function () {
+        $("html, body").animate({scrollTop: 0}, "fast");
+        // $('body').css('overflow','hidden');
+
+    });
+    $(window).scroll(function () {
+        scroll(0, 0);
+    });
+</script> -->
+<!-- ----------------------------------------------------------- -->

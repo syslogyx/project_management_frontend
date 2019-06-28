@@ -1,0 +1,522 @@
+<section class="content">
+    <!-- Suvrat Change the position of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <!-- ------------------------------------- -->
+    <br><br>
+    <!-- Add Task Section -->
+    <form role="form" name="taskForm" id="taskForm">
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border boxhead">
+                <div class="col-md-6 ">
+                    <div class="">
+                        <h1 class="formheading">
+                            <b>{{tsk.title}} </b>
+                        </h1>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="pull-right" style="margin-top: 5px; margin-right: 30px;">
+                        <a ng-href="/project/task/{{tsk.project_id}}"><button type="button"
+                                class="btn btn-default btn-sm" data-toggle="modal" title="Back" data-target=""
+                                data-ng-click="" style="border:white;color:#428bca;"><i class="fa fa-arrow-left"
+                                    aria-hidden="true"></i></button></a>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="mandatory" for="">Task Name</label>
+                    <input type="text" class="form-control" name="taskName" ng-model="tsk.taskName"
+                        placeholder="Enter task name">
+                </div>
+                <div class="form-group">
+                    <label class="mandatory" for="">Description</label><br>
+                    <textarea type="text" rows="6" cols="90" ng-model="tsk.taskDescription" name="description"
+                        id="description" class="form-control" placeholder="Task overview"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Milestone</label>
+
+                            <!-- Suvrat Open the create Milestone modal -->
+                            <button type="button" class="btn btn-default btn-xs moving-pulse-button  ng-scope"
+                                data-toggle="modal" title="Add more" data-ng-click="tsk.addNewMilestone()" style="margin-right: 40px;float: right;left: 16px; width: 21px;
+                              height: 21px;"><i style="color: black;padding-bottom: 0px;padding-right: 0px;"
+                                    class="fa fa-plus-circle" aria-hidden="true"></i>
+                            </button>
+                            <!-- -------------------------------------- -->
+
+                            <select id="milestoneList" name="milestoneList" ng-model="tsk.milestoneData"
+                                class="form-control select2 s2mn" style="width: 100%;"
+                                ng-options="x.id as x.title for x in tsk.milestoneList"
+                                ng-change="tsk.selectedItemChanged()">
+                                <option value="">Select milestone</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Status</label>
+                            <select id="taskStatus" name="taskStatus" ng-model="tsk.taskStatusData"
+                                class="form-control select2 s2mn" style="width: 100%;"
+                                ng-options="x.name as x.name for x in tsk.taskStatus" disabled>
+                                <option value="">Select project status</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Priority</label>
+                            <select id="priority" name="priority" ng-model="tsk.priority"
+                                class="form-control select2 s2mn" style="width: 100%;"
+                                ng-options="x.id as x.name for x in tsk.priorities" placeholder="Select priority">
+                                <option value="">Select priority</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Assigned To</label>
+                            <select id="projectManager" name="projectManager" ng-model="tsk.assignedToData"
+                                class="form-control select2 s2mn" style="width: 100%;"
+                                ng-options="x.id as x.user.name + ' -- ' + x.domain.name for x in tsk.assigned_to"
+                                placeholder="Select user">
+                                <option value="">Select user</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 4px">
+                        <div class="form-group">
+                            <label for="">Technical Support</label>
+                            <select id="technicalSupport" name="technicalSupport" ng-model="tsk.technicalSupportId"
+                                class="form-control select2 s2mn" style="width: 100%;"
+                                ng-options="x.id as x.name for x in tsk.technical_support"
+                                placeholder="Select technical support">
+                                <option value="">Select technical support</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-4"> -->
+                    <!-- <div class="form-group"> -->
+                    <!-- <label class="mandatory" for="">Estimated Hours</label> -->
+                    <!-- <div class="col-sm-12" style="padding-left: 0px;padding-right: 0px;"> -->
+                    <!-- <div class="col-sm-6" style="padding-left: 0px;"> -->
+                    <!-- <input type="text" class="form-control" id = "taskEstimationhh"  name="taskEstimationhh" ng-model="tsk.task_estimationhh" placeholder="HH"> -->
+                    <!-- </div> -->
+                    <!-- <div class="col-sm-6" style="padding-left: 0px;"> -->
+                    <!-- <input type="text" class="form-control" id = "taskEstimationmm"  name="taskEstimationmm" ng-model="tsk.task_estimationmm" placeholder="MM"> -->
+                    <!-- </div> -->
+                    <!-- </div> -->
+
+                    <!-- <input type="text" class="form-control" id = "taskEstimation"  name="taskEstimation" ng-model="tsk.task_estimation" placeholder="Enter estimated hours">  donot uncomment-->
+                    <!-- </div> -->
+                    <!-- </div> -->
+
+                    <!-- Suvrat Issue#3173 -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="">Estimated Hours</label>
+                            <div class="col-sm-12" style="padding-left: 0px;padding-right: 0px;">
+                                <div class="form-group">
+                                    <div class="col-sm-6" style="padding-left: 0px;">
+                                        <input type="text" class="form-control" id="taskEstimationhh"
+                                            name="taskEstimationhh" ng-model="tsk.task_estimationhh" placeholder="HH">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-6" style="padding-left: 0px; margin-top:-15px;">
+                                        <input type="text" class="form-control" id="taskEstimationmm"
+                                            name="taskEstimationmm" ng-model="tsk.task_estimationmm" placeholder="MM">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <input type="text" class="form-control" id = "taskEstimation"  name="taskEstimation" ng-model="tsk.task_estimation" placeholder="Enter estimated hours"> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="pull pull-right">
+                    <input type="submit" value="Save" data-ng-click="tsk.saveTask()" class="btn btn-success"
+                        ng-disabled="tsk.submitClicked" />
+                    <!-- <input type="submit" value="Save and Add New" data-ng-click="tsk.saveTask(2)" class="btn btn-default" ng-disabled="tsk.submitClicked"/> -->
+                    <input ng-if="tsk.title == 'Add New Task'" type="reset" value="Reset" ng-click="resetForm()"
+                        class="btn btn-warning" />
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+<!-- Suvrat Issue#3177 -->
+
+<div class="modal fade" id="addMilestModal" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Milestone</h4>
+            </div>
+
+            <div class="modal-body">
+                <form role="form" name="addMilestoneForm" id="milestoneForm">
+                    <input type="hidden" id="projectId" ng-model="tsk.project_id">
+                    <input type="hidden" id="sprojStartDate" value="{{tsk.projectStartDate}}">
+                    <input type="hidden" id="sprojEndDate" value="{{tsk.projectEndDate}}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="mandatory" for="">Milestone Title</label>
+                                <input type="text" class="form-control" name="milestoneTitle" id="milestoneTitle"
+                                    ng-model="tsk.milestoneName" placeholder="Enter milestone title">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="mandatory" for="milestoneStatus">Status</label>
+                                <select id="milestoneStatus" name="milestoneStatus" ng-model="tsk.milestoneStatus"
+                                    class="form-control s2mn" style="width: 100%;"
+                                    ng-options="x.name as x.name for x in tsk.status" disabled="">
+                                    <option label="{{tsk.milestoneStatus}}" value="string:{{tsk.milestoneStatus}}"
+                                        selected>{{tsk.milestoneStatus}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="mandatory" for="">Description</label><br>
+                                <textarea type="text" rows="6" cols="90" ng-model="tsk.milestdescription"
+                                    name="milestdescription" id="milestdescription" class="form-control"
+                                    placeholder="Milestone overview"></textarea>
+                            </div>
+                        </div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="mandatory" for="">Start Date</label>
+                                <div>
+                                    <div class="input-group date">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input type="text" class="form-control pull-right" id="startDate"
+                                            name="start_date" ng-model="tsk.milestoneStartDate" autocomplete="off"
+                                            placeholder="Enter start date" readonly='true'
+                                            style="cursor:default;background-color: white;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="mandatory">End Date</label>
+                                <div>
+                                    <div class="input-group date">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input type="text" class="form-control pull-right" id="endDate" name="end_date"
+                                            ng-model="tsk.milestoneEndDate" autocomplete="off"
+                                            placeholder="Enter end date" readonly='true'
+                                            style="cursor:default;background-color: white;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-md-6" style="display: none;">
+                            <div class="form-group">
+                                <label class="mandatory" for="">Version</label>
+                                <select name="milestoneIndex" class="form-control select2" id="milestoneIndex"
+                                    ng-model="tsk.version"
+                                    ng-options="option.id as option.name for option in tsk.milestonIndex"
+                                    style="width:100%">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <input type="submit" value="Save" data-ng-click="tsk.saveMilestone()" class="btn btn-success"
+                    ng-disabled="tsk.submitClicked" />
+                <button type="button" class="btn btn-warning" data-dismiss="modal">
+                    Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ----------------- -->
+
+<!-- Suvrat Issue#3177 Validation and other initialisations -->
+<script>
+    $(document).ready(function () {
+        $('#milestdescription').ckeditor();
+
+        setTimeout(function () {
+            var sd = $("#sprojStartDate").val();
+            var ed = $("#sprojEndDate").val();
+
+            $('#startDate').datepicker({
+                autoclose: true
+            }).on("changeDate", function () {
+                $(this).valid();
+                var selected = $(this).val();
+                $('#endDate').datepicker('setStartDate', selected);
+            });
+
+            $('#endDate').datepicker({
+                autoclose: true
+            }).on('changeDate', function (e) {
+                $(this).valid();
+                var selected = $(this).val();
+                $('#startDate').datepicker('setEndDate', selected);
+            });
+        }, 800);
+
+        function validatemilestForm() {
+            $("#milestoneForm").validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block help-block-error',
+                errorPlacement: function (error, element) {
+                    var type = $(element).attr("type");
+                    if ($(element).attr("id") === "milestoneIndex") {
+                        element.parent().append(error);
+                    } else if ($(element).attr("id") === "startDate") {
+                        element.parent().parent().parent().append(error);
+                    } else if ($(element).attr("id") === "endDate") {
+                        element.parent().parent().parent().append(error);
+                    } else if ($(element).attr("id") === "milestdescription") {
+                        element.parent().append(error);
+                    } else {
+                        error.insertAfter(element);
+                    }
+                },
+                focusInvalid: true, // set focus the last invalid input
+                ignore: [], // validate all fields including form hidden input
+                rules: {
+                    milestoneTitle: {
+                        required: true
+                    },
+                    start_date: {
+                        required: true
+                    },
+                    end_date: {
+                        required: true
+                    },
+                    milestoneIndex: {
+                        required: true
+                    },
+                    milestdescription: {
+                        required: true
+                    },
+                    milestoneStatus: {
+                        required: true
+                    }
+                },
+                messages: {
+                    milestoneTitle: {
+                        required: "Milestone title is required."
+                    },
+                    start_date: {
+                        required: "Start date is required."
+                    },
+                    end_date: {
+                        required: "End date is required."
+                    },
+                    milestoneIndex: {
+                        required: "Milestone Index is required"
+                    },
+                    milestdescription: {
+                        required: "Description is required"
+                    },
+                    milestoneStatus: {
+                        required: "Status is required"
+                    }
+                },
+                highlight: function (element) { // hightlight error inputs
+                    $(element).closest('.form-group').addClass('has-error');
+                    $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');// set error class to the control group
+                },
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element).closest('.form-group').removeClass('has-error');
+                    $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+                },
+                success: function (label) {
+                    label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+                }
+            });
+        }
+        validatemilestForm();
+    });
+</script>
+
+
+<script>
+    $('#startDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#endDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>
+
+<!-- ------------------------------------------------------ -->
+
+<script>
+    /*$(function () {
+     // Replace the <textarea id="editor1"> with a CKEditor
+     // instance, using default configuration.
+     CKEDITOR.replace('editor1');
+     //bootstrap WYSIHTML5 - text editor
+     $(".textarea").wysihtml5();
+     });
+     */
+    $(document).ready(function () {
+        $('#description').ckeditor();
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+    });
+
+    //Initialize Select2 Elements
+    $(".select2").select2();
+    $(".s2mn").on("change", function () { $(this).valid(); });
+
+    $.validator.addMethod('checkRange', function (value, el, param) {
+        return value <= param;
+    }, "The value must be less than equal to {0}");
+    //Suvrat Issue#3186
+    $.validator.addMethod("integer", function (value, element) {
+        return this.optional(element) || /^-?\d+$/.test(value);
+    }, "Decimal values not allowed");
+
+    //For form validations
+    function validateclientForm() {
+        $("#taskForm").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            errorPlacement: function (error, element) {
+                if ($(element).attr("id") === "milestoneList" || $(element).attr("id") === "priority" || $(element).attr("id") === "projectManager" || $(element).attr("id") === "technicalSupport" || $(element).attr("id") === "taskStatus") {
+                    element.parent().append(error);
+                } else if ($(element).attr("id") === "startDate") {
+                    element.parent().parent().parent().append(error);
+                } else if ($(element).attr("id") === "endDate") {
+                    element.parent().parent().parent().append(error);
+                } else if ($(element).attr("id") === "description") {
+                    element.parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            focusInvalid: true, // set focus the last invalid input
+            ignore: "", // validate all fields including form hidden input
+            rules: {
+                taskName: {
+                    required: true
+                },
+                milestoneList: {
+                    required: true
+                },
+                priority: {
+                    required: true
+                },
+                projectManager: {
+                    required: true
+                },
+                // taskEstimation: {
+                //     required: true,
+                //     number: true
+                // },
+                taskEstimationhh: {
+                    required: true,
+                    number: true,
+                    integer: true,   //Suvrat Issue#3186
+                    minlength: 2     //Suvrat Issue#3341
+                },
+                taskEstimationmm: {
+                    required: true,
+                    number: true,
+                    checkRange: 59,
+                    integer: true,   //Suvrat Issue#3186
+                    minlength: 2,    //Suvrat Issue#3341
+                    maxlength: 2     //Suvrat Issue#3341
+                },
+                taskStatus: {
+                    required: true
+                },
+                description: {
+                    required: true
+                }
+            },
+            messages: {
+                taskName: {
+                    required: "Task name is required"
+                },
+                milestoneList: {
+                    required: "Milestone List is required"
+                },
+                priority: {
+                    required: "Priority is required"
+                },
+                projectManager: {
+                    required: "User is required"
+                },
+                // taskEstimation: {
+                //     required: "Task estimation is required"
+                // },
+                taskEstimationhh: {
+                    required: "Hour is required",
+                    integer: "Decimal values not allowed"       //Suvrat Issue#3186
+                },
+                taskEstimationmm: {
+                    required: "Minute is required",
+                    integer: "Decimal values not allowed"       //Suvrat Issue#3186
+                },
+                taskStatus: {
+                    required: "Task status is required"
+                },
+                description: {
+                    required: "Task description is required"
+                }
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+    }
+    validateclientForm();
+</script>

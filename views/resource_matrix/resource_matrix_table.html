@@ -1,0 +1,656 @@
+<style>
+    .modal-body {
+        max-height: calc(100vh - 210px);
+        overflow-y: auto;
+    }
+
+    #circle {
+        width: 15px;
+        height: 15px;
+        -webkit-border-radius: 25px;
+        -moz-border-radius: 25px;
+        border-radius: 25px;
+        /*background: red;*/
+        float: left;
+        margin-right: 10px;
+    }
+
+    /* Suvrat Add a new legend for tables */
+    @media (max-width: 768px) {
+        #legend5 {
+            margin-left: -28px;
+            width: 32%;
+        }
+    }
+
+    @media (min-width: 768px) {
+        #legend5 {
+            margin-left: unset;
+            width: unset;
+        }
+    }
+
+    /* ////////////////////////////////////////// */
+</style>
+<section class="content" id="resource_matrix">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4 col-sm-12 col-xs-12">
+                <ol id="breadcrumb" class="ab-nav breadcrumb">
+                    <i class="glyphicon glyphicon-home"></i>&nbsp;
+                    <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path"
+                        ng-class="{ active: $last }">
+                        <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                            class="margin-right-xs"></a>
+                        <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-md-3 col-sm-4 col-xs-4">
+                <h4>Resource Matrix</h4>
+            </div>
+            <div class="col-md-5 col-sm-8 col-xs-8 pull-right" style="margin-top:5px;">
+                <button type="button" data-toggle="collapse" data-target="#filterBox"
+                    class="btn btn-primary btn-circle btn-sm pull-right" title="Filter" style="outline: 0;"><i
+                        class="fa fa-filter" aria-hidden="true" style="padding-right:0.3px"></i>
+                </button>
+                <div id="showmore" class="col-md-7 col-sm-7 col-xs-10" style="margin-top:0.5%;display:none">
+                    <div class="dataTables_length text-right" id="example_length"><label>Show
+                            <select id="table_length" aria-controls="example">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            entries</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row collapse" id="filterBox">
+            <div class="col-md-12">
+                <div class="box box-primary paddingLeft0">
+
+                    <div class="box-header with-border paddingLeft0 marginBorderHead">
+                        <div class="formHeadDiv">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h1 class="formheading paddingLeft0">
+                                        Filter
+                                    </h1>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="pull-right">
+                                        <label>Duration</label>
+                                        <input type="checkbox" id="durationCB" name="duration" ng-model="rmx.duration"
+                                            ng-click="rmx.clearDuration();" ng-change="rmx.clearDuration();"
+                                            ng-disabled="rmx.matrixForm.technology.length <= 0">
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="pull-right">
+                                        <i data-toggle="tooltip" title="Refresh" data-ng-click="rmx.refreshfilter();"
+                                            style="font-size: 18px;" class="mdi mdi-refresh" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+
+                    <form id="filterDataForm" name="filterDataForm">
+                        <div class="box-body marginEmailBody">
+
+                            <div class="row">
+                                <!--
+                                    <div class="col-md-3">
+
+                                        <div class="form-group">
+                                            <label for="resourceName">Name</label>
+                                            <select id="resourceName" name="resourceName" ng-model="rmx.matrixForm.user_id" ng-options="x.id as x.name for x in rmx.userList"  class="form-control" style="width: 100%;">
+                                                <option value="">Select user</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                -->
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="project">Project</label>
+                                        <select id="project" name="project" ng-model="rmx.matrixForm.project"
+                                            ng-options="x.id as x.name for x in rmx.projectList"
+                                            class="form-control select2 s2mn" data-placeholder="Select project"
+                                            style="width: 100%;" multiple="multiple">
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="technologyGroup">Domains</label>
+                                        <select id="technologyGroup" name="technologyGroup"
+                                            ng-model="rmx.matrixForm.technology_group"
+                                            ng-options="x.id as x.name for x in rmx.categoryList"
+                                            data-placeholder="Select domain" class="form-control select2 s2mn"
+                                            style="width: 100%;" multiple="multiple"
+                                            ng-change="rmx.fetchInfo(rmx.matrixForm.technology_group)">
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="technology">Technology</label>
+                                        <select id="technology" name="technology" ng-model="rmx.matrixForm.technology"
+                                            ng-options="x.id as x.name for x in rmx.technologyList"
+                                            data-placeholder="Select technology" class="form-control select2 s2mn"
+                                            style="width: 100%;" multiple="multiple" ng-change="rmx.resetDuration()">
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group" ng-if="rmx.matrixForm.project.length > 0">
+                                        <label for="status">Status</label>
+                                        <select id="status" name="status" ng-model="rmx.matrixForm.name"
+                                            ng-options="x.id as x.name for x in rmx.projectStatus"
+                                            data-placeholder="Select status" class="form-control" style="width: 100%;">
+                                            <option value="">Select status</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row" ng-if=" rmx.matrixForm.technology.length > 0 && rmx.duration "
+                                id="yearMonthDiv">
+                                <div class="col-md-3"></div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="mandatory" for="experienceYears">Year</label>
+                                        <select id="experienceYears" name="experienceYears"
+                                            ng-model="rmx.matrixForm.duration.start_year"
+                                            ng-options="x.id as x.name for x in rmx.years" class="form-control"
+                                            style="width: 100%;">
+                                            <option value="">Select year</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="mandatory" for="experienceMonths">Month</label>
+                                        <select id="experienceMonths" name="experienceMonths"
+                                            ng-model="rmx.matrixForm.duration.start_month"
+                                            ng-options="x.id as x.name for x in rmx.months" class="form-control"
+                                            style="width: 100%;">
+                                            <option value="">Select month</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- <div class="col-md-3">
+
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <div class="pull-right" style="margin-top: 30px;">
+                                                <input type="checkbox" id="durationCB" name="duration" ng-model="rmx.duration" ng-click="rmx.clearDuration();">
+                                                <label>Duration</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+
+                                            <button type="button" class="btn btn-default btn-md pull pull-right"  title="Find" ng-click="rmx.findWithFilter();" style="margin-top: 25px;" ><i class="fa fa-search" aria-hidden="true"></i> &nbsp; Find
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                </div> -->
+                            </div>
+
+                        </div>
+                    </form>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer"
+                        style="margin-right:14px!important;border-top: 1px solid lightgrey!important;">
+                        <div class="row">
+                            <div class="pull-right">
+                                <div class="col-md-6">
+
+                                    <button type="button" class="btn btn-default btn-md pull pull-right" title="Find"
+                                        ng-click="rmx.findWithFilter();" style="margin-top: 10px;outline: 0;"><i
+                                            class="fa fa-search" aria-hidden="true"></i> &nbsp; Find
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Filter section ends here -->
+
+        <!-- Suvrat Add a new legend for tables -->
+        <div class="row" style="margin-bottom: 10px; text-align: center;">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div id="legendd" class="" style="display: inline-block;">
+                    <!-- <div class="legend-item col-md-2 col-sm-4 col-xs-5"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Pending"></span>
+                    <span class="status_name">Pending</span>
+                    <!-- </div> -->
+                    <!-- <div class="legend-item col-md-3 col-sm-4 col-xs-7"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Start"></span>
+                    <span class="status_name">In-progress</span>
+                    <!-- </div> -->
+                    <!-- <div class="legend-item col-md-2 col-sm-4 col-xs-4"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Active"></span>
+                    <span class="status_name">Active</span>
+                    <!-- </div> -->
+                    <!-- <div class="legend-item col-md-3 col-sm-4 col-xs-5"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Paused"></span>
+                    <span class="status_name">On-hold</span>
+                    <!-- </div> -->
+                    <!-- <div id="legend5" class="legend-item col-md-2 col-sm-4 col-xs-3"> -->
+                    <span id="circle" ng-class="tk.status_id" class="Closed"></span>
+                    <span class="status_name">Closed</span>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Project resource table  -->
+        <div class="table-responsive">
+            <table class="table  table-striped table-condensed table-responsive table-hover">
+                <thead class="thead-default">
+                    <tr>
+                        <th style="/*text-align: center;*/ text-align: center;padding-left:10px; width: 7.5%;">Sr No.
+                        </th>
+                        <th style="text-align: left; padding-left:10px;">Name</th>
+                        <th style="text-align: left; padding-left:17px;">Technology/s</th>
+                        <!-- <th style="text-align: center;">Duration</th> -->
+                        <!--<th style="text-align: left; padding-left:185px;">Project</th>-->
+                        <th style="text-align: left; padding-left:27px; width: 25%; word-wrap: break-word;">Project/s
+                        </th>
+                        <th style="text-align: center; ">End Date</th>
+                        <th style="text-align: center; padding-left:10px;width: 7.5%;"
+                            ng-if="can('user.resourcematrix.dashboard.edit')">Action</th>
+                    </tr>
+                </thead>
+                <!-- <pre>{{rmx.userArrayList|json}}</pre>-->
+                <tbody>
+                    <tr ng-repeat="data in rmx.userArrayList">
+                        <td style="text-align: center; padding-left:5px;">{{$index + 1}}</td>
+                        <td style="text-align: left; padding-left:10px; width: 19%; "> <a
+                                ng-href="{{can('user.resourcematrix.users.view') ?  'user/info/'+ data.id  : '/error'}}"
+                                id="nameTd_{{$index}}" style="text-decoration: none;outline: 0;">{{data.name}}</a>
+                            <!-- <i class="mdi mdi-information-outline" ng-click="rmx.showMore(data, 'User info');rmx.showActiveTab();" style="font-size: 18px!important;margin-left:4px;position:absolute;margin-top:-3px;" data-toggle="tooltip" title="See more."></i> -->
+
+                            <!-- Suvrat -->
+                            <i class="mdi mdi-information-outline"
+                                ng-click="rmx.showMore(data, 'User Info');rmx.showActiveTab();"
+                                style="font-size: 18px!important;margin-left:4px;position:relative;vertical-align: -3px;"
+                                data-toggle="tooltip" title="See more."></i>
+                            <!-- --------------- -->
+                        </td>
+
+                        <!-- <td style="text-align: left; padding-left:10px;">{{data.technology[0].name}} <a href="#" data-toggle="control-sidebar" id="techTD_{{$index}}"></a><i ng-if="data.technology[0].name" class="mdi mdi-information-outline" ng-click="rmx.showMore(data, 'Technology');" style="font-size: 18px!important;margin-left: 3px;" data-toggle="tooltip" title="See more."></i></td> -->
+
+                        <!-- <td style="text-align: left; padding-left:17px;">{{data.technology[0].name}} <a href="#" data-toggle="control-sidebar" id="techTD_{{$index}}"></a><a href="#" style="text-decoration: none;outline: 0;"><i ng-if="data.technology.length >1" class="" ng-click="rmx.showMore(data, 'Technology');rmx.showActiveTechTab();" data-toggle="tooltip" title="See more.">, + {{data.technology.length - 1}}</i></a></td> -->
+
+                        <!-- Suvrat  Issue#3168-->
+                        <td style="text-align: left; padding-left:17px;">{{data.technology[0].name}} <a href="#"
+                                data-toggle="control-sidebar" id="techTD_{{$index}}"></a><a
+                                style="text-decoration: none;outline: 0; cursor: pointer;"><i
+                                    ng-if="data.technology.length >1" class=""
+                                    ng-click="rmx.showMore(data, 'Technology');rmx.showActiveTechTab();"
+                                    data-toggle="tooltip" title="See more.">, + {{data.technology.length - 1}}</i></a>
+                        </td>
+                        <!-- ------------ -->
+
+                        <!--  <td style="text-align: center;">{{data.user_technology_mapping[0].duration}} <a href="#" data-toggle="control-sidebar" id="durationTD_{{$index}}"></a></td> -->
+
+                        <!-- ng-click="rmx.showMore(data,'Project');" -->
+                        <td style="text-align: left; padding-left:10px;width: 25%; word-wrap: break-word;">
+                            <ul style="list-style: none;">
+                                <li ng-repeat="x in data.project| orderBy:'-work_end_date_old':true"
+                                    style="height:40px;" ng-if="x.id">
+                                    <div class="row">
+                                        <!-- <pre>{{x|json}}</pre> -->
+                                        <div class="col-sm-12" style="margin-bottom: 10px;">
+                                            <div id="circle" ng-class="x.status_id" data-toggle="tooltip"
+                                                title={{x.status_id}}></div>
+                                            <!-- <a ng-href="#"
+                                            ng-click="rmx.redirectToProjectView('/project/view/',x.id)" style="text-decoration: none;outline: 0;">{{x.name}}<span ng-if="x.domain[0].name">-({{x.domain[0].name}})</span><span ng-if="x.active_status == 1">*</span></a> -->
+                                            <!-- Suvrat Issue#2930 -->
+                                            <a ng-href="/project/view/{{x.id}}"
+                                                style="text-decoration: none;outline: 0;">{{x.name}}<span
+                                                    ng-if="x.domain[0].name">-({{x.domain[0].name}})</span><span
+                                                    ng-if="x.active_status == 1">*</span></a>
+                                            <!-- -------------- -->
+                                            <a href="#" data-toggle="control-sidebar" id="projTd_{{$index}}"
+                                                style="text-decoration: none;outline: 0;"></a>
+                                            <input type="hidden" id="projectStartDate__{{$index}}"
+                                                name="projectStartDate" ng-model="x.due_date" value="{{x.due_date}}">
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                        <td style="text-align: center; padding-left:10px;">
+                            <ul style="list-style: none;">
+                                <li ng-repeat="x in data.project| orderBy:'-work_end_date_old':true" style="height:40px"
+                                    ng-if="x.id">
+                                    <div class="row">
+                                        <!-- <div class="col-sm-12"> -->
+                                        <div class="col-md-12">
+                                            <span>[{{x.work_end_date}}] </span>
+                                            <!-- <a type="button" class="btn" data-toggle="modal" title="Edit" data-target="#dateChangeModal" data-ng-click="rmx.loadDueDate(x.user_id, x.id, x.work_end_date, x.domain[0].id);" ng-disabled="!x.domain[0].name">
+                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                </a> -->
+                                        </div>
+                                        <!-- </div> -->
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                        <td style="text-align: center; padding-left:5px; width: 1%"
+                            ng-if="can('user.resourcematrix.dashboard.edit')">
+                            <ul style="list-style: none;">
+                                <li ng-repeat="x in data.project| orderBy:'-work_end_date_old':true" style="height:40px"
+                                    ng-if="x.id">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <!-- <div class="col-md-3"> -->
+                                            <!-- <span>[{{x.work_end_date}}] </span> -->
+                                            <a ng-if="can('user.resourcematrix.dashboard.edit')" type="button"
+                                                class="btn" data-toggle="modal" title="Edit"
+                                                data-ng-click="rmx.loadDueDate(x.user_id, x.id, x.work_end_date, x.domain[0].id,x.due_date);"
+                                                ng-disabled="x.domain[0].id ==1" style="padding-top: 0px">
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                            </a>
+                                            <!--  </div>-->
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr ng-if="rmx.userArrayList == null || rmx.userArrayList.length == 0">
+                        <td style="text-align: center;" colspan="6">No Records Found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade dateChangeModal" id="dateChangeModal" role="dialog">
+    <div class="modal-dialog modal-md">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <center>Do you want to update work end date?</center>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="formEditWorkDate">
+                    <div class="form-group">
+                        <div>
+                            <div class="input-group date endDate" id="endDate" onclick="showDate();">
+                                <input type="text" class="form-control pull-right endDate" id="end_Date" name="end_date"
+                                    ng-model="rmx.formEditWorkDate.endDate" value="{{rmx.workEndDate}}"
+                                    autocomplete="off" placeholder="dd/mm/yyyy" readonly='true'
+                                    style="cursor:default;background-color: white;">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remark">Remark</label><br>
+                        <textarea type="text" rows="6" cols="90" ng-model="rmx.formEditWorkDate.remark" name="remark"
+                            id="remark" class="form-control" placeholder="Enter remark"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="updateDueDateBtn" class="btn btn-default" data-ng-click="rmx.updateDueDate();"
+                    style="outline: 0;">Update</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal" style="outline: 0;">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        //      $('#sidebarComponent').click(function (event) {
+        //                    event.stopPropagation();
+        //      });
+        //      $(document).click(function () {});
+
+        $("#filterDataForm").validate({
+            rules: {
+                experienceYears: { required: "#durationCB:checked" },
+                experienceMonths: { required: "#durationCB:checked" }
+            },
+            messages: {
+                experienceYears: 'Year is required',
+                experienceMonths: 'Month is required'
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element)
+                    .closest('.form-group').addClass('has-error');
+                $(element)
+                    .next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element)
+                    .closest('.form-group').removeClass('has-error');
+                $(element)
+                    .next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label
+                    .closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+
+        $("#formEditWorkDate").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            errorPlacement: function (error, element) {
+                var type = $(element).attr("type");
+                if ($(element).attr("id") === "end_Date") {
+                    // custom placement
+                    element.parent().parent().parent().append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            focusInvalid: true, // set focus the last invalid input
+            ignore: [],
+            rules: {
+                end_date: { required: true },
+                remark: { required: true }
+            },
+            messages: {
+                end_date: 'Date is required',
+                remark: 'Remark is required'
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element)
+                    .closest('.form-group').addClass('has-error');
+                $(element)
+                    .next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element)
+                    .closest('.form-group').removeClass('has-error');
+                $(element)
+                    .next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label
+                    .closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+    });
+
+    //Date picker
+    $('#endDate').datepicker({
+        autoclose: true
+    });
+
+    // $('#end_Date').datepicker({
+    //     autoclose: true
+    // });
+
+    // function showDate() {
+    //     //var pdate = $('#projectStartDate').val();
+    //     var ndate = $('#end_Date').val();
+    //     console.log(ndate);
+    //     var ndate = ndate.split("/").reverse().join("-");
+    //     var d = new Date(ndate);
+    //     console.log(d);
+    //     // $('#endDate').datepicker('setStartDate', d);
+    //     $('#endDate').datepicker().datepicker('setDate', d);
+    // $('#endDate').datepicker().datepicker('setEndDate', d);
+    //     // $('#end_Date').datepicker('setDate', d);
+    //     // for(i=0;i< ;i++){
+    //     // $('#end_Date'+ '_' + i).datepicker('setEndDate', pdate);
+    //     // }
+    // }
+
+    ////////////////// Suvrat Issue#3157////////////////
+    var flag = 0;
+    function showDate() {
+        if (flag == 0) {
+            var ndate = $('#end_Date').val();
+            var ndate = ndate.split("/").reverse().join("-");
+            var d = new Date(ndate);
+            $('#endDate').datepicker().datepicker('setDate', d);
+            $('#endDate').datepicker().datepicker('setEndDate', d);
+            flag++;
+        }
+        else { }
+    }
+    ///////////////////////////////////////////////////
+
+    //Initialize Select2 Elements
+    $(".select2").select2();
+    $("#nameTd").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+
+    $("#projTd").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+
+    $("#techTD").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+
+    $("#durationTD").click(function (e) {
+        e.preventDefault();
+        $(".sm_container").show();
+    })
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $('.modal').on('hidden.bs.modal', function (e) {
+            // console.log("Modal is closed");
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        })
+    });
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            // console.log("Modal is open");
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+    // showDate();
+
+</script>
+<!-- <script>
+    $(document).ready(function () {
+        $('#technology').change(function () {
+            var techLength = $(this).val();
+            console.log(techLength);
+            console.log(techLength.length);
+            if (techLength.length == 0) {
+                $(':checkbox').each(function () {
+                    $(this).prop('disabled',true);
+                    $(this).prop('checked', false);
+                    console.log("in 'blank'");
+                });
+            }
+            if($(':checkbox').prop('checked', false))
+            {
+                $('#yearMonthDiv').hide();
+                console.log("hgdjdjd");
+            }
+            else{
+               $('#yearMonthDiv').show();
+                console.log("1234");
+            }
+            // else if( techLength == 'null'){
+            //     $(':checkbox').each(function () {
+            //         $(this).prop('checked', false);
+            //         $(this).prop('disabled', true);
+            //         console.log("in 'null'");
+            //     });
+            // }
+            // else{
+            //      $(':checkbox').each(function () {
+            //         $(this).prop('disabled', false);
+            //         //$(this).prop('checked', false);
+            //         console.log("in 'value'");
+            //     });
+            // }
+
+        });
+    });
+</script> -->
+
+<!-- Suvrat Issue#3159 -->
+<script>
+    $('#end_Date').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>
+<!-- --------------------- -->

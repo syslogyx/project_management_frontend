@@ -1,0 +1,168 @@
+<section class="content">
+    <!-- Suvrat Issue#3182 -->
+    <style>
+        .cancelBtn {
+            display: none;
+        }
+    </style>
+    <!-- ------------------ -->
+    <!-- Suvrat Change the layout of breadcrumb and title -->
+    <div class="row">
+        <div class="col-md-5 col-sm-6 col-xs-7">
+            <ol id="breadcrumb" class="ab-nav breadcrumb">
+                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                    <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                        class="margin-right-xs"></a>
+                    <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                </li>
+            </ol>
+        </div>
+        <div class="col-md-7 col-sm-6 col-xs-5">
+            <h4 id="pageHead">Project Feed</h4>
+        </div>
+    </div>
+    <!-- -------------------------------------- -->
+    <div class="row">
+        <div class="col-md-12">
+            <!-- <div class="col-md-3">
+            <div class="form-group">
+                <label class="" for="">Project</label>
+                <select id="projectFeedId" name="taskStatus"  class="form-control select2 s2mn" style="width: 100%;"  >
+                    <option value="">Select field</option>
+                </select>
+                <input disabled ng-model="fdcc.projectName" type="text" class="form-control pull-right" id="projectName">
+             </div>
+        </div> -->
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="" for="">Milestone</label>
+                    <select id="milestoneList" name="milestoneList" ng-model="fdcc.milestoneId" class="form-control"
+                        style="width: 100%;" ng-options="x.id as x.title for x in fdcc.milestoneList">
+                        <!-- ng-change="fdcc.searchMilestone()" -->
+                        <option value="">Select milestone</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <div class="input-group date">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input ng-model="fdcc.dateRange" type="text" class="form-control pull-right" name="datepicker"
+                            id="datepicker" placeholder="Select date range" readonly='true'
+                            style="cursor:default;background-color: white;">
+                    </div>
+                    <!-- /.input group -->
+                </div>
+            </div>
+
+            <div class="col-md-1 " style="margin-top: 23px;">
+                <button type="button" class="btn btn-block btn-primary" ng-click="fdcc.getActivityLogsFilter()">Search
+                </button>
+            </div>
+
+            <div class="col-md-1 " style="margin-top: 23px;">
+                <button type="button" class="btn btn-block btn-primary fa fa-refresh" ng-click="fdcc.refreshfilter()">
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <!-- The time line -->
+            <ul class="timeline" ng-repeat="ac in fdcc.projectFeedList | orderBy:'-created_at'"
+                style="margin: 0 0 0 0;">
+                <li>
+                    <div class="timeline-item "
+                        ng-init=" cDate = ac.created_at.split(' ')[0]; ctime = ac.created_at.split(' ')[1]">
+                        <!-- <span class="time"><i class="fa fa-clock-o"></i>&nbsp;{{ac.created_at | date:'dd-MM-yyyy'}}</span> -->
+                        <div class="row timeline-body" style="padding:10px">
+                            <div class="col-md-9 timeline-body" style="word-wrap: break-word;"
+                                ng-bind-html="ac.message | htmlToText">
+                            </div>
+                            <div class="col-md-3" style="color:#888484;padding-left:5%">
+                                <span class="time"><i class="fa fa-clock-o"></i>&nbsp;{{cDate | date :'dd/MM/yyyy'}}
+                                    {{ctime}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </li>
+                <!-- END timeline item -->
+            </ul>
+        </div>
+        <!-- /.col -->
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+
+        // $('input[name="datepicker"]').on('cancel.daterangepicker', function(ev, picker) {
+        //     $(this).val('');
+        // });
+
+        // $('input[name="datepicker"]').bind('keydown',function(e){
+        //     if (e.which == 13) //13 is Enter/Return key.
+        //         e.stopImmediatePropagation();
+        // }).daterangepicker({
+        //     autoclose: true,
+        //     // todayHighlight: true
+        //     locale: {
+        //         format: 'DD/MM/YYYY',
+        //         cancelLabel: 'Clear'
+        //     },
+        // }).on('changeDate', function (e) {
+        //     $(this).valid();
+        // }).val('');
+
+        /////////////////////Suvrat Issue#3182///////////////////////////
+
+        $('input[name="datepicker"]').bind('keydown', function (e) {
+            if (e.which == 13) //13 is Enter/Return key.
+                e.stopImmediatePropagation();
+        });
+
+        $('input[name="datepicker"]').daterangepicker({
+            autoUpdateInput: false,
+            autoclose: true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+        });
+
+        $('input[name="datepicker"]').on('show.daterangepicker', function () {
+            $('input[name="datepicker"]').daterangepicker({
+                autoUpdateInput: true,
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    cancelLabel: 'Clear'
+                },
+            });
+        });
+
+        $('input[name="datepicker"]').on('apply.daterangepicker', function () {
+            $('input[name="datepicker"]').daterangepicker({
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    cancelLabel: 'Clear'
+                },
+            }, function (start_date, end_date) {
+                $('#datepicker').val(start_date.format('DD/MM/YYYY') + '-' + end_date.format('DD/MM/YYYY'));
+            }).on('changeDate', function (e) {
+                $(this).valid();
+            }).val('');
+        });
+        ///////////////////////////////////////////////////////////////////
+    });
+</script>

@@ -1,0 +1,474 @@
+<section class="" style="padding-top: 50px;">
+    <style type="text/css">
+        header {
+            cursor: not-allowed !important;
+        }
+
+        aside {
+            cursor: not-allowed !important;
+        }
+
+        header a {
+            pointer-events: none;
+        }
+
+        aside a {
+            pointer-events: none;
+        }
+    </style>
+    <div class="container-fluid">
+        <!-- <div class="pull-right">
+            <ol class="ab-nav breadcrumb">
+                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+                  <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label" class="margin-right-xs"></a>
+                  <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                </li>
+            </ol>
+        </div> -->
+        </br>
+        <div class="row">
+            <div class="col-md-12 paddingLeft30">
+                <div class="tab-content">
+                    <div id="genInfoTab" class="tab-pane fade in active">
+                        <div class="box box-default paddingLeft0">
+                            <form id="projectResourceDatesEditForm" role="form" name="projectResourceDatesEditForm">
+
+                                <div class="box-header with-border paddingLeft0 marginBorderHead">
+                                    <div class="formHeadDiv">
+                                        <h1 class="formheading paddingLeft0">
+                                            Edit Project Resource Record
+                                        </h1>
+                                    </div>
+                                </div>
+
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="form-group col-md-4">
+                                            <label class="" for="projectName">Project Name</label>
+                                            <input type="text" class="form-control" id="projectName" name="projectName"
+                                                ng-model="prc.projectName" placeholder="Enter project name"
+                                                disabled="disabled">
+                                        </div>
+
+                                        <div class="form-group col-md-4">
+                                            <label class="" for="startDate">Start Date</label>
+                                            <input type="text" class="form-control pull-right" id="project_start_date"
+                                                name="project_start_date" ng-model="prc.projectStartDate"
+                                                disabled="disabled">
+                                        </div>
+
+                                        <div class="form-group col-md-4">
+                                            <label class="">End Date</label>
+                                            <input type="text" class="form-control pull-right" id="project_end_date"
+                                                name="project_end_date" ng-model="prc.projectEndDate"
+                                                disabled="disabled">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="box-body table-responsive" style="margin-right: 0px !important;">
+                                    <table class="table" id="resourceEditTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Sr. No.</th>
+                                                <th>Resource Name</th>
+                                                <th>Domains / Technologies</th>
+                                                <th style="text-align: center;">Start Date</th>
+                                                <th style="text-align: center;">End Date</th>
+                                            </tr>
+                                        </thead>
+                                        <!-- <pre>{{prc.project_resources|json}}</pre> -->
+                                        <tbody ng-repeat="pr in prc.project_resources| orderBy:'-users.name':true"
+                                            style="border-top: 0;">
+                                            <tr ng-repeat="domains in pr.domains">
+                                                <td rowspan="{{pr.tech_len + pr.domains.length}}" style="border-top: 0;"
+                                                    ng-hide="$index > 0">{{$parent.$index + 1}}</td>
+                                                <td ng-if="domains.technologies" rowspan="{{pr.tech_len + 1}}"
+                                                    style="/*vertical-align: middle;*/ border-top: 0;"
+                                                    ng-hide="$index > 0">{{pr.users.name}} <b><span
+                                                            ng-if="pr.manager !== ''">(M)</span><span
+                                                            ng-if="pr.active !== ''">*</span></b>
+                                                </td>
+                                                <td ng-if="!domains.technologies" rowspan="{{pr.domains.length + 1}}"
+                                                    style="/*vertical-align: middle;*/ border-top: 0;"
+                                                    ng-hide="$index > 0">{{pr.users.name}} <b><span
+                                                            ng-if="pr.manager !== ''">(M)</span><span
+                                                            ng-if="pr.active !== ''">*</span></b>
+                                                </td>
+                                                <td style="vertical-align: middle; border-top: 0;"
+                                                    ng-if="domains.technologies">
+                                                    <div ng-if="domains.id != 1">
+                                                        <b>{{domains.name ? domains.name : 'Manager'}}</b>
+                                                    </div>
+                                                    <ul style="margin-left: 12%;">
+                                                        <li ng-repeat="resource in domains.technologies">
+                                                            {{resource.technology.name}}</li>
+                                                    </ul>
+                                                </td>
+                                                <td style="vertical-align: middle; border-top: 0;"
+                                                    ng-if="!domains.technologies">
+                                                    <div ng-if="domains.id != 1">
+                                                        <b>{{domains.name ? domains.name : 'Manager'}}</b>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="domains.technologies"
+                                                    style="vertical-align: middle;text-align: center; border-top: 0;">
+
+                                                    <div class="form-group">
+                                                        <div class="input-group date">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            <!-- <input type="text" class="form-control pull-right start_date" id="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}" name="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}" ng-model="domains.start_date" autocomplete="off" placeholder="Enter start date"  ng-disabled="pr.manager !== '' && pr.active == ''"> -->
+                                                            <!-- Suvrat Issue#3159 -->
+                                                            <input type="text"
+                                                                class="form-control pull-right start_date"
+                                                                id="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                name="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                ng-model="domains.start_date" autocomplete="off"
+                                                                placeholder="Enter start date"
+                                                                ng-disabled="pr.manager !== '' && pr.active == ''"
+                                                                onkeydown="event.stopImmediatePropagation();event.preventDefault();">
+                                                            <!-- readonly='true' style="cursor:default;background-color: white;" -->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="!domains.technologies"
+                                                    style="vertical-align: middle;text-align: center; border-top: 0;">
+
+                                                    <div class="form-group">
+                                                        <div>
+                                                            <div class="input-group date">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <!-- <input type="text" class="form-control pull-right start_date" id="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}" name="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}" ng-model="domains.start_date" autocomplete="off" placeholder="Enter start date" ng-disabled="pr.manager !== '' && pr.active == ''" ng-disabled="pr.manager !== '' && pr.active == ''"> -->
+                                                                <!-- Suvrat Issue#3159 -->
+                                                                <input type="text"
+                                                                    class="form-control pull-right start_date"
+                                                                    id="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                    name="startDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                    ng-model="domains.start_date" autocomplete="off"
+                                                                    placeholder="Enter start date"
+                                                                    ng-disabled="pr.manager !== '' && pr.active == ''"
+                                                                    ng-disabled="pr.manager !== '' && pr.active == ''"
+                                                                    onkeydown="event.stopImmediatePropagation();event.preventDefault();">
+                                                                <!-- -------------- -->
+                                                                <!-- readonly='true' style="cursor:default;background-color: white;" -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="domains.technologies"
+                                                    style="vertical-align: middle;text-align: center; border-top: 0;">
+                                                    <div class="form-group">
+                                                        <div class="input-group date ">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+
+                                                            <!-- <input type="text" class="form-control pull-right end_date" id="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}" name="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}" ng-model="domains.due_date" autocomplete="off" placeholder="Enter end date"ng-disabled="pr.manager !== '' && pr.active == ''"> -->
+                                                            <!-- Suvrat Issue#3159 -->
+                                                            <input type="text" class="form-control pull-right end_date"
+                                                                id="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                name="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                ng-model="domains.due_date" autocomplete="off"
+                                                                placeholder="Enter end date"
+                                                                ng-disabled="pr.manager !== '' && pr.active == ''"
+                                                                onkeydown="event.stopImmediatePropagation();event.preventDefault();">
+                                                            <!-- ---------------- -->
+                                                            <!-- readonly='true' style="cursor:default;background-color: white;"  -->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="!domains.technologies"
+                                                    style="vertical-align: middle;text-align: center; border-top: 0;">
+                                                    <div class="form-group">
+                                                        <div class="input-group date ">
+                                                            <div class="input-group-addon">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+
+                                                            <!-- <input type="text" class="form-control pull-right end_date" id="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}" name="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}" ng-model="domains.due_date" autocomplete="off" placeholder="Enter end date" ng-disabled="pr.manager !== '' && pr.active == ''" ng-disabled="pr.manager !== '' && pr.active == ''"> -->
+                                                            <!-- Suvrat Issue#3159 -->
+                                                            <input type="text" class="form-control pull-right end_date"
+                                                                id="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                name="endDate_{{$parent.$parent.$index}}_{{$parent.$index}}"
+                                                                ng-model="domains.due_date" autocomplete="off"
+                                                                placeholder="Enter end date"
+                                                                ng-disabled="pr.manager !== '' && pr.active == ''"
+                                                                ng-disabled="pr.manager !== '' && pr.active == ''"
+                                                                onkeydown="event.stopImmediatePropagation();event.preventDefault();">
+                                                            <!-- ---------------- -->
+                                                            <!-- readonly='true' style="cursor:default;background-color: white;" -->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="row" style="margin-left: 18px !important;margin-right: 18px !important;">
+                                    <h1 class="formheading paddingLeft0"><b>Note:</b></h1>
+                                    <span>Resource's dates should be in between project's start and end date </span>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button data-ng-click="prc.saveResourceDate()" class="btn btn-primary">
+                                        Save</button>
+                                    <!-- <button type="button" class="btn btn-warning">Cancel</button> -->
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    function setDatepicker() {
+        $('.start_date').datepicker({
+            autoclose: true
+        }).on('show', function () {
+            var selected = $(this).val();
+            // $('#startDate').datepicker('setStartDate', '');
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+
+        $('.end_date').datepicker({
+            autoclose: true
+        }).on('show', function () {
+            var selected = $(this).val();
+            // $('#endDate').datepicker('setStartDate', '');
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+    }
+
+    function setResourceDate() {
+        var proStartDate = $("#project_start_date").val();
+        var proEndDate = $("#project_end_date").val();
+        // var resStartDate = $("#startDate").val();
+        // console.log(proStartDate);
+        // var pSdate = proStartDate.split("/").reverse().join("-");
+        // console.log(pSdate);
+        // var pEdate = proEndDate.split("/").reverse().join("-");
+        // var rSdate = resStartDate.split("/").reverse().join("-");
+        // var sd = new Date(pSdate);
+        // console.log(sd);
+        // var ed = new Date(pEdate);
+        //var rd = new Date(rSdate);
+
+        $('.start_date').datepicker('setStartDate', proStartDate).datepicker('setEndDate', proEndDate);
+        $('.end_date').datepicker('setStartDate', proStartDate).datepicker('setEndDate', proEndDate);
+
+        // $.validator.addClassRules(
+        //     "start_date", //your class name
+        //     {
+        //         required: true,
+        //         dateRange: {
+        //           from: proStartDate,
+        //           to: proEndDate
+        //         }
+        //     }
+        // );
+    }
+
+    $.validator.addMethod("dateRange", function (value, element, params) {
+        try {
+            var pSdate = value.split("/").reverse().join("-");
+            var date = new Date(pSdate);
+
+            var pFdate = params.from.split("/").reverse().join("-");
+            var fromDate = new Date(pFdate);
+
+            var pTdate = params.to.split("/").reverse().join("-");
+            var toDate = new Date(pTdate);
+
+            if (date >= fromDate && date <= toDate) {
+                return true;
+            }
+        } catch (e) { }
+        return false;
+    }, '** Note');
+
+    $.validator.addMethod("greaterThan", function (value, element, params) {
+        if (!/Invalid|NaN/.test(new Date(value))) {
+            return new Date(value) > new Date($(params).val());
+        }
+
+        return isNaN(value) && isNaN($(params).val())
+            || (Number(value) > Number($(params).val()));
+    }, 'Must be greater than {0}.');
+
+    function validation() {
+        $("#projectResourceDatesEditForm").validate({
+            errorElement: 'span', //default input error message container
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false, // set focus the last invalid input
+            invalidHandler: function (form, validator) {
+
+                if (!validator.numberOfInvalids())
+                    return;
+                $(this).find(":input.error:first").focus();
+                $("html, body").animate({ scrollTop: 0 }, "fast");
+
+            },
+            errorPlacement: function (error, element) {
+
+                var type = $(element).attr("type");
+                if (type === "radio") {
+                    // custom placement
+                    element.parent().parent().append(error);
+                } else if ($(element).attr("class") === "start_date") {
+                    // custom placement
+                    element.parent().parent().parent().append(error);
+                } else if ($(element).attr("class") === "end_date") {
+                    // custom placement
+                    element.parent().parent().parent().append(error);
+                } else {
+                    element.parent().parent().append(error);
+                }
+            },
+            ignore: [], // validate all fields including form hidden input
+            rules: {
+                start_date: {
+                    required: true
+                },
+                end_date: {
+                    required: true
+                },
+            },
+            messages: {
+                start_date: {
+                    required: "Start date is required."
+                },
+                end_date: {
+                    required: "End date is required."
+                },
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element).closest('.form-group').addClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+                // set error class to the control group
+            },
+            unhighlight: function (element) { // revert the change done by hightlight
+                $(element).closest('.form-group').removeClass('has-error');
+                $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+            },
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+            }
+        });
+
+        var sd = $("#project_start_date").val();
+        var ed = $("#project_end_date").val();
+
+        $.validator.addClassRules(
+            "end_date", //your class name
+            {
+                required: true,
+                dateRange: {
+                    from: sd,
+                    to: ed
+                }
+            }
+        );
+        $.validator.addClassRules(
+            "start_date", //your class name
+            {
+                required: true,
+                dateRange: {
+                    from: sd,
+                    to: ed
+                }
+            }
+        );
+    }
+    function checkValidForStart() {
+        var isValid = null;
+        $(".start_date").each(function () {
+            isValid = $(this).valid();
+            if (isValid == false) {
+                // console.log(isValid);
+                return isValid;
+            }
+        });
+        return isValid;
+    }
+    function checkValidForEnd() {
+        var isValid = null;
+        $(".end_date").each(function () {
+            isValid = $(this).valid();
+            if (isValid == false) {
+                // console.log(isValid);
+                return isValid;
+            }
+        });
+        return isValid;
+    }
+    // validation();
+    setTimeout(function () { validation() }, 800);
+
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $(".sidebar").attr('disabled', true);
+        $(".main-header.top-nav").attr('disabled', 'disabled');
+    });    
+</script>
+
+<!-- Suvrat Issue#3159 -->
+<script>
+    $('#project_start_date').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#project_end_date').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>
+<!-- --------------------- -->
+
+<!-- Suvrat Issue#3198 Function to dynamically disable the unnecessary date fields-->
+<script>
+    setTimeout(function () {
+        var main_root = $('td').children().find('span');
+        var child_root = main_root.parent().parent().parent().children().find('td');
+        var input_root = child_root.prevObject.children().find('div.input-group.date');
+        var date_fields = input_root.find('input');
+        var disabled_date_fields = $([]);
+        var enabled_date_fields = $([]);
+
+        $.each(date_fields, function (key, value) {
+            if (this.attributes.disabled) {
+                disabled_date_fields = disabled_date_fields.add(date_fields[key])
+            } else
+                enabled_date_fields = enabled_date_fields.add(date_fields[key])
+        });
+
+        var field_length = enabled_date_fields.length;
+        var field_limit = field_length - 2;
+        var actual_field_limit = 0;
+
+        $.each(enabled_date_fields, function (key, value) {
+            var temp_field = $([]);
+            if (actual_field_limit < field_limit) {
+                temp_field = temp_field.add(enabled_date_fields[key]);
+                temp_field.attr("disabled", "true");
+            }
+            actual_field_limit++;
+        });
+    }, 4800);
+</script>
+<!-- ---------------------- -->

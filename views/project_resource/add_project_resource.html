@@ -1,0 +1,825 @@
+<section class="content">
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .table {
+            /*margin-top: 30px;*/
+            border-collapse: separate !important;
+        }
+
+        .btn-default:active:focus,
+        .btn-default:active:hover,
+        .btn-default:active {
+            background-color: #fff !important;
+        }
+
+        /*Suvrat Layout positioning for top elements*/
+        @media (min-width: 1360px) {
+            #addBtn {
+                margin-left: -50px;
+            }
+        }
+
+        /*//////////////////////////////////*/
+    </style>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <ol id="breadcrumb" class="ab-nav breadcrumb">
+                    <i class="glyphicon glyphicon-home"></i>&nbsp;
+                    <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path"
+                        ng-class="{ active: $last }">
+                        <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                            class="margin-right-xs"></a>
+                        <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                    </li>
+                </ol>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-6">
+                <h4>Project Resources</h4>
+            </div>
+            <!-- Comment by sonal to remove pagination-->
+            <!-- <div class="col-md-3 col-sm-3 col-xs-6" style="margin-top:12px;">
+                <div class="dataTables_length text-right" id="example_length"><label>Show 
+                    <select id="table_length" aria-controls="example" style='outline: 0;'>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select> entries</label>
+                </div>
+            </div> -->
+            <div id="addBtn" class="col-md-4 col-sm-4 col-xs-4 pull-right" style="margin-top: 8px;">
+                <button ng-if="can('user.projects.resources.add')" type="button"
+                    class="btn btn-primary btn-circle btn-sm pull-right" data-toggle="modal" title="Add Resource"
+                    data-target="#addModal" data-ng-click="prc.clearForm();"><i class="fa fa-plus" aria-hidden="true"
+                        style="padding-right:0.3px"></i>
+                </button>
+                <button ng-if="can('user.projects.resources.changemanager')" type="button"
+                    class="btn btn-primary btn-circle btn-sm pull-right" data-toggle="modal" title="Change Manager"
+                    data-target="#addManagerModal" data-ng-click="prc.clearForm();prc.disableNwMngrDates();"
+                    style="margin-right: 2%;"><i class="fa fa-exchange" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Project resource table  -->
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">Sr. No.</th>
+                        <th>Resource Name</th>
+                        <!--<th>Role</th>-->
+                        <th>Domains / Technologies</th>
+                        <!--<th>Technology</th>-->
+                        <th style="text-align: center;">Start Date</th>
+                        <th style="text-align: center;">End Date</th>
+                        <th style="text-align: center;" ng-if="can('user.projects.resources.remove')">Action</th>
+                    </tr>
+                </thead>
+                <!-- <pre>{{prc.project_resources|json}}</pre>  -->
+                <tbody ng-if="prc.project_resources.length > 0"
+                    ng-repeat="pr in prc.project_resources| orderBy:'-users.name':true" ng-init="sr = $index"
+                    style="border-top: 0;">
+                    <tr ng-repeat="domains in pr.domains track by $index">
+                        <!-- <td rowspan="{{pr.tech_len + 1}}" style="vertical-align: middle; border-top: 0;text-align: center;" ng-bind="(prc.pageno - 1) * prc.limit + (sr + 1)" ng-hide="$index > 0">
+                        </td> -->
+                        <!-- Suvrat Issue#3194 -->
+                        <td rowspan="{{pr.tech_len + 100}}"
+                            style="vertical-align: middle; border-top: 0;text-align: center;"
+                            ng-bind="(prc.pageno - 1) * prc.limit + (sr + 1)" ng-hide="$index > 0">
+                        </td>
+                        <!-- ----------------- -->
+                        <td ng-if="domains.technologies" rowspan="{{pr.tech_len + 1}}"
+                            style="vertical-align: middle; border-top: 0;" ng-hide="$index > 0">
+                            {{pr.users.name}}
+                            <b>
+                                <span ng-if="pr.role == 'Manager'">(M)</span><span ng-if="pr.active !== ''">*</span>
+                                <span ng-if="pr.role == 'Lead'">(L)</span>
+                            </b>
+                        </td>
+                        <td ng-if="!domains.technologies" rowspan="{{pr.domains.length }}"
+                            style="vertical-align: middle; border-top: 0;" ng-hide="$index > 0">
+                            {{pr.users.name}}
+                            <b>
+                                <span ng-if="pr.role == 'Manager'">(M)</span><span ng-if="pr.active !== ''">*</span>
+                                <span ng-if="pr.role == 'Lead'">(L)</span>
+                            </b>
+                        </td>
+                        <td style="vertical-align: middle; border-top: 0;" ng-if="domains.technologies">
+                            <div ng-if="domains.id != 1">
+                                <b>{{domains.name ? domains.name : 'Manager'}}</b>
+                            </div>
+                            <ul style="margin-left: 12%;">
+                                <li style="list-style: none;" ng-repeat="resource in domains.technologies">
+                                    {{resource.technology.name}}</li>
+                            </ul>
+                        </td>
+                        <td style="vertical-align: middle; border-top: 0;" ng-if="!domains.technologies">
+                            <div ng-if="domains.id != 1">
+                                <b>{{domains.name ? domains.name : 'Manager'}}</b>
+                            </div>
+                        </td>
+
+                        <td ng-if="domains.technologies"
+                            style="vertical-align: middle;text-align: center; border-top: 0;">
+                            <ul style="margin-top: 11%;">
+                                <li style="list-style: none;" ng-repeat="resource in domains.technologies">
+                                    {{resource.start_date}}</li>
+                            </ul>
+
+                        </td>
+                        <td ng-if="!domains.technologies" ng-bind="domains.start_date"
+                            style="vertical-align: middle;text-align: center; border-top: 0;">
+                        </td>
+
+                        <td ng-if="domains.technologies"
+                            style="vertical-align: middle;text-align: center; border-top: 0;">
+                            <ul style="margin-top: 11%;">
+                                <li style="list-style: none;" ng-repeat="resource in domains.technologies">
+                                    {{resource.due_date}}</li>
+                            </ul>
+                        </td>
+                        <td ng-if="!domains.technologies" ng-bind="domains.due_date"
+                            style="vertical-align: middle;text-align: center; border-top: 0;">
+                        </td>
+                        <!-- <td ng-if="domains.technologies" ng-bind="domains.start_date" style="vertical-align: middle;text-align: center; border-top: 0;">
+
+                        </td>
+                        <td ng-if="!domains.technologies" ng-bind="domains.start_date" style="vertical-align: middle;text-align: center; border-top: 0;">
+                        </td>
+
+                        <td ng-if="domains.technologies" ng-bind="domains.due_date" style="vertical-align: middle;text-align: center; border-top: 0;">
+                        </td>
+                        <td ng-if="!domains.technologies" ng-bind="domains.due_date" style="vertical-align: middle;text-align: center; border-top: 0;">
+                        </td> -->
+                        <td ng-if="domains.technologies && can('user.projects.resources.remove')"
+                            style="text-align: center; vertical-align: middle; border-top: 0;">
+                            <span class="tool-tip" data-toggle="tooltip" data-placement="top"
+                                ng-attr-title="{{domains.task_list.length <= 0 ? '' : 'Resource is assigned to some task'}}">
+                                <button ng-if="can('user.projects.resources.remove') && domains.id != 1" type="button"
+                                    title="Remove project resource" class="btn btn-default btn-xs"
+                                    style="border-color: #fff!important;text-align: center;"
+                                    ng-disabled="domains.task_list.length > 0"
+                                    data-ng-click="prc.removeResource(domains.proj_res_id, $index)"><i
+                                        class="fa fa-remove" aria-hidden="true"></i>
+                                </button>
+                            </span>
+                        </td>
+                        <td ng-if="!domains.technologies && can('user.projects.resources.remove')"
+                            style="text-align: center; vertical-align: middle; border-top: 0;">
+                        </td>
+                    </tr>
+                    <!--<tr >
+                        <td >{{domains.name ? domains.name : 'Manager'}}</td>
+                    </tr>-->
+                    <!--<tr ng-repeat="resource in pr.domains.technologies">
+                            <td>{{resource.technology.name}}</td>
+                        </tr>-->
+
+                    <!--<td  ng-bind="pr.users.name" ng-rowspan="{{pr.domains.length}}"></td>-->
+                    <!--<td>
+                            <ul>
+                                <li ng-repeat="domains in pr.domains"><b  style="padding-right: 10%;">{{domains.name ? domains.name : 'Manager'}}</b>
+                                <div ng-if="domains">
+                                {{domains.start_date}}
+                                </div>
+                                <div ng-if="domains">
+                                {{domains.due_date}}
+                                </div>
+
+                                <div style="float: right;">
+                                <button type="button" ng-if="domains" class="btn btn-default btn-xs"  title="Remove project resource" data-ng-click="prc.removeResource(domains.proj_res_id, $index)"><i class="fa fa-remove" aria-hidden="true"></i></button>
+                                </div>
+                                <div>
+                                    <ul>
+                                        <li ng-repeat="resource in domains.technologies">{{resource.technology.name}}</li>
+
+                                    </ul>
+                                    <br>
+                                </div>
+                                </li>
+                             </ul>
+                    </td>-->
+                    <!--<td ng-bind="pr.start_date">
+
+                    </td>
+                        <td ng-bind="pr.due_date">
+
+                        </td>-->
+                    <!--<td >
+                            <ul ng-repeat="domains in pr.domains">
+                                <li ng-repeat="resource in domains.technologies">{{resource.technology.name}}</li>
+                            </ul>
+                    </td>-->
+                    <!--<td style="text-align: center;" >
+                            <button type="button" class="btn btn-default btn-xs"  title="Edit project resource" data-ng-click="prc.editProjectResource(pr.id)"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                            <button ng-repeat="domains in pr.domains" type="button" class="btn btn-default btn-xs"  title="Remove project resource" data-ng-click="prc.removeResource(pr.domains.proj_res_id, $index)"><i class="fa fa-remove" aria-hidden="true"></i></button>
+                    s</td>-->
+                    <!--</tr>-->
+                </tbody>
+                <tbody ng-if="prc.project_resources == null || prc.project_resources.length == 0">
+                    <tr>
+                        <td colspan="5" style="text-align: center">No Data Found..!</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Comment by sonal to remove pagination-->
+            <!-- <div class="row col-sm-12" style="padding-right: 0px;">
+                <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px">
+                    <span style="float: left;margin-top: 17px;margin-bottom: 10px;font-weight: 700;">Showing {{prc.fromValue != null ? prc.fromValue : 0}} to {{prc.toValue != null ? prc.toValue : 0}} out of {{prc.totalEntries != null ? prc.totalEntries : 0}} results</span>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right:0px">
+                    <ul id="pagination-sec" class="pagination-sm" style="float: right;margin-top: 10px;margin-bottom: 10px">
+                    </ul>
+                </div>
+            </div> -->
+        </div>
+
+        <!-- Modal for adding new project resource -->
+        <div class="modal fade" id="addModal" role="dialog">
+            <div class="modal-dialog modal-md">
+
+                <form class="form-horizontal" role="form" id="projectResourceForm" ng-submit="addRow()"
+                    style="margin-right: 5.1%;margin-left: 5.1%;">
+                    <input type="hidden" id="projectId" ng-model="projectId">
+                    <input type="hidden" id="sprojStartDate" value="{{prc.projectStartDate}}">
+                    <input type="hidden" id="sprojEndDate" value="{{prc.projectEndDate}}">
+                    <div class="modal-content" style="border-radius: 0px!important;">
+
+                        <div class="modal-header" style="text-align:center;">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">{{prc.title}}</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="form-group" style="min-height:65px;margin-bottom:0px">
+                                <label class="col-md-4 control-label">Domain</label>
+                                <div class="col-md-8">
+                                    <select id="domainName" data-ng-model="prc.domain_id"
+                                        ng-options="x as x.name for x in prc.domains" name="domainName"
+                                        class="form-control s2mn" ng-change="prc.fetchInfo(prc.domain_id);">
+                                        <option value="">Select domain</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="form-group" style="min-height:65px;margin-bottom:0px">
+                                    <label for="experienceYears" class="col-md-4 control-label">Technologies</label>
+                                    <div class="col-md-8">
+                                        <select id="technology" name="technology" ng-model="prc.technology_id"
+                                            class="form-control s2mn" data-placeholder="Select technologies"
+                                            ng-options="x.id as x.name for x in prc.technologies" multiple="multiple"
+                                            style="width: 100%;" ng-change="prc.getProjectResource();"
+                                            ng-disabled="!prc.domain_id">
+                                            <!-- <option value="">Select technology</option> -->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--
+                            <pre>{{prc.project_resources|json}}
+                            </pre> -->
+                            <div class="form-group" style="min-height:65px;margin-bottom:0px">
+                                <label class="col-md-4 control-label">Resource name</label>
+                                <div class="col-md-8">
+                                    <select id="projectTechnology" data-project_id="{{prc.projectId}}"
+                                        class="form-control s2mn" data-user_id="{{prc.user_id}}"
+                                        data-ng-model="prc.user_id" name="projectResourceName"
+                                        data-placeholder="Select resources" multiple="multiple"
+                                        ng-options="x.id as x.name for x in prc.resources" style="width: 100%;"
+                                        ng-change="prc.checkResource()" ng-disabled="prc.technology_id.length < 1">
+                                        <!--<option value="">Select resource </option>-->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="min-height:65px;margin-bottom:0px">
+                                <label class="col-md-4 control-label" for="startDate">Start Date</label>
+                                <div class="col-md-8">
+                                    <div class="input-group date">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input type="text" class="form-control pull-right" id="startDate"
+                                            name="start_date" ng-model="prc.projectStartDate" autocomplete="off"
+                                            placeholder="Enter start date" readonly='true'
+                                            style="cursor:default;background-color: white;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="min-height:65px;margin-bottom:0px">
+                                <label class="col-md-4 control-label">End Date</label>
+                                <div class="col-md-8">
+                                    <div class="input-group date">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-calendar"></i>
+                                        </div>
+
+                                        <input type="text" class="form-control pull-right" id="endDate" name="end_date"
+                                            ng-model="prc.projectEndDate" autocomplete="off"
+                                            placeholder="Enter end date" readonly='true'
+                                            style="cursor:default;background-color: white;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button data-ng-click="prc.saveProjectResource($event)" class="btn btn-primary">Add</button>
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal for changing project manager -->
+        <div class="modal fade" id="addManagerModal" role="dialog">
+            <div class="modal-dialog modal-md" style="width: 652px !important;">
+
+                <form class="ChangeManagerDate" role="form" id="ChangeManagerDate">
+                    <input type="hidden" id="projectId" ng-model="projectId">
+                    <div class="modal-content" style="border-radius: 0px!important;">
+
+                        <div class="modal-header" style="text-align:center;">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Change Manager</h4> <!-- Added closing tag -->
+                        </div>
+                        <!-- <pre>{{prc.project_resources|json}}
+                            </pre>  -->
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6 form-group" style="min-height:90px;margin-bottom:0px">
+                                    <label class="">Current Manager Name </label>
+                                    <!-- <select id="oldManagerName" ng-model="prc.oldManagerId" ng-options="x.id as x.name for x in prc.userName" name="oldManagerName" class="form-control s2mn">
+                                            <option value="">Select old manager</option>
+                                    </select> -->
+
+                                    <input type="text" class="form-control" id="oldManagerName" name="oldManagerName"
+                                        ng-model=" prc.oldManagerName" disabled="disabled">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group" style="min-height:90px;margin-bottom:0px">
+                                        <label class="">New Manager Name</label>
+                                        <div>
+                                            <select id="newManagerName" class="form-control s2mn"
+                                                data-ng-model="prc.newManagerId" name="newManagerName"
+                                                placeholder="Select new manager"
+                                                ng-options="x.id as x.name disable when prc.isDisabled(x.id) for x in prc.managersList"
+                                                style="width: 100%;">
+                                                <option value="">Select New Manager</option>
+                                                <!-- x as x.companyName disable when  x.id == '3' for x in usc.companies track by x.id -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class=" col-md-6 form-group" style="min-height:90px;margin-bottom:0px">
+                                    <label class="">Current Manager Start Date</label>
+                                    <div class="input-group date">
+                                        <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                        <input type="text" class="form-control" id="projectStartDate"
+                                            name="projectStartDate" ng-model="prc.oldManagerStartDate"
+                                            autocomplete="off" placeholder="Enter start date" disabled="disabled">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 form-group" style="min-height:90px;margin-bottom:0px">
+                                    <label class="">New Manager Start Date</label>
+                                    <div class="input-group date">
+                                        <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                        <input type="text" class="form-control" id="managerStartDate"
+                                            name="managerStartDate" ng-model="prc.managerStartDate" autocomplete="off"
+                                            placeholder="Enter start date">
+                                        <!-- readonly='true' style="cursor:default;background-color: white;" -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group" style="min-height:90px;margin-bottom:0px">
+                                    <label class="">Current Manager End Date</label>
+                                    <div class="input-group date">
+                                        <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                        <input type="text" class="form-control" id="projectEndDate"
+                                            name="projectEndDate" ng-model="prc.oldManagerEndDate"
+                                            placeholder="Enter end date" readonly='true'
+                                            style="cursor:default;background-color: white;"
+                                            ng-change="prc.enableNwMngrDates();">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <div class="form-group" style="min-height:90px;margin-bottom:0px">
+                                        <label class="">New Manager End Date</label>
+                                        <div class="input-group date">
+                                            <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                            <input type="text" class="form-control" id="managerEndDate"
+                                                name="managerEndDate" ng-model="prc.managerEndDate" autocomplete="off"
+                                                placeholder="Enter end date">
+                                            <!-- readonly='true' style="cursor:default;background-color: white;" -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="padding-left: 3%;">
+                                <h1 class="formheading paddingLeft0"><b>Note:</b></h1>
+                                <input type="checkbox" id="managerDevloper" name="managerDevloper"
+                                    ng-model="prc.developerCheck" ng-click="">
+                                <span>Do you want to continue as a developer? </span>
+                                <br>
+                                <span><b style="color:#dd4b39;">*</b> Change the current Manager's end date to enable
+                                    the new Manager's date fields.</span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="saveNewManagerButton" data-ng-click="prc.saveNewManager()"
+                                class="btn btn-primary">Change</button>
+
+                            <!-- title="First change current manager end date." -->
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function setData() {
+        setTimeout(function () {
+
+            var sd = $("#sprojStartDate").val();
+            var ed = $("#sprojEndDate").val();
+            //console.log(sd);
+            //console.log(ed);
+            $('#startDate').datepicker({
+                autoclose: true
+            }).on("changeDate", function () {
+                //console.log("i am in");
+                $(this).valid();
+                var selected = $(this).val();
+                $('#endDate').datepicker('setStartDate', selected);
+            });
+            //Date picker
+            $('#endDate').datepicker({
+                autoclose: true
+            }).on('changeDate', function (e) {
+                $(this).valid();
+            });
+
+            if (sd != '') {
+                $('#startDate').datepicker('setStartDate', sd).datepicker('setDate', sd).datepicker('setEndDate', ed);
+            }
+            if (ed != '') {
+                $('#endDate').datepicker('setStartDate', sd).datepicker('setDate', ed).datepicker('setEndDate', ed);
+            }
+        }, 500);
+    }
+
+    $(function () {
+        //Date picker
+        setTimeout(function () {
+            $(".s2mn").on("change", function () { $(this).valid(); });
+
+            var sd = $("#sprojStartDate").val();
+            var ed = $("#sprojEndDate").val();
+            //console.log(sd);
+            //console.log(ed);
+            $('#startDate').datepicker({
+                autoclose: true
+            }).on("changeDate", function () {
+                //console.log("i am in");
+                $(this).valid();
+                var selected = $(this).val();
+                $('#endDate').datepicker('setStartDate', selected);
+            });
+            //Date picker
+            $('#endDate').datepicker({
+                autoclose: true
+            }).on('changeDate', function (e) {
+                $(this).valid();
+            });
+
+            $('#startDate').datepicker().datepicker('setStartDate', sd).datepicker('setDate', sd).datepicker('setEndDate', ed);
+            $('#endDate').datepicker().datepicker('setStartDate', sd).datepicker('setDate', ed).datepicker('setEndDate', ed);
+        }, 500);
+    });
+
+    $(function () {
+        setTimeout(function () {
+
+            var sd = $("#sprojStartDate").val();
+            var ed = $("#sprojEndDate").val();
+
+            // var psd = $("#projectStartDate").val();
+            // var rpSdate = psd.split("/").reverse().join("-");
+            // var pSdate = new Date(rpSdate);
+
+            // var ped = $("#projectEndDate").val();
+            // var rpEdate = ped.split("/").reverse().join("-");
+            // var pEdate = new Date(rpEdate);
+            // console.log(ped);
+
+            var msd = $("#managerStartDate").val();
+            if (msd != '' && msd != null) {
+                var rmSdate = msd.split("/").reverse().join("-");
+                var mSdate = new Date(rmSdate);
+            }
+
+
+
+            $('#projectEndDate').datepicker({
+                autoclose: true
+            }).on('show', function () {
+                var selected = $(this).val();
+            }).on('changeDate', function (e) {
+                // Suvrat Issue#3363
+                $(this).valid();
+                /////////////////////
+                var selected = $(this).val();
+                // $('#managerStartDate').datepicker('setStartDate', '');
+                $('#managerStartDate').datepicker('setStartDate', selected);
+            });
+
+
+            $('#managerStartDate').datepicker({
+                autoclose: true
+            }).on('show', function () {
+                var selected = $(this).val();
+                // $('#managerStartDate').datepicker('setStartDate', '');
+            }).on('changeDate', function (e) {
+                $(this).valid();
+                var selected = $(this).val();
+                $('#managerEndDate').datepicker('setStartDate', '');
+                $('#managerEndDate').datepicker('setStartDate', selected);
+            });
+
+
+            $('#managerEndDate').datepicker({
+                autoclose: true
+            }).on('show', function () {
+                var selected = $(this).val();
+            }).on('changeDate', function (e) {
+                $(this).valid();
+            });
+
+            // console.log("pEdate");
+            // console.log(ed);
+
+            $('#projectEndDate').datepicker('setStartDate', sd).datepicker('setEndDate', ed);
+            $('#managerStartDate').datepicker('setStartDate', sd).datepicker('setEndDate', ed);
+            $('#managerEndDate').datepicker('setStartDate', sd).datepicker('setEndDate', ed);
+
+        }, 5000);
+    });
+
+    $("#projectResourceForm ").validate({
+        // Suvrat Issue#2291
+        // focusCleanup: true,
+        ////////////////////
+        onkeyup: false,
+        onselect: true,
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        focusInvalid: false, // set focus the last invalid input
+        invalidHandler: function (form, validator) {
+
+            if (!validator.numberOfInvalids())
+                return;
+            $(this).find(":input.error:first").focus();
+            $("html, body").animate({ scrollTop: 0 }, "fast");
+
+        },
+        errorPlacement: function (error, element) {
+
+            var type = $(element).attr("type");
+            if (type === "radio") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "domainName" || $(element).attr("id") === "technology" || $(element).attr("id") === "projectTechnology") {
+                // custom placement
+                element.parent().append(error);
+            } else if ($(element).attr("id") === "startDate") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "endDate") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            projectResourceName: {
+                required: true
+            },
+            domainName: {
+                required: true
+            },
+            technology: {
+                required: true
+            },
+            designationName: {
+                required: true
+            },
+            start_date: {
+                required: true
+            },
+            end_date: {
+                required: true
+            },
+        },
+        messages: {
+            projectResourceName: {
+                required: "Resource is required."
+            },
+            domainName: {
+                required: "Domain is required."
+            },
+            technology: {
+                required: "Technology is required."
+            }
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+
+    $("#ChangeManagerDate").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        focusInvalid: false, // set focus the last invalid input
+        // invalidHandler: function (form, validator) {
+
+        //     if (!validator.numberOfInvalids())
+        //         return;
+        //     $(this).find(":input.error:first").focus();
+        //     $("html, body").animate({scrollTop: 0}, "fast");
+
+        // },
+        errorPlacement: function (error, element) {
+
+            var type = $(element).attr("type");
+            if (type === "radio") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "newManagerName") {
+                // custom placement
+                element.parent().append(error);
+            } else if ($(element).attr("id") === "projectEndDate") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "managerStartDate") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "managerEndDate") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            newManagerName: {
+                required: true
+            },
+            projectEndDate: {
+                required: true
+            },
+            managerStartDate: {
+                required: true
+            },
+            managerEndDate: {
+                required: true
+            },
+        },
+        messages: {
+            newManagerName: {
+                required: "New manager name is required."
+            },
+            projectEndDate: {
+                required: "Project end date is required."
+            },
+            managerStartDate: {
+                required: "Manager start date is required."
+            },
+            managerEndDate: {
+                required: "Manager end date is required."
+            },
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#managerStartDate").attr("disabled", "disabled");
+        $("#managerEndDate").attr("disabled", "disabled");
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $('.modal').on('hidden.bs.modal', function (e) {
+            // console.log("Modal is closed");
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        });
+    });
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            // console.log("Modal is open");
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+</script>
+
+<!-- Suvrat Issue#3159 -->
+<script>
+    $('#startDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#endDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#projectStartDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#managerStartDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#projectEndDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#managerEndDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>
+<!-- --------------------- -->

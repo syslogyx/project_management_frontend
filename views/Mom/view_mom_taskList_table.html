@@ -1,0 +1,538 @@
+<section class="content">
+    <style>
+        #circle {
+            width: 15px;
+            height: 15px;
+            -webkit-border-radius: 25px;
+            -moz-border-radius: 25px;
+            border-radius: 25px;
+            /*background: red;*/
+            float: left;
+            margin-right: 10px;
+        }
+
+        .editor {
+            height: auto;
+            min-height: 140px;
+        }
+
+        .menu-highlighted {
+            font-weight: bold;
+        }
+
+        .user-search {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+            border-radius: 6px;
+            -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+            box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+            background-clip: padding-box;
+            outline: 0;
+        }
+
+        .list-group {
+            width: 293px;
+            height: 212px;
+            overflow: auto;
+        }
+
+        .list-group-item.active {
+            background-color: #f5f5f5;
+        }
+
+        .user-search:hover {
+            cursor: pointer;
+        }
+
+        .user-search .list-group-item.active {
+            color: #fff;
+            background-color: #428bca;
+            border-color: #428bca;
+        }
+
+        .user-search .list-group-item.active .text-muted {
+            color: #ccc;
+        }
+
+        .user-search .list-group-item.active .text-primary {
+            color: #fff;
+        }
+
+        .user-search .list-group-item {
+            padding: 5px;
+        }
+
+        .user-search .user-photo {
+            max-width: 30px;
+            max-height: 30px;
+            border-radius: 15px;
+        }
+    </style>
+    <div class="container-fluid">
+        <!-- Suvrat Change the position of breadcrumb -->
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <ol id="breadcrumb" class="ab-nav breadcrumb">
+                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                    <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                        class="margin-right-xs"></a>
+                    <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                </li>
+            </ol>
+        </div>
+        <!-- -------------------------------------- -->
+        <br><br>
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border boxhead">
+                <div class="col-md-6 ">
+                    <div class="">
+                        <h1 class="formheading">
+                            <b>Minutes of Meetings(MoM) Details </b>
+                        </h1>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="pull-right" style="margin-right: 15px;">
+                        <a ng-href="mom/mom-list"><button type="button" class="btn btn-default btn-sm"
+                                data-toggle="modal" title="Back" data-target="" data-ng-click=""
+                                style="border:white;color:#428bca;"><i class="fa fa-arrow-left"
+                                    aria-hidden="true"></i></button></a>
+
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">MoM Title</label>
+                            <div style="overflow: auto;height: auto; max-height: {{hgt }}px;">{{ momViewTitle}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label class="" for="">Description</label>
+                            <div ng-bind-html="momViewDescription | htmlToText"
+                                style="overflow: auto;height: auto; max-height: {{ hgt }}px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Meeting Called By</label>
+                            <div>{{momViewCalledBy}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Meeting Venue</label>
+                            <div>{{momViewMeetingVenue}}</div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Keyword</label>
+                            <div>{{momViewkeyword}}</div>                            
+                        </div>
+                    </div> -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Status</label>
+                            <div><a class="btn status-btn {{momViewStatus}}" title="Status">{{momViewStatus}}</a></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Date</label>
+                            <div>{{momViewDate}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Start Time</label>
+                            <div>{{momViewStartTime}}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">End Time</label>
+                            <div>{{momViewEndTime}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Clients</label>
+                            <ul ng-repeat="x in momViewClients" style="margin-left:17px">
+                                <li>{{x.name}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Projects</label>
+                            <ul ng-repeat="x in momViewProjects" style="margin-left:17px">
+                                <li>{{x.name}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="" for="">Attendees</label>
+                            <ul ng-repeat="x in momViewAttendees" style="margin-left:17px">
+                                <li>{{x.name}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                </br>
+            </div>
+        </div>
+        <div class="box box-default">
+            <div class="row boxhead box-header with-border boxhead">
+                <div class="col-md-6 ">
+                    <div class="">
+                        <h1 class="formheading">
+                            <b>Minutes of Meetings(MoM) Tasks </b>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-condensed table-hover" width=100%>
+                        <thead class="thead-default">
+                            <tr>
+                                <th width=5% style="text-align: center;">Sr. No.</th>
+                                <th width=40%>Task Name</th>
+                                <!-- <th width=10%>Task Type</th> -->
+                                <!-- <th width=18%>Description</th> -->
+                                <th width=25%>Assigned</th>
+                                <!-- <th width=8%>Status</th> -->
+                                <th width=10% style="text-align: center;">Start Date</th>
+                                <th width=10% style="text-align: center;">End Date</th>
+                                <th width=10% style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr ng-repeat="data in TaskListofMoM">
+                                <td width=5% style="text-align: center;">{{$index+1}}</td>
+                                <td width=40%>{{data.name}}</td>
+                                <!-- <td width=10%>{{data.type}}</td> -->
+                                <!-- <td width=18%>{{data.description}}</td> -->
+                                <td width=25%>{{data.user.name}}</td>
+                                <!-- <td width=8%>{{data.status}}</td> -->
+                                <td width=10% style="text-align: center;">{{taskStartDateofMom}}</td>
+                                <td width=10% style="text-align: center;">{{taskEndDateofMom}}</td>
+                                <td width=10% style="text-align: center;">
+                                    <button type="button" class="btn btn-default btn-xs" title="View Task"
+                                        ng-click="openViewTaskModal(data)"
+                                        style="border-color: #fff!important;text-align: center;"><i class="fa fa-eye"
+                                            aria-hidden="true" style="color:#428bca;"></i></button>
+
+                                    <button type="button" class="btn btn-default btn-xs" title="Change Status"
+                                        ng-click="openChangeStatusModal(data.id);resetChangeStatusModal();"
+                                        style="border-color: #fff!important;text-align: center;"><i class="fa fa-edit"
+                                            aria-hidden="true" style="color:#428bca;"></i></button>
+
+                                    <button type="button" class="btn btn-default btn-xs" title="Add Comment"
+                                        ng-click="openaddCommentModal()"
+                                        style="border-color: #fff!important;text-align: center;"><i
+                                            class="fa fa-comments" aria-hidden="true"
+                                            style="color:#428bca;"></i></button>
+                                </td>
+                            </tr>
+                            <tr ng-if="TaskListofMoM == null || TaskListofMoM.length == 0">
+                                <td style="text-align: center;" colspan="6">No Records Found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Status Drop down modal  -->
+    <div class="modal fade" id="changeMoMStatusModal" role="dialog">
+        <div class="modal-dialog modal-md">
+            <!-- Modal content-->
+            <div class="modal-content" style="width: 80%; margin-left: 10%;">
+                <!-- Suvrat Issue#3091 -->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div class="row col-md-12" style="text-align:center;">
+                        <div class="">
+                            <h4 class="modal-title">Change Status </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <form id="changeMoMStatusForm">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" style="min-height:100px;margin-bottom:0px">
+                                    <label class="" for="taskStatus">Status</label>
+                                    <select id="taskStatus" name="taskStatus" class="form-control" ng-model="taskStatus"
+                                        data-placeholder="Enter Status"
+                                        ng-options="x.name as x.name for x in statusList">
+                                        <option value="">Select task status</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- Suvrat Issue#3091 -->
+                                <!-- <div class="form-group" style="width: 90%; margin-left: 18px;min-height:140px;margin-bottom:0px" > -->
+                                <div class="form-group" style="min-height:140px;margin-bottom:0px">
+                                    <!-- Suvrat Issue#3091 -->
+                                    <label for="status_comment">Add comment</label><br>
+                                    <textarea type="text" rows="3" cols="90" ng-model="status_comment"
+                                        name="status_comment" id="status_comment" class="form-control"
+                                        placeholder="Enter comment" style="resize: vertical">
+                                </textarea>
+                                </div> <!-- Suvrat Issue#3091 -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="changeStatus" type="button" class="btn btn-primary btn-sm" data-dismiss=""
+                        ng-click="changeStatus();">Update</button>
+                    <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Comment Drop down modal -->
+    <div class="modal fade" id="addCommentToTaskModale" role="dialog">
+        <div class="modal-dialog modal-md">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div class="row col-md-12" style="text-align:center;">
+                        <div class="">
+                            <h4 class="modal-title">Task Comment</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <form id="addCommentToTaskForm">
+                        <div class="form-group">
+                            <label for="status_comment">Add comment</label><br>
+                            <!-- <textarea  type="text" rows="3" cols="90" ng-model="task_comment" name="task_comment" id="task_comment" class="form-control" placeholder="Enter comment" style="resize: vertical">
+                            </textarea> -->
+
+                            <div contenteditable mentio mentio-typed-text="typedTerm" mentio-macros="macros"
+                                mentio-require-leading-space="true" mentio-select-not-found="true"
+                                class="editor form-control" mentio-id="'htmlContent'" id="htmlContent"
+                                name="htmlContent" ng-model="htmlContent" style="height: auto!important;">
+                            </div>
+                        </div>
+                        <mentio-menu mentio-for="'htmlContent'" mentio-trigger-char="'@'" mentio-items="people"
+                            mentio-template-url="/people-mentions.tpl" mentio-search="searchPeople(term)"
+                            mentio-select="getPeopleText(item)"></mentio-menu>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="addComment" type="button" class="btn btn-primary btn-sm" data-dismiss=""
+                        ng-click="addCommentToTask();">Update</button>
+                    <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Viewing task -->
+    <div class="modal fade" id="viewTaskModal" role="dialog">
+        <div class="modal-dialog modal-md">
+            <form class="form-horizontal" role="form" id="viewTaskForm">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"> View Task</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Name</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control pull-right" id="viewTaskName" name="viewTaskName"
+                                    ng-model="viewTaskName" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Type</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control pull-right" id="viewTaskType" name="viewTaskType"
+                                    ng-model="viewTaskType" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Assigned To</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control pull-right" id="viewTaskUser" name="viewTaskUser"
+                                    ng-model="viewTaskUserName" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Description</label>
+                            <div class="col-md-9">
+                                <textarea class="form-control pull-right" id="viewTaskDesc" name="viewTaskDesc"
+                                    ng-model="viewTaskDesc" disabled="disabled">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" style="display:none">
+                            <label class="col-md-3 control-label">Status</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control pull-right" id="viewTaskStatus"
+                                    name="viewTaskStatus" ng-model="viewTaskStatus" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Start Date</label>
+                            <div class="col-md-9">
+                                <div class="input-group date">
+                                    <input type="text" class="form-control pull-right" id="viewTaskStartDate"
+                                        name="viewTaskStartDate" ng-model="viewTaskStartDate" disabled="disabled">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar" disabled="disabled"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">End Date</label>
+                            <div class="col-md-9">
+                                <div class="input-group date">
+                                    <input type="text" class="form-control pull-right" id="viewTaskEndDate"
+                                        name="viewTaskEndDate" ng-model="viewTaskEndDatee" disabled="disabled">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar" disabled="disabled"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="margin-top:0px">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End of Modal for Viewing task -->
+</section>
+<script type="text/ng-template" id="/people-mentions.tpl">
+    <ul class="list-group user-search">
+        <li mentio-menu-item="person" ng-repeat="person in items" class="list-group-item">
+            <img ng-src="https://hrms.syslogyx.com/upload/profilepic/{{person.avatar}}" onerror="this.onerror=null;this.src='resources/img/default_profile.png';" class="user-photo">
+            <span class="text-primary" ng-bind-html="person.name | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+            <!-- <em class="text-muted" ng-bind="person.bio | words:5"></em> -->
+        </li>
+    </ul>
+</script>
+<script type="text/javascript">
+    $("#changeMoMStatusForm").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        errorPlacement: function (error, element) {
+            var type = $(element).attr("type");
+            if ($(element).attr("id") === "taskStatus") {
+                element.parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        focusInvalid: true, // set focus the last invalid input
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            taskStatus: {
+                required: true
+            },
+            status_comment: {
+                required: true
+            },
+        },
+        messages: {
+            taskStatus: {
+                required: "Task status is required."
+            },
+            status_comment: {
+                required: "Comment is required."
+            },
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');// set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color: #dd4b39!important'); // set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error');//set success class to the control group
+        }
+    });
+
+    $("#addCommentToTaskForm").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        errorPlacement: function (error, element) {
+            var type = $(element).attr("type");
+            if ($(element).attr("id") === "htmlContent") {
+                element.parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        focusInvalid: true, // set focus the last invalid input
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            htmlContent: {
+                required: true
+            }
+        },
+        messages: {
+            htmlContent: {
+                required: "Comment is required."
+            }
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');// set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color: #dd4b39!important');// set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error');//set success class to the control group
+        }
+    });
+
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $('.modal').on('hidden.bs.modal', function (e) {
+            $("#addCommentToTaskForm")[0].reset();
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        })
+    });
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+</script>

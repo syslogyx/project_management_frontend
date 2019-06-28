@@ -1,0 +1,351 @@
+<section class="content">
+    <!-- Suvrat Change the layout of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <!-- ----------------------------------------- -->
+    <br><br>
+    <div class="box box-default">
+        <div class="row boxhead box-header with-border boxhead">
+            <div class="col-md-6 ">
+                <div class="">
+                    <h1 class="formheading">
+                        <b>General Information</b>
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="box-header with-border">
+            <div class="formHeadDiv">
+                <h1 class="formheading">General Information
+                    <button type="button" class="btn btn-primary btn-circle btn-sm pull-right"  ng-click="pjc.changeMode()" title="Edit" data-ng-if="pjc.mode"><i class="fa fa-edit" ></i></button>
+                </h1>
+            </div>
+        </div> -->
+        <div class="box-body">
+            <form id="projectAddForm" role="form" name="addProjectForm">
+                <input type="hidden" id="projectId" name="projectId" value="{{pjc.id}}">
+                <div class="form-group">
+                    <label class="mandatory" for="projectName">Project Name</label>
+                    <input type="text" class="form-control" id="projectName" name="projectName"
+                        ng-model="pjc.projectName" placeholder="Enter project name" ng-disabled="pjc.mode">
+                </div>
+                <div class="row" id="dateSection">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="pStartDate">Start Date</label>
+                            <div>
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" class="form-control pull-right" id="pStartDate" name="start_date"
+                                        ng-model="pjc.startDate" autocomplete="off" placeholder="Enter start date"
+                                        ng-disabled="pjc.mode" readonly='true'
+                                        style="cursor:default;background-color: white;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory">End Date</label>
+                            <div>
+                                <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+
+                                    <input type="text" class="form-control pull-right" id="pEndDate" name="end_date"
+                                        ng-model="pjc.endDate" autocomplete="off" placeholder="Enter end date"
+                                        ng-disabled="pjc.mode" readonly='true'
+                                        style="cursor:default;background-color: white;">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="projectStatus">Status</label>
+                            <input type="text" class="form-control pull-right" id="projectStatus" name="projectStatus"
+                                ng-model="pjc.projectStatus" autocomplete="off" placeholder="Enter status"
+                                disabled="disabled">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mandatory form-group" id="descDiv">
+                            <label class="mandatory" for="description">Project Overview</label><br>
+                            <textarea type="text" rows="6" cols="90" ng-model="pjc.description" name="description"
+                                id="description" class="form-control" placeholder="Project overview"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label class="mandatory" for="projectOwner">Owner</label>
+                            <select id="projectOwner" name="projectOwner" ng-model="pjc.projectOwner"
+                                class="form-control s2mn" style="width: 100%;"
+                                ng-options="x.id as x.name for x in pjc.clients" ng-disabled="pjc.mode">
+                                <option value="">Select project owner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label class="mandatory" for="projectManager">Manager</label>
+                            <input type="text" class="form-control pull-right" id="projectManager" name="projectManager"
+                                ng-model="pjc.projectManagerName" autocomplete="off" placeholder="Enter manager"
+                                disabled="disabled">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="mandatory" for="projectLead">Lead</label>
+                            <select id="projectLead" name="projectLead" ng-model="pjc.projectLead"
+                                class="form-control s2mn" style="width: 100%;"
+                                ng-options="x.id as x.name for x in pjc.leads">
+                                <option value="">Select project Lead</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 20px;" ng-if="can('user.projects.edit')">
+                    <div class="col-md-12">
+                        <div class="pull pull-right">
+                            <input type="submit" value="Save" data-ng-click="pjc.saveProject()" class="btn btn-success"
+                                ng-disabled="pjc.mode" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <!-- Ends here -->
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#projectOwner").on("change", function () {
+            $(this).valid();
+        });
+        $('#description').ckeditor();
+        CKEDITOR.instances.description.on('change', function () {
+            if (CKEDITOR.instances.description.getData().length > 0) {
+                $('#description-error').hide();
+                $('#cke_1_top').removeAttr('style');
+                $('#cke_1_bottom').removeAttr('style');
+                $('#descDiv').removeClass('has-error');
+                //$('#descLable').removeClass('has-error');
+
+            }
+
+            if (CKEDITOR.instances.description.getData().length == 0) {
+                $('#description-error').show();
+                $('#cke_1_top,#cke_1_bottom').css({ 'border-color': 'red' });
+                $('#descDiv').addClass('has-error');
+            }
+        });
+
+        $('#pStartDate').datepicker({
+            autoclose: true
+        }).on('show', function () {
+            var selected = $(this).val();
+            $('#pStartDate').datepicker('setDate', selected);
+            $('#pStartDate').datepicker('setStartDate', '');
+            $('#pStartDate').datepicker('setEndDate', '');
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+
+        $('#pEndDate').datepicker({
+            autoclose: true
+        }).on('show', function () {
+            var selected = $(this).val();
+            $('#pEndDate').datepicker('setDate', selected);
+            $('#pEndDate').datepicker('setStartDate', '');
+            $('#pEndDate').datepicker('setEndDate', '');
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+
+        $("#dateSection").delegate('.date', 'focusin', function () {
+            $(this).datepicker({
+                autoclose: true,
+                viewMode: 'days',
+                todayHighlight: true
+            });
+        });
+    });
+
+    var baseUrl = Utility.apiBaseUrl;
+
+    $("#projectAddForm").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        errorPlacement: function (error, element) {
+
+            var type = $(element).attr("type");
+            if (type === "radio") {
+                // custom placement
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "projectOwner" || $(element).attr("id") === "projectManager" || $(element).attr("id") === "projectDomain" || $(element).attr("id") === "projectTechnology" || $(element).attr("id") === "projectStatus") {
+                // custom placement
+                element.parent().append(error);
+            } else if ($(element).attr("id") === "pStartDate") {
+                // custom placement
+                element.parent().parent().parent().append(error);
+            } else if ($(element).attr("id") === "pEndDate") {
+                // custom placement
+                element.parent().parent().parent().append(error);
+            } else if ($(element).attr("id") === "description") {
+                // custom placement
+                element.parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        focusInvalid: true, // set focus the last invalid input
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            projectName: {
+                required: true,
+                /*    remote:
+                 {
+                 url: baseUrl + 'validate',
+                 type: "post",
+                 dataType: 'json',
+                 data:
+                 {
+                 project: function ()
+                 {
+                 return JSON.stringify({name: $("#projectName").val(),
+                 id: $("#projectId").val()});
+                 }
+                 }
+                 }
+                 */
+            },
+            start_date: {
+                required: true
+            },
+            end_date: {
+                required: true
+            },
+            projectOwner: {
+                required: true
+            },
+            projectManager: {
+                required: true
+            },
+            projectStatus: {
+                required: true
+            },
+            projectAccess: {
+                required: false
+            },
+            description: {
+                required: true
+            }
+        },
+        messages: {
+            projectName: {
+                required: "Project name is required.",
+                //remote: ' already in database'
+                //                           remote: jQuery.validator.format("{0} is already taken.")
+                //
+            },
+            start_date: {
+                required: "Start date is required."
+            },
+            end_date: {
+                required: "End date is required."
+            },
+            projectOwner: {
+                required: "Project owner is required"
+            },
+            projectManager: {
+                required: "Project manager is required"
+            },
+            projectStatus: {
+                required: "Project status is required"
+            },
+            projectAccess: {
+                required: "Project access is required"
+            },
+            description: {
+                required: "Description is required"
+            }
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');
+            // set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+        $('.modal').on('hidden.bs.modal', function (e) {
+            // console.log("Modal is closed");
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        });
+    });
+    function setCSS() {
+        if ($('.modal').is(':visible') == true) {
+            // console.log("Modal is open");
+            $('header').css('z-index', '900');
+            $('footer').css('z-index', '900');
+        } else {
+            $('header').css('z-index', '1053');
+            $('footer').css('z-index', '1053');
+        }
+    }
+    setCSS();
+</script>
+
+<!-- Suvrat Issue#3159 -->
+<script>
+    $('#pStartDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+    $('#pEndDate').bind('keydown', function (e) {
+        // console.log("in");
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+        // console.log("in2");
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>
+<!-- --------------------- -->

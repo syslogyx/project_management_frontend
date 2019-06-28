@@ -1,0 +1,670 @@
+<section class="content">
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ccc !important;
+            border-radius: 0px !important;
+        }
+    </style>
+    <!-- Suvrat Change the position of breadcrumb -->
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <ol id="breadcrumb" class="ab-nav breadcrumb">
+            <i class="glyphicon glyphicon-home"></i>&nbsp;
+            <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.label" ng-class="{ active: $last }">
+                <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                    class="margin-right-xs"></a>
+                <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+            </li>
+        </ol>
+    </div>
+    <br><br>
+
+    <!-- MoM Edit Form -->
+    <div class="box box-default">
+        <form id="momEditForm" role="form" name="momAddForm">
+            <div class="box box-default" style="margin-bottom:0px;">
+                <div class="row box-header with-border boxhead">
+                    <div class="col-md-6">
+                        <div class="">
+                            <h1 class="formheading">
+                                <b> {{title}}</b>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pull-right" style="margin-top: 5px;">
+                            <a class="back" ng-href="mom/mom-list"><button type="button" class="btn btn-default btn-sm "
+                                    data-toggle="modal" title="Back" data-target="" data-ng-click=""
+                                    style="border:white;color:#428bca;"><i class="fa fa-arrow-left"
+                                        aria-hidden="true"></i></button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momTitle">Meeting Title</label>
+                                <input type="text" class="form-control " id="momTitle" name="momTitle"
+                                    ng-model="momTitle" placeholder="Enter Meeting Title">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momUser">Meeting Called By</label>
+                                <select id="momUser" name="momUser" class="form-control s2mn" ng-model="momUser"
+                                    ng-options="x.id as x.name for x in userList" data-placeholder="Select User">
+                                    <option value="" ng-disabled="">Select User </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momKeyword">Keywords</label>
+                                <input type="text" class="form-control " id="momKeyword" name="momKeyword"
+                                    ng-model="momKeyword" placeholder="Enter Keyword">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momName">Projects</label>
+                                <select id="momName" name="momName" class="form-control s2mn" ng-model="momName"
+                                    ng-options="x.id as x.name for x in projectList" data-placeholder="Select Projects"
+                                    multiple="multiple">
+                                    <option value="" ng-disabled="">Select Projects </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momDate">Date</label>
+                                <div class="input-group date">
+                                    <input type="text" class="form-control" id="momDate" name="momDate"
+                                        ng-model="momDate" placeholder="Enter Date" readonly='true'
+                                        style="cursor:default;background-color: white;">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momClient">Client Name</label>
+                                <select id="momClient" name="momClient" class="form-control s2mn" ng-model="momClient"
+                                    ng-options="x.name as x.name for x in clientList | unique:'name'"
+                                    data-placeholder="Select Client Name" multiple="multiple">
+                                    <option value="" ng-disabled="">Select Client Name</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="startTime">Start Time</label>
+                                <div class="input-group bootstrap-timepicker timepicker">
+                                    <input id="momStartTime" name="momStartTime" type="text" class="form-control"
+                                        ng-model="momStartTime" placeholder="Enter Start Time"
+                                        ng-change="calculateMeetingTimeDuration(momDate,momStartTime,momEndTime);">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="endTime">End Time</label>
+                                <div class="input-group bootstrap-timepicker timepicker">
+                                    <input id="momEndTime" name="momEndTime" type="text" class="form-control"
+                                        ng-model="momEndTime" placeholder="Enter End Time"
+                                        ng-change="calculateMeetingTimeDuration(momDate,momStartTime,momEndTime);"
+                                        style="border-color: {{highlightcolor2}};">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                </div>
+                                <span style="color:#dd4b39;border-color:#dd4b39">{{errMessage2}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="timeDuration">Duration</label>
+                                <input type="text" class="form-control" id="duration" name="duration"
+                                    placeholder="Enter Duration" disabled="" ng-model="timeDuration">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momVenue">Meeting Venue</label>
+                                <input type="text" class="form-control" id="momVenue" name="momVenue"
+                                    ng-model="momVenue" placeholder="Enter Meeting Venue">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="momStatus">Status</label>
+                                <select id="momStatus" name="momStatus" class="form-control s2mn" ng-model="momStatus"
+                                    data-placeholder="Select Status" ng-options="x.name as x.name for x in statusList">
+                                    <option ng-repeat="x in statusList" value="{{x.name}}">{{x.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="attendees">List Of Attendees:</label>
+                                <select id="attendees" name="attendees" class="form-control s2mn" ng-model="attendees"
+                                    ng-options="x.id as x.name for x in userList" data-placeholder="Select Attendees"
+                                    multiple="multiple">
+                                    <option value="" ng-disabled="">Select Attendees </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="" for="momDesc">Description</label>
+                                <textarea rows="2" class="form-control" id="momDesc" name="momDesc" ng-model="momDesc"
+                                    placeholder="Enter Description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <form id="momEditTaskForm" role="form" name="momEditTaskForm"> -->
+            <div class="box box-default">
+                <div class="row boxhead box-header with-border boxhead">
+                    <div class="col-md-6 ">
+                        <div class="">
+                            <h1 class="formheading">
+                                <b>Tasks</b>
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="taskName">Name</label>
+                                <input type="text" class="form-control" id="taskName" name="taskName" ng-model="taskForm.taskName" placeholder="Enter Task Name" >
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="taskType">Type</label>
+                                <input type="text" class="form-control" id="taskType" name="taskType" ng-model="taskForm.taskType"  placeholder="Enter Type" >
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="mandatory" for="taskUser">Assigned To</label>
+                                <select id="taskUser" ng-model="taskForm.taskUser" name="taskUser" class="form-control" data-placeholder="Select User" ng-options="x.id as x.name for x in attendeesList">
+                                    <option value="" ng-disabled="">Select User </option>
+                                </select>
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="mandatory" for="taskDesc">Description</label>
+                                <textarea class="form-control" id="taskDesc" name="taskDesc" ng-model="taskForm.taskDesc" placeholder="Enter Description" ></textarea> 
+                            </div>                                         
+                        </div>
+                    </div>
+                    <div class="row">                        
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="mandatory" for="taskStatus">Status</label>
+                                <select id="taskStatus" name="taskStatus" class="form-control" ng-model="taskStatus" data-placeholder="Enter Status">
+                                    <option ng-repeat="x in statusList" value="{{x.name}}" >{{x.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="mandatory" for="taskStartDate">Start Date</label>
+                                <div class="input-group date" >
+                                    <input type="text" class="form-control" id="taskStartDate" name="taskStartDate" ng-model="taskForm.taskStartDate" placeholder="Enter Start Date">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="mandatory" for="taskEndDate">End Date</label>
+                                <div class="input-group date" >
+                                    <input type="text" class="form-control" id="taskEndDate" name="taskEndDate" ng-model="taskForm.taskEndDate" placeholder="Enter End Date">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="button" value="Add" class="btn btn-success form-control" style="margin-top: 10.5%;" data-ng-click="addMoMTask()">
+                        </div>
+                    </div>
+                </div> -->
+                <!--task table section-->
+                <div class="row box-body">
+                    <div class="col-md-12 table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">Sr No.</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Assigned</th>
+                                    <th>Status</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th style="text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="data in taskArray">
+                                    <td style="text-align: center;">{{$index + 1}}</td>
+                                    <td>{{data.name}}</td>
+                                    <td>{{data.type}}</td>
+                                    <td>{{data.user.name}}</td>
+                                    <td>{{data.status}}</td>
+                                    <td>{{data.start_date}}</td>
+                                    <td>{{data.due_date}}</td>
+                                    <td style="padding-left: 0px;text-align: center;">
+                                        <div>
+                                            <button type="button" class="btn btn-default btn-xs" title="View"
+                                                ng-click="viewTask(data,'edit');"
+                                                style="border-color: #fff!important;text-align: center;"><i
+                                                    class="fa fa-eye" aria-hidden="true" style="color:#428bca;"></i>
+                                            </button>
+
+                                            <!--  <button type="button" class="btn btn-default btn-xs"   title="Edit" ng-click = "editTask(data);" style="border-color: #fff!important;text-align: center;"><i class="fa fa-edit" aria-hidden="true"  style="color:#428bca;"></i>
+                                            </button>
+
+                                            <button type="button" class="btn btn-default btn-xs"   title="Remove" ng-click = "deleteTask(data);" style="border-color: #fff!important;text-align: center;"><i class="fa fa-times" aria-hidden="true"  style="color:#428bca;"></i>
+                                            </button> -->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr ng-if="taskArray == null || taskArray.length == 0">
+                                    <td style="text-align: center;" colspan="8">No Records Found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull pull-right">
+                        <input type="button" value="Save" data-ng-click="updateSavedMoM()" class="btn btn-success"
+                            ng-disabled="submitClicked" />
+                        <button type="button" class="btn btn-warning" data-dismiss="modal"
+                            data-ng-click="cancleMoM();">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <br>
+
+    <!-- Modal for Viewing task -->
+    <div class="modal fade" id="showTaskModal" role="dialog">
+        <div class="modal-dialog modal-md">
+            <form class="form-horizontal" role="form" id="momEditTaskForm" style="margin-right: 100px;">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add Task</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="taskName">Name</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <input type="text" class="form-control pull-right" id="taskName" name="taskName"
+                                    ng-model="taskForm.taskNamee" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskType" class="col-md-4 control-label">Type</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <input type="text" class="form-control pull-right" id="taskType" name="taskType"
+                                    ng-model="taskForm.taskTypee" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="taskUser">Assigned To</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <input type="text" class="form-control pull-right" id="taskUser" name="taskUser"
+                                    ng-model="taskForm.userNamee" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="taskDesc">Description</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <textarea class="form-control pull-right" id="taskDesc" name="taskDesc"
+                                    ng-model="taskForm.taskDesce" disabled="disabled">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="taskStatus">Status</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <input type="text" class="form-control pull-right" id="taskStatus" name="taskStatus"
+                                    ng-model="taskForm.taskStatuse" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="taskStartDate">Start Date</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <div class="input-group date">
+                                    <input type="text" class="form-control pull-right" id="taskStartDate"
+                                        name="taskStartDate" ng-model="taskForm.taskStartDatee" disabled="disabled">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar" disabled="disabled"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="taskEndDate">End Date</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <div class="input-group date">
+                                    <input type="text" class="form-control pull-right" id="taskEndDate"
+                                        name="taskEndDate" ng-model="taskForm.taskEndDatee" disabled="disabled">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar" disabled="disabled"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button   data-ng-click="saveMoM()" class="btn btn-primary"> Save</button>-->
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End of Modal for Viewing task -->
+
+    <!-- Modal for editing task -->
+    <div class="modal fade" id="editTaskModal" role="dialog">
+        <div class="modal-dialog modal-md">
+            <form class="form-horizontal" role="form" id="momEditTaskForm" style="margin-right: 100px;">
+                <div class="modal-content" style="border-radius: 0px!important;">
+                    <div class="modal-header" style="text-align:center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add Task</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-md-4 control-label mandatory" for="taskName">Name</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <input type="text" class="form-control pull-right" id="taskName" name="taskName"
+                                    ng-model="taskForm.taskName" placeholder="Enter Task Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskType" class="col-md-4 control-label mandatory">Type</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <input type="text" class="form-control pull-right" id="taskType" name="taskType"
+                                    ng-model="taskForm.taskType" placeholder="Enter Type">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label mandatory" for="taskUser">Assigned To</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <select id="taskUser1" ng-model="taskForm.taskUser" name="taskUser1"
+                                    class="form-control select2 s2mn" data-placeholder="Select User"
+                                    ng-options="x.id as x.name for x in momattendeesArray">
+                                    <option value="" ng-disabled="">Select User </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label mandatory" for="taskDesc">Description</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <textarea class="form-control pull-right" id="taskDesc" name="taskDesc"
+                                    ng-model="taskForm.taskDesc" placeholder="Enter Description">
+                                </textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label mandatory" for="taskStatus">Status</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <input type="text" class="form-control pull-right" id="taskStatus" name="taskStatus"
+                                    ng-model="taskForm.taskStatus" placeholder="Enter Status">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label mandatory" for="taskStartDate">Start Date</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <div class="input-group date">
+                                    <input type="text" class="form-control pull-right" id="editTaskStartDate"
+                                        name="taskStartDate" ng-model="taskForm.taskStartDate"
+                                        placeholder="Enter Start Date" readonly='true'
+                                        style="cursor:default;background-color: white;">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label mandatory" for="taskEndDate">End Date</label>
+                            <div class="col-md-8" style="padding-right: 12%;">
+                                <div class="input-group date">
+                                    <input type="text" class="form-control pull-right" id="editTaskEndDate"
+                                        name="taskEndDate" ng-model="taskForm.taskEndDate" placeholder="Enter End Date"
+                                        readonly='true' style="cursor:default;background-color: white;">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button data-ng-click="saveMoM()" class="btn btn-primary"> Save</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End of Modal for editing task -->
+</section>
+<script type="text/javascript">
+    $(function () {
+        $(".s2mn").on("change", function () { $(this).valid(); });
+        $("#momName").select2();
+        $("#momUser").select2();
+        $("#taskUser1").select2();
+        $("#attendees").select2();
+        $("#momClient").select2({ tags: true });
+
+        $('#editTaskStartDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        }).on("changeDate", function () {
+            $(this).valid();
+            var selected = $(this).val();
+            $('#editTaskEndDate').datepicker('setStartDate', selected);
+        });
+
+        $('#editTaskEndDate').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+
+        $('#momDate').datepicker({
+            format: 'dd/mm/yyyy',
+            setDate: new Date(),
+            startDate: '-7d',
+            autoclose: true
+        }).on('changeDate', function (e) {
+            $(this).valid();
+        });
+
+        $('#momStartTime').timepicker({
+            showInputs: false,
+            autoclose: true,
+            showMeridian: false
+        });
+
+        $('#momEndTime').timepicker({
+            showInputs: false,
+            autoclose: true,
+            showMeridian: false
+        });
+    });
+
+    $("#momEditForm").validate({
+        errorElement: 'span', //default input error message container
+        errorClass: 'help-block help-block-error',
+        errorPlacement: function (error, element) {
+            var type = $(element).attr("type");
+            if ($(element).attr("id") === "momName" || $(element).attr("id") === "momUser" || $(element).attr("id") === "momClient" || $(element).attr("id") === "attendees") {
+                element.parent().append(error);
+            } else if ($(element).attr("id") === "momDate") {
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "momStartTime") {
+                element.parent().parent().append(error);
+            } else if ($(element).attr("id") === "momEndTime") {
+                element.parent().parent().append(error);
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        focusInvalid: true, // set focus the last invalid input
+        ignore: [], // validate all fields including form hidden input
+        rules: {
+            momTitle: {
+                required: true
+            },
+            momName: {
+                required: true
+            },
+            momUser: {
+                required: true
+            },
+            momKeyword: {
+                required: true
+            },
+            momVenue: {
+                required: true
+            },
+            momDate: {
+                required: true
+            },
+            momClient: {
+                required: true
+            },
+            momStartTime: {
+                required: true
+            },
+            momEndTime: {
+                required: true
+            },
+            attendees: {
+                required: true
+            }
+        },
+        messages: {
+            momTitle: {
+                required: "MoM name is required.",
+            },
+            momName: {
+                required: "MoM name is required.",
+            },
+            momUser: {
+                required: "MoM user name is required."
+            },
+            momKeyword: {
+                required: "MoM keyword is required."
+            },
+            momVenue: {
+                required: "MoM venue is required."
+            },
+            momDate: {
+                required: "MoM date is required."
+            },
+            momClient: {
+                required: "MoM client name is required."
+            },
+            momStartTime: {
+                required: "Start time is required."
+            },
+            momEndTime: {
+                required: "End time is required."
+            },
+            attendees: {
+                required: "Attendees is required."
+            }
+        },
+        highlight: function (element) { // hightlight error inputs
+            $(element).closest('.form-group').addClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:#dd4b39!important');// set error class to the control group
+        },
+        unhighlight: function (element) { // revert the change done by hightlight
+            $(element).closest('.form-group').removeClass('has-error');
+            $(element).next().children().children().attr('style', 'border-color:'); // set error class to the control group
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error'); // set success class to the control group
+        }
+    });
+</script>
+<script>
+    $('#momDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $('#taskStartDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $('#taskEndDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $('#editTaskStartDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    $('#editTaskEndDate').bind('keydown', function (e) {
+        if (e.which == 13) //13 is Enter/Return key.
+            e.stopImmediatePropagation();
+    }).datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+</script>

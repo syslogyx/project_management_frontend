@@ -1,0 +1,69 @@
+<section class="content">
+    <div class="container-fluid">
+        <div class="pull-right">
+            <ol class="ab-nav breadcrumb">
+                <i class="glyphicon glyphicon-home"></i>&nbsp;
+                <li ng-repeat="breadcrumb in breadcrumbs.get() track by breadcrumb.path" ng-class="{ active: $last }">
+                    <a ng-if="!$last" ng-href="{{ breadcrumb.path }}" ng-bind="breadcrumb.label"
+                        class="margin-right-xs"></a>
+                    <span ng-if="$last" ng-bind="breadcrumb.label"></span>
+                </li>
+            </ol>
+        </div>
+        <br>
+        <h4>Users Project
+            <button type="button" class="btn btn-primary btn-circle btn-lg pull-right" title="Sync"
+                data-ng-click="usc.syncNewUsers()"><i class="fa fa-refresh"></i></button>
+        </h4>
+        <br><br>
+        <!-- Project resource table  -->
+        <!-- <div> -->
+        <!-- Suvrat -->
+        <div class="table-responsive">
+            <!-- ------ -->
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Sr No.</th>
+                                <th>Name</th>
+                                <th>Company Name</th>
+                                <th>Role</th>
+                                <th style="text-align: center;">Duration in years</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!-- <pre>{{usc.userList||json}}</pre> -->
+                            <tr ng-if="usc.userProjectList.length > 0"
+                                ng-repeat="data in usc.userProjectList | orderBy:'name' track by data.id">
+                                <td style="text-align: center;" ng-bind="(usc.pageno - 1) * usc.limit + ($index + 1)">
+                                </td>
+                                <td>{{data.name}}</td>
+                                <td>{{data.company_name}}</td>
+                                <!--<td>{{data.total_experience}}</td>-->
+                                <td>{{data.role}}</td>
+                                <td style="text-align: center;">
+                                    {{data.duration_in_years}}
+                                </td>
+                            </tr>
+                            <tr ng-if="usc.userProjectList == null || usc.userProjectList.length == 0">
+                                <td style="text-align: center;" colspan="5">No Records Found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row col-sm-12" style="padding-right: 0px;">
+                        <ul id="pagination-sec" class="pagination-sm"
+                            style="float: right;margin-top: 10px;margin-bottom: 10px"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(document).ready(function () {
+        $("html, body").animate({ scrollTop: 0 }, "fast");
+    });
+</script>
